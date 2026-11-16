@@ -158,9 +158,12 @@ tr:hover td{background:rgba(255,255,255,.025)}
 <div class="tabs">
   <button id="t-stats" class="on" onclick="tab('stats')">📊 آمار</button>
   <button id="t-accounts" onclick="tab('accounts')">👥 اکانت‌ها</button>
-  <button id="t-messages" onclick="tab('messages')">📨 ایمیل‌ها</button>
-  <button id="t-settings" onclick="tab('settings')">⚙️ تنظیمات و سهمیه‌ها</button>
-  <button id="t-maintenance" onclick="tab('maintenance')">🧹 نگهداری و ریست</button>
+  <button id="t-messages" onclick="tab('messages')">📨 پیام‌ها</button>
+  <button id="t-heavy" onclick="tab('heavy')">🏋️ سنگین‌ها</button>
+  <button id="t-files" onclick="tab('files')">🗂 فایل‌ها</button>
+  <button id="t-sched" onclick="tab('sched')">⏰ زمان‌بندی‌ها</button>
+  <button id="t-settings" onclick="tab('settings')">⚙️ تنظیمات</button>
+  <button id="t-maintenance" onclick="tab('maintenance')">🧹 نگهداری</button>
 </div>
 
 <main>
@@ -187,6 +190,46 @@ tr:hover td{background:rgba(255,255,255,.025)}
       <div class="body" id="mvBody"></div>
       <div style="margin-top:14px;display:flex;gap:8px"><button class="btn sm danger" onclick="delMsg(viewingId)">🗑 حذف</button></div>
     </div>
+  </div>
+
+  <div id="v-heavy" style="display:none">
+    <div class="glass" style="padding:18px 20px;margin-bottom:14px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+      <div class="field" style="margin:0;flex:1;min-width:150px">
+        <label>فیلتر نوع پیوست</label>
+        <select id="heavyKind" onchange="loadHeavy()" style="width:100%;background:rgba(0,0,0,.3);border:1px solid var(--glass-br);border-radius:11px;padding:10px 12px;color:var(--fg);font-family:inherit;font-size:.82rem;outline:none">
+          <option value="all">همه انواع</option>
+          <option value="image">🖼 عکس‌ها</option>
+          <option value="video">🎬 ویدیوها</option>
+          <option value="audio">🎵 صداها</option>
+          <option value="doc">📄 اسناد (PDF)</option>
+          <option value="archive">🗜 آرشیوها (ZIP)</option>
+        </select>
+      </div>
+      <div class="field" style="margin:0;flex:1;min-width:150px">
+        <label>حداقل حجم (کیلوبایت)</label>
+        <input type="number" id="heavyMin" value="0" min="0" onchange="loadHeavy()" style="width:100%;background:rgba(0,0,0,.3);border:1px solid var(--glass-br);border-radius:11px;padding:10px 12px;color:var(--fg);font-family:var(--mono);font-size:.82rem;outline:none">
+      </div>
+      <button class="btn primary" onclick="loadHeavy()">🔍 اعمال فیلتر</button>
+    </div>
+    <div class="glass tablewrap"><table id="heavyTable">
+      <thead><tr><th>#</th><th>از</th><th>به</th><th>موضوع</th><th>پیوست‌ها</th><th>حجم کل</th><th>زمان</th><th>عملیات</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </div>
+
+  <div id="v-files" style="display:none">
+    <div class="stats" id="fileStats"></div>
+    <div class="glass" style="padding:22px">
+      <h3 style="font-size:.95rem;font-weight:800;margin-bottom:16px">🌳 درخت فایل‌ها (بر اساس پسوند)</h3>
+      <div id="fileTree" style="display:grid;gap:8px"></div>
+    </div>
+  </div>
+
+  <div id="v-sched" style="display:none">
+    <div class="glass tablewrap"><table id="schedTable">
+      <thead><tr><th>#</th><th>کاربر</th><th>به</th><th>موضوع</th><th>پیوست</th><th>زمان ارسال</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
   </div>
 
   <div id="v-settings" style="display:none">
@@ -228,6 +271,18 @@ tr:hover td{background:rgba(255,255,255,.025)}
     </div>
 
     <div class="glass setcard" style="margin-top:22px;max-width:460px">
+      <h3>👑 افزودن ادمین</h3>
+      <div class="desc">ادمین جدید روی دامنه‌ی سرویس ساخته می‌شود (یا کاربر موجود با این ایمیل ارتقا می‌یابد). رمز حداقل ۸ کاراکتر.</div>
+      <div class="field"><label>ایمیل ادمین جدید</label><input type="text" id="newAdminEmail" placeholder="modir@metora.ir" style="direction:ltr;text-align:left"></div>
+      <div class="field"><label>رمز عبور</label><input type="password" id="newAdminPass" autocomplete="new-password"></div>
+      <button class="btn primary" onclick="addAdmin()">👑 ساخت ادمین جدید</button>
+      <div style="margin-top:20px;border-top:1px dashed rgba(255,255,255,.1);padding-top:16px">
+        <div class="desc" style="margin-bottom:10px">ادمین‌های فعلی:</div>
+        <div id="adminList" style="display:grid;gap:8px"></div>
+      </div>
+    </div>
+
+    <div class="glass setcard" style="margin-top:22px;max-width:460px">
       <h3>🔐 تغییر رمز ادمین</h3>
       <div class="desc">رمز جدید باید حداقل ۸ کاراکتر باشد و با رمز اولیه فرق کند.</div>
       <div class="field"><label>رمز جدید</label><input type="password" id="npass" autocomplete="new-password"></div>
@@ -261,6 +316,49 @@ tr:hover td{background:rgba(255,255,255,.025)}
         <button class="btn danger" onclick="resetAction('purge_inactive_now')">حذف اکانت‌های بی‌استفاده</button>
       </div>
     </div>
+
+    <div class="glass" style="padding:26px;margin-top:18px">
+      <h3 style="font-size:1rem;font-weight:800;margin-bottom:6px">🧯 پاکسازی هوشمند بر اساس نوع محتوا</h3>
+      <p class="hint" style="margin-bottom:20px">پیام‌هایی که پیوستِ نوع مشخصی دارند کامل حذف می‌شوند (هم پیام هم فایل). «متن‌ها» فقط ایمیل‌های بدون پیوست را پاک می‌کند.</p>
+      <div class="maintenance">
+        <div class="glass mcard">
+          <div class="t">🖼 همه عکس‌ها</div>
+          <p>پیام‌هایی که پیوست عکس (JPG/PNG/GIF/WebP…) دارند، با فایل‌شان.</p>
+          <button class="btn warn" onclick="purgeKind('image')">پاک‌کردن عکس‌ها</button>
+        </div>
+        <div class="glass mcard">
+          <div class="t">🎬 همه ویدیوها</div>
+          <p>پیام‌های دارای پیوست ویدیویی (MP4/MOV/WebM…).</p>
+          <button class="btn warn" onclick="purgeKind('video')">پاک‌کردن ویدیوها</button>
+        </div>
+        <div class="glass mcard">
+          <div class="t">🎵 همه صداها</div>
+          <p>پیام‌های دارای پیوست صوتی (MP3/WAV/OGG…).</p>
+          <button class="btn warn" onclick="purgeKind('audio')">پاک‌کردن صداها</button>
+        </div>
+        <div class="glass mcard">
+          <div class="t">📄 همه اسناد PDF</div>
+          <p>پیام‌های دارای پیوست PDF.</p>
+          <button class="btn warn" onclick="purgeKind('doc')">پاک‌کردن اسناد</button>
+        </div>
+        <div class="glass mcard">
+          <div class="t">🗜 همه آرشیوها</div>
+          <p>پیام‌های دارای پیوست ZIP/RAR.</p>
+          <button class="btn warn" onclick="purgeKind('archive')">پاک‌کردن آرشیوها</button>
+        </div>
+        <div class="glass mcard">
+          <div class="t">📝 فقط متن‌ها</div>
+          <p>ایمیل‌های بدون پیوست (فقط متن). می‌توانی حداقل حجم بگذاری.</p>
+          <div style="display:flex;gap:8px;margin-bottom:12px">
+            <input type="number" id="purgeMinKb" value="0" min="0" placeholder="KB"
+              style="width:90px;background:rgba(0,0,0,.3);border:1px solid var(--glass-br);border-radius:9px;padding:7px;color:var(--fg);font-family:var(--mono);font-size:.78rem;text-align:center">
+            <span style="font-size:.72rem;color:var(--muted);align-self:center">KB به بالا</span>
+          </div>
+          <button class="btn danger" onclick="purgeTexts()">پاک‌کردن متن‌ها</button>
+        </div>
+      </div>
+    </div>
+
     <p class="hint" style="margin-top:20px;line-height:2">
       💡 ریست خودکار هر ۶ ساعت (۰۰:۰۰، ۰۶:۰۰، ۱۲:۰۰، ۱۸:۰۰ به وقت سرور) اجرا می‌شود و پاک‌سازی بی‌استفاده‌ها هر روز ساعت ۰۳:۳۰.
       این دکمه‌ها برای وقتی‌اند که می‌خواهید همین حالا انجام شود.
@@ -289,16 +387,21 @@ function esc(s){ return (s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;
 async function boot(){
   const me = await api('/api/me.php');
   if (!me.authenticated || me.role !== 'admin') { location.href='/'; return; }
+  ME_EMAIL = me.email;
   loadStats();
+  loadAdmins();
 }
 function tab(t){
-  ['stats','accounts','messages','settings','maintenance'].forEach(x=>{
+  ['stats','accounts','messages','heavy','files','sched','settings','maintenance'].forEach(x=>{
     $('v-'+x).style.display = x===t?'block':'none';
     $('t-'+x).className = x===t?'on':'';
   });
   if (t==='stats') loadStats();
   if (t==='accounts') loadAccounts();
   if (t==='messages') loadMessages();
+  if (t==='heavy') loadHeavy();
+  if (t==='files') loadFiles();
+  if (t==='sched') loadSchedAdmin();
   if (t==='settings') loadSettings();
 }
 
@@ -384,11 +487,12 @@ async function delAcc(id, email){
     body: JSON.stringify({action:'delete_account', id})});
   j.ok ? (toast('حذف شد'), loadAccounts()) : toast(j.error,1);
 }
-async function delMsg(id){
+async function delMsg(id, after){
   if (!confirm('این پیام حذف بشه؟')) return;
   const j = await api('/api/admin.php', {method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({action:'delete_message', id})});
-  j.ok ? (toast('حذف شد'), $('msgViewer').style.display='none', loadMessages()) : toast(j.error,1);
+  if (j.ok){ toast('حذف شد'); $('msgViewer').style.display='none'; (after || loadMessages)(); }
+  else toast(j.error,1);
 }
 
 /* ── settings ── */
@@ -418,6 +522,117 @@ async function saveSettings(){
   j.ok ? toast('تنظیمات ذخیره شد ✓ (برای کاربران از سیکل بعد اعمال می‌شود)') : toast(j.error,1);
 }
 
+/* ── heavy messages ── */
+async function loadHeavy(){
+  const kind = $('heavyKind').value, min = $('heavyMin').value || 0;
+  const j = await api(`/api/admin.php?action=heavy&kind=${kind}&min=${min}`);
+  if (!j.ok) return;
+  const tb = $('heavyTable').querySelector('tbody');
+  if (!j.messages.length){ tb.innerHTML = '<tr><td colspan="8" class="empty">پیامی با این فیلترها نیست</td></tr>'; return; }
+  tb.innerHTML = j.messages.map(m => `
+    <tr>
+      <td class="mono">${m.id}</td>
+      <td class="mono" style="font-size:.72rem">${esc(m.from_addr)}</td>
+      <td class="mono" style="font-size:.72rem">${esc(m.to_addr)}</td>
+      <td>${esc(m.subject||'(بدون موضوع)')}</td>
+      <td>${m.attachments.length ? m.attachments.map(a => `<span class="pill prem">${esc(a.filename)} · ${fmtSize(a.size)}</span>`).join(' ') : '—'}</td>
+      <td class="mono" style="color:var(--warn)">${fmtSize(m.size_bytes)}</td>
+      <td class="mono" style="font-size:.68rem">${fmtDate(m.created_at)}</td>
+      <td><button class="btn sm danger" onclick="delMsg(${m.id},()=>loadHeavy())">🗑</button></td>
+    </tr>`).join('');
+}
+
+/* ── file tree ── */
+const EXT_ICON = {jpg:'🖼',jpeg:'🖼',png:'🖼',gif:'🖼',webp:'🖼',svg:'🖼',pdf:'📄',doc:'📃',docx:'📃',txt:'📝',
+                  zip:'🗜',rar:'🗜',gz:'🗜',mp4:'🎬',mov:'🎬',webm:'🎬',mp3:'🎵',wav:'🎵',ogg:'🎵'};
+async function loadFiles(){
+  const j = await api('/api/admin.php?action=files');
+  if (!j.ok) return;
+  $('fileStats').innerHTML = `
+    <div class="glass stat"><div class="v">${faNum(j.files)}</div><div class="k">کل فایل‌ها</div></div>
+    <div class="glass stat"><div class="v">${fmtSize(j.total_bytes)}</div><div class="k">حجم کل دیسک</div></div>
+    <div class="glass stat warn"><div class="v">${faNum(j.orphan_count)}</div><div class="k">فایل یتیم</div></div>
+    <div class="glass stat warn"><div class="v">${fmtSize(j.orphan_bytes)}</div><div class="k">حجم یتیم‌ها</div></div>`;
+  const tree = $('fileTree');
+  if (!j.tree.length){ tree.innerHTML = '<div class="empty">فایلی روی دیسک نیست</div>'; return; }
+  tree.innerHTML = j.tree.map(t => {
+    const pct = j.total_bytes ? Math.round(t.bytes / j.total_bytes * 100) : 0;
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid rgba(255,255,255,.06);border-radius:12px">
+      <span style="font-size:1.1rem">${EXT_ICON[t.ext] || '📦'}</span>
+      <span class="mono" style="min-width:70px;font-weight:600">.${t.ext}</span>
+      <div style="flex:1;height:7px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden">
+        <div style="width:${pct}%;height:100%;background:linear-gradient(90deg,#3CF2D3,#2B7FFF)"></div>
+      </div>
+      <span style="font-size:.72rem;color:var(--muted);min-width:90px;text-align:center">${faNum(t.count)} فایل · ${fmtSize(t.bytes)}</span>
+      ${t.orphan ? `<span class="pill" style="background:rgba(255,196,107,.1);color:var(--warn);border:1px solid rgba(255,196,107,.3)">${faNum(t.orphan)} یتیم</span>` : ''}
+      <button class="btn sm danger" onclick="purgeExt('${t.ext}')">حذف همه</button>
+    </div>`;
+  }).join('');
+}
+async function purgeExt(ext){
+  if (!confirm(`همه فایل‌های .${ext} از دیسک حذف بشن؟ پیام‌ها می‌مانند ولی پیوست‌شان از بین می‌رود.`)) return;
+  const j = await api('/api/admin.php', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'purge_ext', ext})});
+  j.ok ? (toast(`${faNum(j.deleted)} فایل حذف شد (${fmtSize(j.bytes)})`), loadFiles()) : toast(j.error,1);
+}
+
+/* ── scheduled (admin) ── */
+async function loadSchedAdmin(){
+  const j = await api('/api/admin.php?action=scheduled');
+  if (!j.ok) return;
+  const tb = $('schedTable').querySelector('tbody');
+  if (!j.scheduled.length){ tb.innerHTML = '<tr><td colspan="8" class="empty">زمان‌بندی‌ای نیست</td></tr>'; return; }
+  tb.innerHTML = j.scheduled.map(s => `
+    <tr>
+      <td class="mono">${s.id}</td>
+      <td class="mono" style="font-size:.72rem">${esc(s.email)}</td>
+      <td class="mono" style="font-size:.72rem">${esc(s.to_addr)}</td>
+      <td>${esc(s.subject||'(بدون موضوع)')}</td>
+      <td>${+s.has_att ? '📎' : '—'}</td>
+      <td class="mono" style="font-size:.72rem">${fmtDate(s.send_at.replace(' ','T'))}</td>
+      <td><span class="pill ${s.status==='pending'?'prem':s.status==='sent'?'free':'admin'}">${s.status}</span></td>
+      <td>${s.status==='pending' ? `<button class="btn sm danger" onclick="delSched(${s.id})">🗑</button>` : '—'}</td>
+    </tr>`).join('');
+}
+async function delSched(id){
+  if (!confirm('این زمان‌بندی حذف بشه؟')) return;
+  const j = await api('/api/admin.php', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'delete_sched', id})});
+  j.ok ? (toast('حذف شد'), loadSchedAdmin()) : toast(j.error,1);
+}
+
+/* ── admins ── */
+async function loadAdmins(){
+  const j = await api('/api/admin.php?action=accounts');
+  if (!j.ok) return;
+  const admins = j.accounts.filter(a => a.role === 'admin');
+  $('adminList').innerHTML = admins.map(a => `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 12px;border:1px solid rgba(255,255,255,.07);border-radius:10px">
+      <span class="mono" style="font-size:.78rem">${esc(a.email)}</span>
+      ${a.email === ME_EMAIL ? '<span style="font-size:.7rem;color:var(--muted)">شما</span>'
+        : `<button class="btn sm danger" onclick="removeAdmin(${a.id},'${esc(a.email)}')">سلب دسترسی</button>`}
+    </div>`).join('') || '<p class="hint">—</p>';
+}
+let ME_EMAIL = '';
+async function addAdmin(){
+  const email = $('newAdminEmail').value.trim().toLowerCase();
+  const pass = $('newAdminPass').value;
+  if (!email || !pass){ toast('ایمیل و رمز رو بنویس', 1); return; }
+  const j = await api('/api/admin.php', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'add_admin', email, password:pass})});
+  if (j.ok){
+    toast(j.promoted ? 'کاربر موجود به ادمین ارتقا یافت ✓' : 'ادمین جدید ساخته شد ✓');
+    $('newAdminEmail').value = $('newAdminPass').value = '';
+    loadAdmins();
+  } else toast(j.error,1);
+}
+async function removeAdmin(id, email){
+  if (!confirm(`دسترسی ادمینی ${email} سلب بشه؟ (اکانت می‌مونه، فقط کاربر عادی می‌شه)`)) return;
+  const j = await api('/api/admin.php', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'remove_admin', id})});
+  j.ok ? (toast('سلب دسترسی شد'), loadAdmins()) : toast(j.error,1);
+}
+
 /* ── maintenance ── */
 const CONFIRM_TEXT = {
   reset_now: 'ریست کامل انجام بشه؟ همه پیام‌های همه کاربران پاک می‌شوند (اکانت‌ها می‌مانند).',
@@ -435,6 +650,22 @@ async function resetAction(action){
     else toast('انجام شد ✓');
     loadStats();
   } else toast(j.error,1);
+}
+
+/* ── smart purge by kind ── */
+const KIND_LABEL = {image:'عکس', video:'ویدیو', audio:'صدا', doc:'سند', archive:'آرشیو'};
+async function purgeKind(kind){
+  if (!confirm(`همه پیام‌های دارای پیوست ${KIND_LABEL[kind]} حذف بشن؟ این کار برگشت‌ناپذیره.`)) return;
+  const j = await api('/api/admin.php', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'purge_kind', kind})});
+  j.ok ? (toast(`${faNum(j.deleted)} پیام حذف شد (${fmtSize(j.bytes)}) آزاد شد`), loadStats()) : toast(j.error,1);
+}
+async function purgeTexts(){
+  const minKb = $('purgeMinKb').value || 0;
+  if (!confirm(`همه ایمیل‌های بدون پیوست با حجم ${faNum(minKb)}KB به بالا حذف بشن؟`)) return;
+  const j = await api('/api/admin.php', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'purge_texts', min_kb: minKb})});
+  j.ok ? (toast(`${faNum(j.deleted)} ایمیل متنی حذف شد`), loadStats()) : toast(j.error,1);
 }
 
 async function changePass(){

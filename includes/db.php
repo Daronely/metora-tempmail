@@ -81,6 +81,23 @@ function db_install(): void {
       v TEXT
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
+    $pdo->exec("
+    CREATE TABLE IF NOT EXISTS scheduled_messages (
+      id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+      account_id INT UNSIGNED NOT NULL,
+      to_addr VARCHAR(255) NOT NULL,
+      subject VARCHAR(512) NOT NULL DEFAULT '',
+      body_text MEDIUMTEXT,
+      att_json TEXT,
+      send_at DATETIME NOT NULL,
+      status ENUM('pending','sent','failed','canceled') NOT NULL DEFAULT 'pending',
+      sent_at DATETIME NULL,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      INDEX idx_status_send (status, send_at),
+      INDEX idx_acc (account_id),
+      FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
     // seed settings (editable from admin panel; config constants are fallback defaults)
     $defaults = [
         'send_limit_free'    => defined('SEND_LIMIT_FREE') ? SEND_LIMIT_FREE : 10,

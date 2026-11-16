@@ -1,6 +1,16 @@
 <?php
 require_once __DIR__ . '/../includes/helpers.php';
 
+/** content-kind buckets for cleanup & heavy-message filtering */
+const MIME_KINDS = [
+    'image'  => ['label' => 'عکس‌ها',        'like' => 'image/%'],
+    'video'  => ['label' => 'ویدیوها',       'like' => 'video/%'],
+    'audio'  => ['label' => 'صداها',         'like' => 'audio/%'],
+    'doc'    => ['label' => 'اسناد',         'like' => '%pdf%'],
+    'archive'=> ['label' => 'آرشیوها',       'like' => '%zip%'],
+    'text'   => ['label' => 'متن‌ها',         'like' => 'text/%'],
+];
+
 $a = require_admin();
 $method = $_SERVER['REQUEST_METHOD'];
 $pdo = db();
@@ -82,6 +92,74 @@ if ($method === 'GET') {
             return ['id' => $r['att_id'], 'filename' => $r['filename'], 'mime' => $r['mime'], 'size' => $r['att_size']];
         }, array_filter($rows, fn($r) => $r['att_id'] !== null));
         json_out(['ok' => true, 'message' => $msg, 'attachments' => array_values($atts)]);
+    }
+
+    if ($action === 'heavy') {
+        // heavy messages: biggest messages with attachment info, filterable by kind
+        $kind = $_GET['kind'] ?? 'all';
+        $min = max(0, (int)($_GET['min'] ?? 0));
+        $sql = "SELECT m.id, m.from_addr, m.to_addr, m.subject, m.size_bytes, m.folder, m.created_at,
+                       a.filename, a.mime, a.size_bytes att_size, a.file_path
+                FROM messages m LEFT JOIN attachments a ON a.message_id = m.id
+                WHERE m.size_bytes >= ?";
+        $params = [$min];
+        if ($kind !== 'all') {
+            $sql .= " AND (a.mime LIKE ? OR a.mime IS NULL AND 0)";
+            $params[] = MIME_KINDS[$kind]['like'] ?? '%';
+        }
+        $sql .= " ORDER BY m.size_bytes DESC LIMIT 200";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        $rows = $stmt->fetchAll();
+        // group attachments under their message
+        $out = [];
+        foreach ($rows as $r) {
+            $id = $r['id'];
+            if (!isset($out[$id])) {
+                $out[$id] = ['id' => $id, 'from_addr' => $r['from_addr'], 'to_addr' => $r['to_addr'],
+                             'subject' => $r['subject'], 'size_bytes' => (int)$r['size_bytes'],
+                             'folder' => $r['folder'], 'created_at' => $r['created_at'], 'attachments' => []];
+            }
+            if ($r['filename'] !== null) {
+                $out[$id]['attachments'][] = ['filename' => $r['filename'], 'mime' => $r['mime'],
+                                               'size' => (int)$r['att_size'], 'path' => $r['file_path']];
+            }
+        }
+        json_out(['ok' => true, 'messages' => array_values($out)]);
+    }
+
+    if ($action === 'files') {
+        // file tree: storage usage grouped by extension + orphan detection
+        $keep = [];
+        foreach ($pdo->query("SELECT file_path, filename, mime, size_bytes, message_id FROM attachments")->fetchAll() as $r)
+            $keep[$r['file_path']] = $r;
+        $tree = []; $total = 0; $count = 0; $orphanBytes = 0; $orphanCount = 0;
+        foreach (glob(STORAGE_DIR . '/att/*') as $f) {
+            $rel = 'att/' . basename($f);
+            $size = (int)@filesize($f); $total += $size; $count++;
+            $ref = $keep[$rel] ?? null;
+            $name = $ref ? $ref['filename'] : basename($f);
+            $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION)) ?: '—';
+            if (!isset($tree[$ext])) $tree[$ext] = ['ext' => $ext, 'count' => 0, 'bytes' => 0, 'orphan' => 0];
+            $tree[$ext]['count']++; $tree[$ext]['bytes'] += $size;
+            if (!$ref) { $tree[$ext]['orphan']++; $orphanCount++; $orphanBytes += $size; }
+        }
+        foreach (glob(STORAGE_DIR . '/sched/*') as $f) {
+            $size = (int)@filesize($f); $total += $size; $count++;
+            $ext = strtolower(pathinfo($f, PATHINFO_EXTENSION)) ?: '—';
+            if (!isset($tree[$ext])) $tree[$ext] = ['ext' => $ext, 'count' => 0, 'bytes' => 0, 'orphan' => 0];
+            $tree[$ext]['count']++; $tree[$ext]['bytes'] += $size;
+        }
+        usort($tree, fn($a, $b) => $b['bytes'] - $a['bytes']);
+        json_out(['ok' => true, 'tree' => $tree, 'total_bytes' => $total, 'files' => $count,
+                  'orphan_count' => $orphanCount, 'orphan_bytes' => $orphanBytes]);
+    }
+
+    if ($action === 'scheduled') {
+        $stmt = $pdo->query("SELECT s.*, a.email FROM scheduled_messages s
+                             JOIN accounts a ON a.id = s.account_id
+                             ORDER BY (s.status='pending') DESC, s.send_at DESC LIMIT 200");
+        json_out(['ok' => true, 'scheduled' => $stmt->fetchAll()]);
     }
 
     json_error('unknown action', 422);
@@ -192,6 +270,113 @@ if ($method === 'POST') {
         if ($new === ADMIN_SEED_PASSWORD) json_error('رمز جدید نمی‌تواند رمز اولیه باشد');
         $pdo->prepare("UPDATE accounts SET password_hash=? WHERE id=?")
             ->execute([password_hash($new . PEPPER, PASSWORD_BCRYPT, ['cost' => BCRYPT_COST]), $a['id']]);
+        json_out(['ok' => true]);
+    }
+
+    if ($action === 'add_admin') {
+        $email = strtolower(trim($in['email'] ?? ''));
+        $pass = (string)($in['password'] ?? '');
+        if (!valid_email($email) || !str_ends_with($email, '@' . MAIL_DOMAIN))
+            json_error('ایمیل ادمین باید روی دامنه @' . MAIL_DOMAIN . ' باشد');
+        if (strlen($pass) < 8) json_error('رمز ادمین جدید باید حداقل ۸ کاراکتر باشد');
+        $stmt = $pdo->prepare("SELECT id FROM accounts WHERE email = ?");
+        $stmt->execute([$email]);
+        if ($existing = $stmt->fetch()) {
+            // promote existing user to admin
+            $pdo->prepare("UPDATE accounts SET role='admin', is_premium=1 WHERE id=?")->execute([$existing['id']]);
+            json_out(['ok' => true, 'promoted' => true, 'id' => (int)$existing['id']]);
+        }
+        $username = explode('@', $email)[0];
+        $pdo->prepare("INSERT INTO accounts (username, email, password_hash, role, is_premium)
+                       VALUES (?,?,?,?,1)")
+            ->execute([$username, $email,
+                       password_hash($pass . PEPPER, PASSWORD_BCRYPT, ['cost' => BCRYPT_COST]), 'admin']);
+        json_out(['ok' => true, 'created' => true, 'id' => (int)$pdo->lastInsertId()]);
+    }
+
+    if ($action === 'remove_admin') {
+        $id = (int)($in['id'] ?? 0);
+        if ($id === (int)$a['id']) json_error('نمی‌توانید خودتان را از ادمینی خارج کنید');
+        // refuse if this is the last admin
+        $c = (int)$pdo->query("SELECT COUNT(*) c FROM accounts WHERE role='admin'")->fetch()['c'];
+        if ($c <= 1) json_error('حداقل یک ادمین باید بماند');
+        $pdo->prepare("UPDATE accounts SET role='user', is_premium=0 WHERE id=? AND role='admin'")->execute([$id]);
+        json_out(['ok' => true]);
+    }
+
+    if ($action === 'purge_kind') {
+        // delete all messages whose attachments match a content kind (image/video/…)
+        $kind = (string)($in['kind'] ?? '');
+        if (!isset(MIME_KINDS[$kind])) json_error('نوع نامعتبر است');
+        $like = MIME_KINDS[$kind]['like'];
+        // find messages having at least one attachment of this kind
+        $stmt = $pdo->prepare("SELECT DISTINCT m.id FROM messages m
+                               JOIN attachments a ON a.message_id = m.id
+                               WHERE a.mime LIKE ?");
+        $stmt->execute([$like]);
+        $ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $bytes = 0;
+        if ($ids) {
+            $inSql = implode(',', array_fill(0, count($ids), '?'));
+            $f = $pdo->prepare("SELECT a.file_path, a.size_bytes FROM attachments a
+                                JOIN messages m ON m.id = a.message_id
+                                WHERE m.id IN ($inSql)");
+            $f->execute($ids);
+            foreach ($f->fetchAll() as $r) { $bytes += (int)$r['size_bytes']; @unlink(STORAGE_DIR . '/' . $r['file_path']); }
+            $pdo->prepare("DELETE FROM messages WHERE id IN ($inSql)")->execute($ids);
+        }
+        json_out(['ok' => true, 'deleted' => count($ids), 'bytes' => $bytes]);
+    }
+
+    if ($action === 'purge_texts') {
+        // delete all messages with no attachments and body under threshold (pure text mails)
+        $min = max(0, (int)($in['min_kb'] ?? 0)) * 1024;
+        $stmt = $pdo->prepare("SELECT id FROM messages m WHERE NOT EXISTS
+                               (SELECT 1 FROM attachments a WHERE a.message_id = m.id)
+                               AND COALESCE(size_bytes,0) >= ?");
+        $stmt->execute([$min]);
+        $ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        if ($ids) {
+            $inSql = implode(',', array_fill(0, count($ids), '?'));
+            $pdo->prepare("DELETE FROM messages WHERE id IN ($inSql)")->execute($ids);
+        }
+        json_out(['ok' => true, 'deleted' => count($ids)]);
+    }
+
+    if ($action === 'purge_orphan_files') {
+        // delete files on disk that no message references
+        $keep = [];
+        foreach ($pdo->query("SELECT file_path FROM attachments")->fetchAll() as $r) $keep[$r['file_path']] = 1;
+        $n = 0; $bytes = 0;
+        foreach (glob(STORAGE_DIR . '/att/*') as $f) {
+            $rel = 'att/' . basename($f);
+            if (!isset($keep[$rel]) && @unlink($f)) { $n++; $bytes += (int)@filesize($f); }
+        }
+        json_out(['ok' => true, 'deleted' => $n, 'bytes' => $bytes]);
+    }
+
+    if ($action === 'purge_ext') {
+        // delete attachment files of a given extension from disk + their attachments rows
+        $ext = strtolower(trim((string)($in['ext'] ?? '')));
+        if (!preg_match('/^[a-z0-9]{1,10}$/', $ext)) json_error('پسوند نامعتبر است');
+        $stmt = $pdo->prepare("SELECT id, file_path, size_bytes FROM attachments WHERE file_path LIKE ?");
+        $stmt->execute(['%.' . $ext]);
+        $n = 0; $bytes = 0;
+        foreach ($stmt->fetchAll() as $r) {
+            if (@unlink(STORAGE_DIR . '/' . $r['file_path'])) { $n++; $bytes += (int)$r['size_bytes']; }
+            $pdo->prepare("DELETE FROM attachments WHERE id=?")->execute([$r['id']]);
+        }
+        json_out(['ok' => true, 'deleted' => $n, 'bytes' => $bytes]);
+    }
+
+    if ($action === 'delete_sched') {
+        $id = (int)($in['id'] ?? 0);
+        $row = $pdo->prepare("SELECT att_json FROM scheduled_messages WHERE id=?");
+        $row->execute([$id]);
+        if ($r = $row->fetch()) {
+            foreach (json_decode($r['att_json'] ?? '[]', true) ?: [] as $a) @unlink(STORAGE_DIR . '/' . $a['path']);
+            $pdo->prepare("DELETE FROM scheduled_messages WHERE id=?")->execute([$id]);
+        }
         json_out(['ok' => true]);
     }
 

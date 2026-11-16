@@ -282,6 +282,42 @@ footer .social{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
 .quota b{color:var(--acc)}
 #typefx{position:absolute;inset:0;pointer-events:none;z-index:5}
 
+/* scheduled-send UI */
+.sched-toggle{display:flex;align-items:center;gap:10px;padding:12px 15px;border-radius:12px;
+  background:rgba(0,0,0,.22);border:1px solid var(--glass-br);cursor:pointer;user-select:none;transition:.25s}
+.sched-toggle:hover{border-color:rgba(60,242,211,.4)}
+.sched-toggle.on{background:rgba(60,242,211,.08);border-color:rgba(60,242,211,.45)}
+.sched-toggle .lbl{font-size:.83rem;font-weight:600}
+.sched-toggle .sub{font-size:.68rem;color:var(--muted);display:block;margin-top:2px}
+.sched-fields{display:none;gap:14px}
+.sched-fields.on{display:grid;grid-template-columns:1fr 1fr;animation:mup .35s var(--ease)}
+.sched-fields input{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--glass-br);border-radius:12px;
+  padding:12px 14px;color:var(--fg);font-family:var(--mono);font-size:.85rem;outline:none;direction:ltr;text-align:center}
+.sched-fields input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(60,242,211,.12)}
+.sched-note{font-size:.7rem;color:var(--muted);line-height:1.9;background:rgba(255,196,107,.06);
+  border:1px solid rgba(255,196,107,.22);border-radius:11px;padding:9px 13px}
+.sched-drop{border:1.5px dashed rgba(255,196,107,.3);border-radius:12px;padding:13px;text-align:center;
+  color:var(--muted);font-size:.75rem;cursor:pointer;transition:.25s}
+.sched-drop:hover,.sched-drop.drag{border-color:var(--warn);color:var(--warn)}
+.sched-drop.has{border-style:solid;border-color:rgba(60,242,211,.4);color:var(--acc)}
+.tabrow{display:flex;gap:4px;margin-bottom:14px}
+.tabrow button{flex:1;background:rgba(0,0,0,.25);border:1px solid var(--card-br);color:var(--muted);
+  font-family:inherit;font-size:.8rem;font-weight:700;padding:10px;border-radius:11px;cursor:pointer;transition:.25s}
+.tabrow button.on{color:var(--acc);border-color:rgba(60,242,211,.4);background:rgba(60,242,211,.08)}
+.sched-list{display:grid;gap:12px}
+.sched-item{border:1px solid var(--glass-br);border-radius:15px;padding:18px 20px;background:rgba(0,0,0,.22);
+  display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap;transition:.25s}
+.sched-item:hover{border-color:rgba(60,242,211,.35)}
+.sched-item .info{min-width:0}
+.sched-item .to{font-family:var(--mono);direction:ltr;color:var(--acc);font-size:.85rem;font-weight:600;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sched-item .subj{font-size:.8rem;margin-top:4px;opacity:.85}
+.sched-item .cnt{font-family:var(--mono);font-size:.75rem;color:var(--warn);margin-top:6px;direction:ltr}
+.countdown{font-family:var(--mono);font-size:1.02rem;font-weight:800;color:var(--acc);direction:ltr;white-space:nowrap}
+.clockchip{display:inline-flex;gap:8px;align-items:center;border:1px dashed rgba(60,242,211,.3);
+  border-radius:10px;padding:5px 12px;font-size:.72rem;color:var(--muted)}
+.clockchip b{color:var(--acc);font-family:var(--mono)}
+
 /* toast */
 #toast{position:fixed;bottom:26px;left:50%;transform:translate(-50%,20px);z-index:200;
   background:rgba(17,20,22,.9);border:1px solid var(--acc);color:var(--fg);padding:14px 24px;border-radius:14px;
@@ -475,6 +511,11 @@ footer .social{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
         <button id="tab-inbox" class="on" onclick="switchFolder('inbox')">📥 دریافتی <span class="cnt" id="cntInbox"></span></button>
         <button id="tab-sent" onclick="switchFolder('sent')">📤 ارسالی <span class="cnt" id="cntSent"></span></button>
       </div>
+      <div class="tabrow">
+        <button id="mt-inbox" class="on" onclick="mailTab('inbox')">📥 دریافتی</button>
+        <button id="mt-sent" onclick="mailTab('sent')">📤 ارسالی</button>
+        <button id="mt-sched" onclick="mailTab('sched')">⏰ زمان‌بندی <span class="cnt" id="cntSched"></span></button>
+      </div>
       <div class="msglist" id="msgList"></div>
     </div>
     <div class="glass readpane" id="readPane">
@@ -489,6 +530,24 @@ footer .social{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
       <div class="field"><label>به (گیرنده)</label><div class="wrap"><input id="cmpTo" class="mono-in" type="email" placeholder="someone@example.com"></div></div>
       <div class="field"><label>موضوع</label><div class="wrap"><input id="cmpSubject" type="text" placeholder="سلام..."></div></div>
       <div class="field"><label>متن</label><div class="wrap"><textarea id="cmpBody" placeholder="بنویس..."></textarea></div></div>
+
+      <div class="sched-toggle" id="schedToggle" onclick="toggleSched()">
+        <label class="toggle"><input type="checkbox" id="schedOn"><span class="tr"></span></label>
+        <span><span class="lbl">⏰ ارسال زمان‌بندی‌شده</span>
+        <span class="sub">ایمیلت در تاریخ و ساعتی که انتخاب می‌کنی، خودکار ارسال می‌شه</span></span>
+      </div>
+      <div class="sched-fields" id="schedFields">
+        <input type="date" id="schedDate" onchange="updateSendBtn()">
+        <input type="time" id="schedTime" onchange="updateSendBtn()">
+      </div>
+      <div class="sched-fields" id="schedAttWrap" style="grid-template-columns:1fr">
+        <div class="sched-drop" id="schedDrop" onclick="document.getElementById('schedFile').click()">
+          📎 پیوست اختیاری (حداکثر ۱ مگابایت)
+        </div>
+        <input type="file" id="schedFile" style="display:none">
+      </div>
+      <div class="sched-note">⚖️ قوانین: هر روز فقط یک ایمیل زمان‌بندی‌شده — حداکثر ۵ ایمیل در انتظار ارسال (قدیمی‌ترها خودکار حذف می‌شوند) — پیوست حداکثر ۱ مگابایت.</div>
+
       <div>
         <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
           📎 پیوست اضافه کن (حداکثر ۲MB هر فایل) — یا فایل رو همین‌جا رها کن
@@ -540,96 +599,124 @@ function fmtDate(s){ const d=new Date(s.replace(' ','T'));
   return faNum(d.toLocaleDateString('fa-IR'))+' '+faNum(d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})); }
 function esc(s){ return (s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-/* ═════════════ EFFECT 1: Particle Typography (hero title) ═════════════
-   The hero H1 words are rendered twice: real text on top + a canvas behind
-   sampling the text pixels; particles drift toward their sampled targets so
-   the headline literally forms out of glowing particles. */
+/* ═════════════ EFFECT 1: Particle Typography v2 (hero title) ═════════════
+   The headline is rendered by thousands of crisp neon particles sampled
+   from the text glyphs. Particles rest tightly on their glyph targets;
+   only the cursor can scatter them — they blast away and spring back. */
 (function particleTitle(){
   if (REDUCED) return;
   const cv = $('pcanvas'), ctx = cv.getContext('2d', {alpha:true});
-  let W, H, parts = [], running = true, formed = false, mouse = {x:-9e3, y:-9e3};
+  let W, H, parts = [], mouse = {x:-9e3, y:-9e3, on:false};
+  const DPR = Math.min(devicePixelRatio || 1, 2);
+
+  // pre-rendered glow sprite for fast additive halos
+  const sprite = document.createElement('canvas');
+  const SPR = 24; sprite.width = sprite.height = SPR;
+  {
+    const sc = sprite.getContext('2d');
+    const g = sc.createRadialGradient(SPR/2, SPR/2, 0, SPR/2, SPR/2, SPR/2);
+    g.addColorStop(0, 'rgba(190,255,242,1)');
+    g.addColorStop(.3, 'rgba(60,242,211,.9)');
+    g.addColorStop(1, 'rgba(60,242,211,0)');
+    sc.fillStyle = g; sc.fillRect(0, 0, SPR, SPR);
+  }
 
   function measure(){
-    const hero = $('landing');
-    W = cv.width = hero.clientWidth;
-    H = cv.height = hero.clientHeight;
+    W = cv.clientWidth; H = cv.clientHeight;
+    cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
   }
+
   function buildTargets(){
-    // render the hero title into an offscreen canvas and sample bright pixels
     const t = $('heroTitle');
     const off = document.createElement('canvas');
     off.width = W; off.height = H;
-    const oc = off.getContext('2d');
+    const oc = off.getContext('2d', {willReadFrequently:true});
     const r = t.getBoundingClientRect(), hr = $('landing').getBoundingClientRect();
-    const cssFont = getComputedStyle(t);
-    const fs = parseFloat(cssFont.fontSize);
-    oc.font = `900 ${fs}px ${cssFont.fontFamily}`;
+    const cs = getComputedStyle(t);
+    const fs = parseFloat(cs.fontSize);
+    const lh = fs * 1.12;
+    oc.font = `900 ${fs}px ${cs.fontFamily}`;
     oc.textAlign = 'center'; oc.textBaseline = 'middle';
     oc.fillStyle = '#fff';
     const cx = r.left - hr.left + r.width/2;
     const cy = r.top - hr.top + r.height/2;
-    // three lines of the headline
-    oc.fillText('ایمیلی که', cx, cy - fs*1.12);
-    oc.fillText('دووم نمیاره', cx, cy);
-    oc.fillText('تا وقتی خودت بخوای', cx, cy + fs*1.12);
+    oc.fillText('ایمیلی که',           cx, cy - lh);
+    oc.fillText('دووم نمیاره',         cx, cy);
+    oc.fillText('تا وقتی خودت بخوای',  cx, cy + lh);
     const data = oc.getImageData(0, 0, W, H).data;
-    const gap = W > 900 ? 4 : 3;                 // sampling density
+    const area = W * H;
+    const gap = area > 700000 ? 3 : area > 380000 ? 4 : 5;
+    const maxParts = area > 700000 ? 8000 : 4500;
     parts = [];
-    for (let y = 0; y < H; y += gap) {
-      for (let x = 0; x < W; x += gap) {
-        if (data[(y*W + x)*4 + 3] > 128) {
+    for (let y = 0; y < H && parts.length < maxParts; y += gap) {
+      for (let x = 0; x < W && parts.length < maxParts; x += gap) {
+        if (data[(y*W + x)*4 + 3] > 140) {
           parts.push({
-            x: W/2 + (Math.random()-0.5)*W*1.4,
-            y: H/2 + (Math.random()-0.5)*H*1.4,
-            tx: x, ty: y,
+            x: Math.random()*W, y: Math.random()*H,
+            tx: x + (Math.random()-.5)*.6, ty: y + (Math.random()-.5)*.6,
             vx: 0, vy: 0,
-            s: Math.random()*1.4 + .5,
-            tw: Math.random()*Math.PI*2,         // twinkle phase
+            s: Math.random()*1.1 + .6,
+            br: Math.random()*.5 + .5,
+            tw: Math.random()*Math.PI*2,
           });
         }
       }
     }
   }
-  function frame(t){
-    if (!running) return;
+
+  let T = 0;
+  function frame(){
+    T++;
     ctx.clearRect(0, 0, W, H);
+    ctx.globalCompositeOperation = 'lighter';
+    const mx = mouse.x, my = mouse.y, mOn = mouse.on;
+    const R = 115, R2 = R*R;
     for (const p of parts) {
-      // spring toward target
-      p.vx += (p.tx - p.x) * 0.014;
-      p.vy += (p.ty - p.y) * 0.014;
-      // gentle swirl before forming
-      if (!formed) { p.vx *= .92; p.vy *= .92; }
-      // mouse repulsion
-      const dx = p.x - mouse.x, dy = p.y - mouse.y, d2 = dx*dx + dy*dy;
-      if (d2 < 8100) { const d = Math.sqrt(d2)||1, f = (90-d)/90*2.6; p.vx += dx/d*f; p.vy += dy/d*f; }
+      // tight spring toward glyph target → crisp letters at rest
+      p.vx = (p.tx - p.x) * .16 + p.vx * .58;
+      p.vy = (p.ty - p.y) * .16 + p.vy * .58;
+      if (mOn) {
+        const dx = p.x - mx, dy = p.y - my, d2 = dx*dx + dy*dy;
+        if (d2 < R2 && d2 > .01) {
+          const d = Math.sqrt(d2), f = 1 - d/R;
+          p.vx += (dx/d) * f * 7.5;
+          p.vy += (dy/d) * f * 7.5;
+        }
+      }
       p.x += p.vx; p.y += p.vy;
-      const tw = .55 + .45*Math.sin(t*.003 + p.tw);
-      ctx.globalAlpha = tw;
-      ctx.fillStyle = '#3CF2D3';
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.s, 0, 7);
-      ctx.fill();
+      const tw = .8 + .2 * Math.sin(T*.05 + p.tw);
+      const a = p.br * tw;
+      ctx.globalAlpha = a;
+      ctx.fillStyle = '#EAFFFA';
+      ctx.fillRect(p.x - p.s*.5, p.y - p.s*.5, p.s, p.s);
+      ctx.globalAlpha = a * .3;
+      ctx.drawImage(sprite, p.x - p.s*2.2, p.y - p.s*2.2, p.s*4.4, p.s*4.4);
     }
     ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
     requestAnimationFrame(frame);
   }
-  function start(){
-    measure(); buildTargets();
-    formed = true;
-    requestAnimationFrame(frame);
-  }
-  addEventListener('resize', () => { clearTimeout(cv._rz); cv._rz = setTimeout(() => { measure(); buildTargets(); }, 220); });
-  $('landing').addEventListener('pointermove', e => {
-    const r = cv.getBoundingClientRect();
-    mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
+
+  function start(){ measure(); buildTargets(); requestAnimationFrame(frame); }
+
+  addEventListener('resize', () => {
+    clearTimeout(cv._rz);
+    cv._rz = setTimeout(() => { measure(); buildTargets(); }, 220);
   });
-  $('landing').addEventListener('pointerleave', () => { mouse.x = mouse.y = -9e3; });
-  // dim the real text once particles are ready (particles show the shape)
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(() => setTimeout(start, 120));
-  } else setTimeout(start, 600);
-  // keep the real text visible as fallback until particles drew at least once
-  setTimeout(() => { const t = $('heroTitle'); if (parts.length) t.style.opacity = .92; }, 2600);
+  const hero = $('landing');
+  hero.addEventListener('pointermove', e => {
+    const r = cv.getBoundingClientRect();
+    mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.on = true;
+  });
+  hero.addEventListener('pointerleave', () => { mouse.on = false; });
+
+  const title = $('heroTitle');
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => setTimeout(start, 100));
+  else setTimeout(start, 600);
+  // once particles cover it, hide the real text but keep it for screen readers
+  const cover = () => { title.style.color = 'transparent'; title.style.textShadow = 'none'; };
+  setTimeout(() => { if (parts.length > 500) cover(); else setTimeout(cover, 2000); }, 1600);
 })();
 
 /* ═════════════ EFFECT 2: word-by-word reveal ═════════════ */
@@ -832,11 +919,16 @@ function updateQuota(me){
 }
 function refreshAll(){ if (!ME) return; api('/api/me.php').then(j => { if (j.authenticated) { ME = j; updateQuota(j); } }); loadFolder(CUR_FOLDER); }
 
-/* ─────────── inbox ─────────── */
+/* ─────────── inbox / scheduled tabs ─────────── */
+let MAIL_TAB = 'inbox';
+function mailTab(t){
+  MAIL_TAB = t;
+  ['inbox','sent','sched'].forEach(x => $('mt-'+x).className = x===t ? 'on' : '');
+  if (t === 'sched') { loadSched(); return; }
+  switchFolder(t);
+}
 function switchFolder(f){
   CUR_FOLDER = f;
-  $('tab-inbox').className = f==='inbox' ? 'on' : '';
-  $('tab-sent').className = f==='sent' ? 'on' : '';
   loadFolder(f);
 }
 async function loadFolder(f){
@@ -844,7 +936,6 @@ async function loadFolder(f){
   if (!j.ok) return;
   const list = $('msgList');
   $(f==='inbox'?'cntInbox':'cntSent').textContent = faNum(j.messages.length);
-  $(f==='inbox'?'cntSent':'cntInbox').textContent = $(f==='inbox'?'cntInbox':'cntSent').textContent || '';
   if (!j.messages.length) {
     list.innerHTML = `<div class="empty"><span class="big">${f==='inbox'?'📥':'📤'}</span>${f==='inbox' ? 'صندوق دریافتی خالیه.<br>منتظر اولین ایمیلت باش...' : 'هنوز چیزی نفرستادی.'}</div>`;
     return;
@@ -859,6 +950,84 @@ async function loadFolder(f){
     </div>`;
   }).join('');
 }
+
+/* ─────────── scheduled messages ─────────── */
+let SCHED = [], schedTick = null, SCHED_FILE = null;
+/* Tehran wall-clock "now" computed client-side regardless of local tz */
+function tehranNowParts(){
+  const now = new Date();
+  const tehran = new Date(now.toLocaleString('en-US', {timeZone: 'Asia/Tehran'}));
+  return tehran;
+}
+function toggleSched(){
+  const on = $('schedOn').checked = !$('schedOn').checked;
+  $('schedToggle').classList.toggle('on', on);
+  $('schedFields').classList.toggle('on', on);
+  $('schedAttWrap').classList.toggle('on', on);
+  // prefill date/time with Tehran "tomorrow 09:00" if empty
+  if (on && !$('schedDate').value) {
+    const t = tehranNowParts();
+    t.setDate(t.getDate() + 1);
+    $('schedDate').value = t.toISOString().slice(0,10);
+    $('schedTime').value = '09:00';
+  }
+  updateSendBtn();
+}
+function updateSendBtn(){
+  const on = $('schedOn').checked;
+  $('sendBtn').textContent = on ? '⏰ زمان‌بندی کن' : 'ارسال ✦';
+}
+async function loadSched(){
+  const j = await api('/api/schedule.php');
+  if (!j.ok) return;
+  SCHED = j.scheduled || [];
+  $('cntSched').textContent = SCHED.length ? faNum(SCHED.length) : '';
+  const list = $('msgList');
+  if (!SCHED.length) {
+    list.innerHTML = '<div class="empty"><span class="big">⏰</span>هیچ ایمیل زمان‌بندی‌شده‌ای نداری.<br>تو فرم «ایمیل جدید» گزینه‌ی زمان‌بندی رو روشن کن.</div>';
+    return;
+  }
+  list.innerHTML = `<div class="sched-list">` + SCHED.map(m => `
+    <div class="sched-item">
+      <div class="info">
+        <div class="to">${m.has_att ? '📎 ' : ''}${esc(m.to_addr)}</div>
+        <div class="subj">${esc(m.subject || '(بدون موضوع)')}</div>
+        <div class="cnt">↳ ${fmtDate(m.send_at.replace(' ','T'))}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+        <span class="countdown" data-send="${m.send_at}">…</span>
+        <button class="btn sm danger" onclick="cancelSched(${m.id})">لغو</button>
+      </div>
+    </div>`).join('') + '</div>';
+  startCountdown();
+}
+function startCountdown(){
+  clearInterval(schedTick);
+  const upd = () => document.querySelectorAll('.countdown').forEach(el => {
+    const target = new Date(el.dataset.send.replace(' ','T'));
+    let s = Math.floor((target - Date.now()) / 1000);
+    if (s < 0) s = 0;
+    const d = Math.floor(s/86400), h = Math.floor(s%86400/3600), m = Math.floor(s%3600/60), sec = s%60;
+    el.textContent = d > 0 ? `${d}d ${h}h ${m}m` : h > 0 ? `${h}h ${m}m ${sec}s` : `${m}m ${sec}s`;
+  });
+  upd();
+  schedTick = setInterval(upd, 1000);
+}
+async function cancelSched(id){
+  if (!confirm('این زمان‌بندی لغف بشه؟')) return;
+  const j = await api('/api/schedule.php', {method:'DELETE', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id})});
+  if (j.ok) { toast('زمان‌بندی لغو شد'); loadSched(); }
+  else toast(j.error, 1);
+}
+$('schedFile').addEventListener('change', function(){
+  const f = this.files[0];
+  if (!f) return;
+  if (f.size > 1048576) { toast('پیوست زمان‌بندی‌شده حداکثر ۱ مگابایت است', 1); this.value=''; return; }
+  SCHED_FILE = f;
+  $('schedDrop').textContent = '📎 ' + f.name + ' (' + fmtSize(f.size) + ') — برای حذف کلیک کن';
+  $('schedDrop').classList.add('has');
+  $('schedDrop').onclick = () => { SCHED_FILE = null; this.value=''; $('schedDrop').textContent = '📎 پیوست اختیاری (حداکثر ۱ مگابایت)'; $('schedDrop').classList.remove('has'); $('schedDrop').onclick = () => this.click(); };
+});
 
 async function openMsg(id, folder){
   SEL_ID = id;
@@ -937,6 +1106,41 @@ dz.addEventListener('drop', e => {
 
 async function doSend(){
   const to = $('cmpTo').value.trim(), subject = $('cmpSubject').value.trim(), body = $('cmpBody').value;
+
+  // ── scheduled branch ──
+  if ($('schedOn').checked) {
+    const date = $('schedDate').value, time = $('schedTime').value;
+    if (!to) { toast('گیرنده رو بنویس', 1); return; }
+    if (!date || !time) { toast('تاریخ و ساعت ارسال رو انتخاب کن', 1); return; }
+    // convert picked wall-clock (interpreted as Tehran time) → same wall-clock string the server validates against Tehran
+    // browsers give us the picked value as local wall-clock; we shift by (local - tehran) offset
+    const picked = new Date(date + 'T' + time + ':00');
+    const offsetMs = picked.getTime() - new Date(picked.toLocaleString('en-US', {timeZone:'Asia/Tehran'})).getTime();
+    const tehranPicked = new Date(picked.getTime() - offsetMs);
+    const sendAt = tehranPicked.getFullYear() + '-' +
+      String(tehranPicked.getMonth()+1).padStart(2,'0') + '-' +
+      String(tehranPicked.getDate()).padStart(2,'0') + ' ' + time;
+    const payload = {to, subject, body, send_at: sendAt};
+    if (SCHED_FILE) {
+      const b64 = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(SCHED_FILE); });
+      payload.attachment = {name: SCHED_FILE.name, data: b64};
+    }
+    const btn = $('sendBtn'); btn.disabled = true;
+    const j = await api('/api/schedule.php', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+    btn.disabled = false;
+    if (!j.ok) { toast(j.error || 'زمان‌بندی ناموفق', 1); return; }
+    toast(`⏰ برای ${to} زمان‌بندی شد — ${j.send_at}`);
+    $('cmpTo').value = $('cmpSubject').value = $('cmpBody').value = '';
+    SCHED_FILE = null; $('schedFile').value = '';
+    $('schedDrop').textContent = '📎 پیوست اختیاری (حداکثر ۱ مگابایت)';
+    $('schedDrop').classList.remove('has');
+    toggleSched(); toggleSched(); // reset toggle to off
+    hideCompose();
+    mailTab('sched');
+    return;
+  }
+
+  // ── immediate branch ──
   if (!to) { toast('گیرنده رو بنویس', 1); return; }
   const fd = new FormData();
   fd.append('to', to); fd.append('subject', subject); fd.append('body', body);
@@ -954,7 +1158,7 @@ async function doSend(){
 }
 
 /* auto-refresh inbox every 45s */
-setInterval(() => { if (ME && CUR_FOLDER === 'inbox') loadFolder('inbox'); }, 45000);
+setInterval(() => { if (ME && MAIL_TAB === 'inbox') loadFolder('inbox'); }, 45000);
 </script>
 </body>
 </html>
