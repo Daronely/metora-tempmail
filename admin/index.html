@@ -156,7 +156,7 @@ async function boot(){
 }
 function tab(t){
   ['stats','accounts','messages','settings'].forEach(x=>{
-    $('v-'+x).style.display = x===t?'':'none';
+    $('v-'+x).style.display = x===t?'block':'none';
     $('t-'+x).className = x===t?'on':'';
   });
   if (t==='stats') loadStats();
@@ -225,7 +225,7 @@ async function viewMsg(id){
   const j = await api('/api/admin.php?action=message&id='+id);
   if (!j.ok){ toast(j.error,1); return; }
   const m = j.message; viewingId = id;
-  $('msgViewer').style.display='';
+  $('msgViewer').style.display='block';
   $('mvSubj').textContent = m.subject || '(بدون موضوع)';
   $('mvFrom').innerHTML = '<b>از:</b> <span class="mono">'+esc(m.from_addr)+'</span>';
   $('mvTo').innerHTML = '<b>به:</b> <span class="mono">'+esc(m.to_addr)+'</span>';
