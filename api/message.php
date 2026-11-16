@@ -8,8 +8,9 @@ $stmt->execute([$id, $u['id']]);
 $m = $stmt->fetch();
 if (!$m) json_error('پیام یافت نشد', 404);
 
-// mark read (inbox only)
-if ($m['folder'] === 'inbox' && !$m['is_read']) {
+// mark read (inbox only) — unless peek=1 (OTP auto-detection must not mark read)
+$peek = isset($_GET['peek']);
+if (!$peek && $m['folder'] === 'inbox' && !$m['is_read']) {
     db()->prepare("UPDATE messages SET is_read = 1 WHERE id = ?")->execute([$id]);
     $m['is_read'] = 1;
 }

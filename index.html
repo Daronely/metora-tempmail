@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="/assets/js/qrcode.min.js"></script>
 <style>
 /* ═══════════════ TOKENS ═══════════════ */
 :root{
@@ -345,6 +346,127 @@ footer .social{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
   *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
   .word,.sr{opacity:1!important;transform:none!important;filter:none!important}
 }
+
+/* ══════════ LIGHT THEME ══════════ */
+html[data-theme="light"]{
+  --bg:#F2F3F0; --bg2:#E8EAE6; --fg:#0E1613; --muted:rgba(14,22,19,.55);
+  --acc:#0BA88A; --acc-soft:rgba(11,168,138,.12);
+  --card:rgba(255,255,255,.75); --card-br:rgba(14,22,19,.1);
+  --glass:rgba(255,255,255,.72); --glass-br:rgba(14,22,19,.12);
+  --danger:#D64545; --warn:#B97F16;
+  --sh-glow:0 0 40px rgba(11,168,138,.16);
+}
+html[data-theme="light"] .aurora .b1{background:rgba(11,168,138,.13)}
+html[data-theme="light"] .aurora .b2{background:rgba(43,127,255,.10)}
+html[data-theme="light"] .aurora .b3{background:rgba(150,110,255,.09)}
+html[data-theme="light"] .glass{background:var(--glass);border-color:var(--glass-br);
+  box-shadow:0 10px 34px rgba(20,40,34,.10), inset 0 1px 0 rgba(255,255,255,.8)}
+html[data-theme="light"] .glass input,html[data-theme="light"] .glass textarea,
+html[data-theme="light"] .sched-fields input,html[data-theme="light"] .tabrow button,
+html[data-theme="light"] .sched-toggle,html[data-theme="light"] .sched-item,
+html[data-theme="light"] .sched-note{background:rgba(255,255,255,.8)}
+html[data-theme="light"] .field input,html[data-theme="light"] .compose input,
+html[data-theme="light"] .compose textarea{background:rgba(255,255,255,.85);color:var(--fg)}
+html[data-theme="light"] .modal .box{background:#fff}
+html[data-theme="light"] .toastbase{background:#fff;color:var(--fg)}
+html[data-theme="light"] .nav{background:rgba(242,243,240,.85)}
+html[data-theme="light"] .grain{opacity:.05}
+html[data-theme="light"] .btn.primary{color:#fff}
+html[data-theme="light"] .btn.ghost{background:rgba(14,22,19,.05);border-color:var(--card-br);color:var(--fg)}
+html[data-theme="light"] .badge-admin,html[data-theme="light"] .badge-prem,html[data-theme="light"] .badge-inf{border-color:rgba(14,22,19,.2)}
+
+/* ══════════ THEME SWITCH BUTTON ══════════ */
+.themeBtn{background:none;border:1px solid var(--glass-br);border-radius:12px;width:38px;height:38px;
+  cursor:pointer;font-size:1.05rem;display:inline-flex;align-items:center;justify-content:center;
+  color:var(--fg);transition:.25s;vertical-align:middle}
+.themeBtn:hover{border-color:var(--acc);box-shadow:var(--sh-glow)}
+
+/* ══════════ MAIL TOOLBAR (new row in appbar) ══════════ */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0 4px;
+  padding:10px 12px;border:1px solid var(--card-br);border-radius:15px;background:var(--card)}
+.toolbtn{background:rgba(0,0,0,.22);border:1px solid var(--card-br);color:var(--muted);
+  font-family:inherit;font-size:.78rem;font-weight:600;padding:8px 13px;border-radius:10px;
+  cursor:pointer;transition:.22s;display:inline-flex;gap:6px;align-items:center}
+.toolbtn:hover{color:var(--acc);border-color:rgba(60,242,211,.4)}
+.toolbtn.on{color:var(--acc);border-color:rgba(60,242,211,.45);background:rgba(60,242,211,.09)}
+html[data-theme="light"] .toolbtn{background:rgba(255,255,255,.7)}
+.cyclebar{margin-inline-start:auto;display:flex;gap:8px;align-items:center;font-size:.72rem;color:var(--muted)}
+.cyclebar .mono{color:var(--acc);font-weight:700}
+
+/* ══════════ GENERATOR (landing) ══════════ */
+.gen-box{max-width:760px;margin:0 auto;padding:26px;display:grid;gap:14px}
+.gen-row{display:grid;grid-template-columns:1fr 168px;gap:10px}
+.gen-row input,.gen-row select{background:rgba(0,0,0,.28);border:1px solid var(--glass-br);border-radius:13px;
+  padding:13px 15px;color:var(--fg);font-family:var(--mono);font-size:.95rem;outline:none;direction:ltr}
+html[data-theme="light"] .gen-row input,html[data-theme="light"] .gen-row select{background:rgba(255,255,255,.85)}
+.gen-row input:focus,.gen-row select:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(60,242,211,.14)}
+.gen-row select{font-family:var(--font);direction:rtl;cursor:pointer}
+.gen-preview{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;
+  padding:16px;border:1.5px dashed rgba(60,242,211,.35);border-radius:14px;background:rgba(60,242,211,.05)}
+.gen-preview .addr{font-family:var(--mono);font-size:1.06rem;font-weight:700;color:var(--acc);direction:ltr;word-break:break-all}
+.gen-hint{font-size:.72rem;color:var(--muted);text-align:center}
+.dice{cursor:pointer;border:none;background:none;font-size:1.2rem;color:var(--acc);transition:.3s}
+.dice:hover{transform:rotate(180deg) scale(1.15)}
+
+/* ══════════ OTP CARD ══════════ */
+.otp-card{display:none;margin:0 0 14px;padding:20px 22px;border-radius:17px;
+  border:1.5px solid rgba(60,242,211,.5);background:linear-gradient(135deg,rgba(60,242,211,.10),rgba(43,127,255,.06));
+  box-shadow:var(--sh-glow);animation:mup .4s var(--ease);align-items:center;gap:16px;flex-wrap:wrap}
+.otp-card.show{display:flex}
+.otp-code{font-family:var(--mono);font-size:2.3rem;font-weight:900;letter-spacing:.28em;color:var(--acc);
+  direction:ltr;text-shadow:0 0 26px rgba(60,242,211,.45)}
+.otp-meta{font-size:.72rem;color:var(--muted)}
+.otp-src{font-family:var(--mono);font-size:.74rem;color:var(--fg);opacity:.8;direction:ltr}
+
+/* ══════════ FAVORITES / STARS ══════════ */
+.star{cursor:pointer;background:none;border:none;font-size:.95rem;opacity:.35;transition:.2s;padding:2px 4px}
+.star:hover{opacity:.8;transform:scale(1.2)}
+.star.on{opacity:1;filter:drop-shadow(0 0 6px rgba(255,196,107,.8))}
+.msgrow .who-l{display:inline-flex;align-items:center;gap:6px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.filterbar{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.filterbar button{background:rgba(0,0,0,.22);border:1px solid var(--card-br);color:var(--muted);border-radius:99px;
+  font-family:inherit;font-size:.72rem;font-weight:600;padding:5px 13px;cursor:pointer;transition:.2s}
+.filterbar button.on{color:var(--acc);border-color:rgba(60,242,211,.45);background:rgba(60,242,211,.09)}
+html[data-theme="light"] .filterbar button{background:rgba(255,255,255,.7)}
+
+/* ══════════ QR MODAL ══════════ */
+.qr-box{display:grid;place-items:center;gap:14px;padding:8px}
+.qr-box canvas{border-radius:14px;background:#fff;padding:10px}
+.qr-addr{font-family:var(--mono);direction:ltr;font-size:.9rem;color:var(--acc);font-weight:700;word-break:break-all}
+
+/* ══════════ AD SLOTS ══════════ */
+.ad-slot{position:relative;display:grid;place-items:center;min-height:120px;margin:14px auto;
+  border:1.5px dashed rgba(255,196,107,.4);border-radius:18px;background:
+  repeating-linear-gradient(45deg,rgba(255,196,107,.045) 0 14px,transparent 14px 28px);
+  cursor:pointer;transition:.3s;max-width:1000px}
+.ad-slot:hover{border-color:var(--warn);box-shadow:0 0 34px rgba(255,196,107,.12);transform:translateY(-2px)}
+.ad-slot .t{font-size:.86rem;font-weight:700;color:var(--warn)}
+.ad-slot .s{font-size:.7rem;color:var(--muted)}
+.ad-slot.compact{min-height:86px;margin:10px 0}
+
+/* ══════════ DEPLOY GUIDE SECTION ══════════ */
+.guide-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.guide-tabs button{background:rgba(0,0,0,.25);border:1px solid var(--card-br);color:var(--muted);
+  font-family:inherit;font-size:.8rem;font-weight:700;padding:10px 16px;border-radius:11px;cursor:pointer;transition:.25s}
+.guide-tabs button.on{color:var(--acc);border-color:rgba(60,242,211,.45);background:rgba(60,242,211,.09)}
+html[data-theme="light"] .guide-tabs button{background:rgba(255,255,255,.7)}
+.gpanel{display:none;animation:mup .35s var(--ease)}
+.gpanel.on{display:block}
+.step-card{display:flex;gap:16px;padding:18px 20px;border:1px solid var(--card-br);border-radius:17px;
+  background:var(--card);margin-bottom:12px;transition:.25s}
+.step-card:hover{border-color:rgba(60,242,211,.3);transform:translateX(-4px)}
+.step-num{flex:0 0 44px;height:44px;border-radius:13px;display:grid;place-items:center;
+  background:linear-gradient(135deg,rgba(60,242,211,.16),rgba(43,127,255,.1));
+  border:1px solid rgba(60,242,211,.35);font-family:var(--mono);font-weight:800;color:var(--acc);font-size:1.05rem}
+.step-body{flex:1;min-width:0}
+.step-body h3{font-size:.95rem;font-weight:800;margin-bottom:6px}
+.step-body p{font-size:.82rem;color:var(--muted);line-height:2}
+.step-body code{font-family:var(--mono);background:rgba(60,242,211,.08);border:1px solid rgba(60,242,91,.2);
+  border-radius:7px;padding:2px 8px;font-size:.76rem;color:var(--acc);direction:ltr;display:inline-block}
+.step-shot{margin-top:12px;border-radius:13px;border:1px solid var(--card-br);overflow:hidden;background:rgba(0,0,0,.3)}
+.step-shot img{width:100%;display:block}
+html[data-theme="light"] .step-shot{background:rgba(255,255,255,.6)}
+.guide-cta{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:22px}
 </style>
 </head>
 <body>
@@ -361,10 +483,12 @@ footer .social{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
     <a href="#features" class="hide-m">امکانات</a>
     <a href="#how" class="hide-m">چطور کار می‌کنه</a>
     <a href="#pricing" class="hide-m">پرمیوم</a>
+    <a href="#guide" class="hide-m">📚 راهنمای نصب</a>
     <span id="navUser">
       <span class="email" id="navEmail"></span>
       <button class="btn sm ghost" onclick="doLogout()">خروج</button>
     </span>
+    <button class="themeBtn" id="themeBtnNav" onclick="toggleTheme()" title="حالت روشن / تاریک">🌙</button>
     <a href="#" id="navEnter" class="btn sm primary" onclick="openAuth('login');return false">ورود</a>
   </div>
 </nav>
@@ -417,6 +541,36 @@ footer .social{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
   </div>
 </section>
 
+<!-- ══ EMAIL GENERATOR ══ -->
+<section class="section" id="generator" style="padding-top:64px">
+  <div class="sec-head sr">
+    <span class="num">⚡ GENERATOR</span>
+    <h2>آدرست رو خودت بساز</h2>
+    <p>نام دلخواهت رو بنویس (یا تاس بنداز)، دامنه رو انتخاب کن و همین‌جا ثبت‌نام کن — آدرس تو همون لحظه ساخته می‌شه.</p>
+  </div>
+  <div class="glass gen-box sr" data-d="2">
+    <div class="gen-row">
+      <input id="genName" type="text" placeholder="نام دلخواه... مثلاً ali_shop" maxlength="32" spellcheck="false" oninput="genPreview()">
+      <select id="genDomain" onchange="genPreview()"></select>
+    </div>
+    <div class="gen-preview">
+      <button class="dice" onclick="randomName()" title="نام تصادفی">🎲</button>
+      <span class="addr" id="genAddr">esm@metora.ir</span>
+      <button class="btn sm ghost" onclick="copyAddr()">📋 کپی</button>
+    </div>
+    <p class="gen-hint">فقط حروف انگلیسی، عدد و <span class="mono">. _ -</span> — حداقل ۳ کاراکتر. با دکمه‌ی زیر همین‌جا مال تو می‌شه.</p>
+    <button class="btn primary magnetic" style="justify-self:center" onclick="genRegister()">⚡ این آدرس رو بساز</button>
+    <p class="gen-hint" style="opacity:.75">🔑 رمز پیشنهادی: <span class="mono" id="genPass"></span> <button class="btn sm ghost" style="padding:3px 10px;font-size:.68rem" onclick="newGenPass()">🎲 رمز دیگه</button></p>
+  </div>
+</section>
+
+<div class="ad-slot" onclick="openAdModal()" role="button" aria-label="رزرو محل تبلیغ">
+  <div style="text-align:center">
+    <div class="t">📣 این محل تبلیغ شماست</div>
+    <div class="s">بنر ۹۷۰×۹۰ یا بنر ریسپانسیو — برای مشاهده تعرفه و رزرو کلیک کنید</div>
+  </div>
+</div>
+
 <!-- ══ HOW IT WORKS ══ -->
 <section class="section" id="how">
   <div class="sec-head sr">
@@ -465,6 +619,138 @@ footer .social{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
   </div>
 </section>
 
+<div class="ad-slot compact" onclick="openAdModal()" role="button" aria-label="رزرو محل تبلیغ">
+  <div style="text-align:center">
+    <div class="t">📣 این محل تبلیغ شماست</div>
+    <div class="s">بنر ۹۷۰×۲۵۰ — کلیک کنید و همین امروز رزرو کنید</div>
+  </div>
+</div>
+
+<!-- ══ DEPLOY GUIDE ══ -->
+<section class="section" id="guide">
+  <div class="sec-head sr">
+    <span class="num">04 — SELF-HOST</span>
+    <h2>روی سی‌پنل خودت<br>راه بندازش</h2>
+    <p>کل پروژه متن‌باز و رایگانه. با این راهنمای تصویری، در کمتر از ۱۵ دقیقه نسخه‌ی خودت رو داشته باش — بدون سرور اختصاصی و بدون هزینه اضافه.</p>
+  </div>
+
+  <div class="glass sr" style="padding:24px;max-width:980px;margin-inline:auto">
+    <div class="guide-cta" style="margin:0 0 20px">
+      <a class="btn primary magnetic" href="https://github.com/Daronely/metora-tempmail" target="_blank" rel="noopener">⭐ گیت‌هاب پروژه (ستاره یادت نره)</a>
+      <a class="btn ghost magnetic" href="https://github.com/Daronely/metora-tempmail/archive/refs/heads/main.zip" target="_blank" rel="noopener">⬇️ دانلود سورس ZIP</a>
+    </div>
+
+    <div class="guide-tabs">
+      <button class="on" onclick="guideTab(0)">ساخت دیتابیس</button>
+      <button onclick="guideTab(1)">آپلود فایل‌ها</button>
+      <button onclick="guideTab(2)">کانفیگ و ستاپ</button>
+      <button onclick="guideTab(3)">صندوق ایمیل</button>
+      <button onclick="guideTab(4)">کرون‌ها</button>
+    </div>
+
+    <div class="gpanel on" id="gp0">
+      <div class="step-card"><div class="step-num">۱</div><div class="step-body">
+        <h3>وارد سی‌پنل شو و MySQL® Databases رو باز کن</h3>
+        <p>از داشبورد سی‌پنل، بخش <code>Databases</code>، روی <code>MySQL® Databases</code> کلیک کن. اینجا هم دیتابیس می‌سازیم هم کاربرش رو.</p>
+        <div class="step-shot"><img src="assets/guide/step1-db.png" alt="ساخت دیتابیس در cPanel"></div>
+      </div></div>
+      <div class="step-card"><div class="step-num">۲</div><div class="step-body">
+        <h3>یک دیتابیس بساز</h3>
+        <p>در فیلد <code>New Database</code> یک نام مثل <code>tempmail</code> بنویس و <code>Create Database</code> رو بزن. نام کامل معمولاً با پسوند کاربری هاستت ساخته می‌شه، مثل <code>user_tempmail</code> — همین نام کامل رو یادداشت کن.</p>
+        <div class="step-shot"><img src="assets/guide/step2-create.png" alt="نام دیتابیس"></div>
+      </div></div>
+      <div class="step-card"><div class="step-num">۳</div><div class="step-body">
+        <h3>کاربر دیتابیس + دسترسی کامل</h3>
+        <p>پایین‌تر در همان صفحه، یک <code>MySQL User</code> با رمز قوی بساز، بعد در بخش <code>Add User To Database</code> کاربر را به دیتابیس وصل کن و در صفحه‌ی بعد <code>ALL PRIVILEGES</code> را تیک بزن.</p>
+        <div class="step-shot"><img src="assets/guide/step3-user.png" alt="ساخت کاربر و دسترسی‌ها"></div>
+      </div></div>
+    </div>
+
+    <div class="gpanel" id="gp1">
+      <div class="step-card"><div class="step-num">۴</div><div class="step-body">
+        <h3>سورس پروژه رو دانلود کن</h3>
+        <p>از گیت‌هاب پروژه، دکمه‌ی سبز <code>Code</code> → <code>Download ZIP</code> رو بزن (یا با گیت کلون کن). فایل ZIP رو سیستم‌ات باز کن.</p>
+        <div class="step-shot"><img src="assets/guide/step4-zip.png" alt="دانلود سورس از گیت‌هاب"></div>
+      </div></div>
+      <div class="step-card"><div class="step-num">۵</div><div class="step-body">
+        <h3>File Manager → پوشه‌ی ساب‌دامین</h3>
+        <p>در سی‌پنل <code>File Manager</code> رو باز کن. اگر ساب‌دامین نداری، اول از بخش <code>Subdomains</code> یکی بساز (مثل <code>temp.yoursite.com</code>)، بعد همه‌ی محتویات پوشه‌ی سورس را در پوشه‌ی آن ساب‌دامین (معمولاً <code>public_html/temp</code>) آپلود کن — <code>Extract</code> یادت نره.</p>
+        <div class="step-shot"><img src="assets/guide/step5-upload.png" alt="آپلود در File Manager"></div>
+      </div></div>
+      <div class="step-card"><div class="step-num">۶</div><div class="step-body">
+        <h3>ساختار نهایی باید این شکلی باشه</h3>
+        <p>یعنی فایل <code>index.html</code> و پوشه‌های <code>api</code> ، <code>includes</code> ، <code>cron</code> ، <code>pipe</code> مستقیم داخل پوشه‌ی ساب‌دامین باشن. پوشه‌های <code>storage</code> و <code>state</code> خودکار ساخته می‌شن.</p>
+        <div class="step-shot"><img src="assets/guide/step6-structure.png" alt="ساختار فایل‌ها"></div>
+      </div></div>
+    </div>
+
+    <div class="gpanel" id="gp2">
+      <div class="step-card"><div class="step-num">۷</div><div class="step-body">
+        <h3>فایل کانفیگ رو بساز</h3>
+        <p>در پوشه‌ی <code>includes</code> یک کپی از <code>config.sample.php</code> با نام <code>config.php</code> بساز و بازش کن برای ویرایش.</p>
+        <div class="step-shot"><img src="assets/guide/step7-copy.png" alt="کپی کانفیگ نمونه"></div>
+      </div></div>
+      <div class="step-card"><div class="step-num">۸</div><div class="step-body">
+        <h3>مقادیر رو پر کن</h3>
+        <p>مشخصات دیتابیس (همون <code>user_tempmail</code> و رمزش)، دامنه‌ی ایمیلت، و مشخصات ادمین seed. همه‌ی ثابت‌ها کامنت فارسی دارند.</p>
+        <div class="step-shot"><img src="assets/guide/step8-config.png" alt="ویرایش مقادیر کانفیگ"></div>
+      </div></div>
+      <div class="step-card"><div class="step-num">۹</div><div class="step-body">
+        <h3>setup.php رو یک‌بار باز کن و حذفش کن</h3>
+        <p>آدرس <code>https://temp.yoursite.com/setup.php</code> رو در مرورگر باز کن — جداول دیتابیس و اکانت ادمین seed ساخته می‌شه. بعد از پیام موفقیت، همین فایل رو از File Manager حذف کن (امنیت!).</p>
+        <div class="step-shot"><img src="assets/guide/step9-setup.png" alt="اجرای setup.php"></div>
+      </div></div>
+    </div>
+
+    <div class="gpanel" id="gp3">
+      <div class="step-card"><div class="step-num">۱۰</div><div class="step-body">
+        <h3>یک ایمیل catch-all بساز</h3>
+        <p>در سی‌پنل بخش <code>Email Accounts</code> → <code>Create</code>، روی همون دامنه‌ی ایمیل یک صندوق بساز (مثل <code>tempmail@yoursite.com</code>) و رمزش رو در کانفیگ یادداشت کن.</p>
+        <div class="step-shot"><img src="assets/guide/step10-mailbox.png" alt="ساخت صندوق ایمیل"></div>
+      </div></div>
+      <div class="step-card"><div class="step-num">۱۱</div><div class="step-body">
+        <h3>Default Address رو تنظیم کن</h3>
+        <p>در بخش <code>Default Address</code> گزینه‌ی <code>Forward to Email Address</code> را انتخاب و آدرس همون صندوق catch-all را وارد کن. حالا هر ایمیلی به هر نامی روی دامنه‌ات برسه، می‌ره تو اون صندوق.</p>
+        <div class="step-shot"><img src="assets/guide/step11-default.png" alt="تنظیم Default Address"></div>
+      </div></div>
+      <div class="step-card"><div class="step-num">۱۲</div><div class="step-body">
+        <h3>MX رکورد دامنه</h3>
+        <p>اگر دامنه‌ات روی همین هاست میل می‌خوره، MX خودکار تنظیمه. اگر ایمیل دامنه‌ات جای دیگه‌ست، در <code>Zone Editor</code> رکورد MX دامنه را به هاست فعلی برگردان تا ایمیل‌ها برسند.</p>
+        <div class="step-shot"><img src="assets/guide/step12-mx.png" alt="Zone Editor و MX"></div>
+      </div></div>
+    </div>
+
+    <div class="gpanel" id="gp4">
+      <div class="step-card"><div class="step-num">۱۳</div><div class="step-body">
+        <h3>Cron Jobs رو باز کن</h3>
+        <p>از سی‌پنل بخش <code>Advanced → Cron Jobs</code>. چهار کرون زیر را با دکمه‌ی <code>Add New Cron Job</code> اضافه کن (مسیر پوشه‌ی خودت را جایگزین کن).</p>
+        <div class="step-shot"><img src="assets/guide/step13-cron.png" alt="Cron Jobs در cPanel"></div>
+      </div></div>
+      <div class="step-card"><div class="step-num">۱۴</div><div class="step-body">
+        <h3>این چهار کرون رو اضافه کن</h3>
+        <p>
+          <code>* * * * * &nbsp;php -q /home/USER/temp/cron/imap_poll.php</code><br>
+          <code>* * * * * &nbsp;php -q /home/USER/temp/cron/process_scheduled.php</code><br>
+          <code>0 0,6,12,18 * * * &nbsp;php -q /home/USER/temp/cron/reset_cycle.php</code><br>
+          <code>30 3 * * * &nbsp;php -q /home/USER/temp/cron/purge_inactive.php</code><br>
+          اولی هر دقیقه ایمیل‌ها را از IMAP برمی‌دارد، دومی ارسال‌های زمان‌بندی‌شده را می‌فرستد، سومی هر ۶ ساعت همه‌چیز را پاک می‌کند و آخری اکانت‌های ۱۰ روز بی‌استفاده را حذف می‌کند.
+        </p>
+        <div class="step-shot"><img src="assets/guide/step14-add.png" alt="افزودن کرون"></div>
+      </div></div>
+      <div class="step-card"><div class="step-num">۱۵</div><div class="step-body">
+        <h3>تمومه! 🎉</h3>
+        <p>با اکانت ادمین seed وارد شو، از پنل ادمین رمزت رو عوض کن، سهمیه‌ها رو سلیقه‌ای کن و لذت ببر. اگر جایی گیر کردی، در گیت‌هاب Issue بزن یا به تلگرام پشتیبانی پیام بده.</p>
+        <div class="step-shot"><img src="assets/guide/step15-done.png" alt="پایان نصب"></div>
+      </div></div>
+    </div>
+
+    <div class="guide-cta">
+      <a class="btn primary magnetic" href="https://github.com/Daronely/metora-tempmail" target="_blank" rel="noopener">📖 مستندات کامل در گیت‌هاب</a>
+      <a class="btn ghost magnetic" href="https://t.me/daronelydev" target="_blank" rel="noopener">💬 سؤال داری؟ تلگرام</a>
+    </div>
+  </div>
+</section>
+
 <!-- ══ AUTH MODAL ══ -->
 <div class="modal" id="authModal">
   <div class="box">
@@ -497,7 +783,8 @@ footer .social{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
         <span class="quota" id="quotaInfo"></span>
       </span>
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <button class="themeBtn" id="themeBtn" onclick="toggleTheme()" title="حالت روشن / تاریک">🌙</button>
       <a href="/admin/" id="adminLink" class="btn sm ghost" style="display:none">پنل ادمین</a>
       <button class="btn sm ghost" onclick="refreshAll()">↻ تازه‌سازی</button>
       <button class="btn sm primary magnetic" onclick="showCompose()">✏️ ایمیل جدید</button>
@@ -505,21 +792,47 @@ footer .social{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
     </div>
   </div>
 
+  <div class="toolbar">
+    <button class="toolbtn" id="qrBtn" onclick="showQR()">📱 QR</button>
+    <button class="toolbtn" id="arBtn" onclick="toggleAutoRefresh()">⚡ برروزرسانی خودکار: خاموش</button>
+    <button class="toolbtn" id="sndBtn" onclick="toggleSound()">🔔 صدای دریافت: روشن</button>
+    <button class="toolbtn" id="expBtn" onclick="exportEML()" style="display:none">📤 خروجی EML</button>
+    <span class="cyclebar">⏳ انقضای سیکل: <span class="mono" id="cycleTimer">--:--:--</span></span>
+  </div>
+
   <div class="client">
     <div class="glass listpane">
-      <div class="tabs">
-        <button id="tab-inbox" class="on" onclick="switchFolder('inbox')">📥 دریافتی <span class="cnt" id="cntInbox"></span></button>
-        <button id="tab-sent" onclick="switchFolder('sent')">📤 ارسالی <span class="cnt" id="cntSent"></span></button>
-      </div>
       <div class="tabrow">
-        <button id="mt-inbox" class="on" onclick="mailTab('inbox')">📥 دریافتی</button>
-        <button id="mt-sent" onclick="mailTab('sent')">📤 ارسالی</button>
+        <button id="mt-inbox" class="on" onclick="mailTab('inbox')">📥 دریافتی <span class="cnt" id="cntInbox"></span></button>
+        <button id="mt-sent" onclick="mailTab('sent')">📤 ارسالی <span class="cnt" id="cntSent"></span></button>
         <button id="mt-sched" onclick="mailTab('sched')">⏰ زمان‌بندی <span class="cnt" id="cntSched"></span></button>
+      </div>
+      <div class="filterbar" id="filterBar" style="display:none">
+        <button class="on" data-f="all" onclick="setFilter('all')">همه</button>
+        <button data-f="fav" onclick="setFilter('fav')">⭐ مهم‌ها</button>
+        <button data-f="unread" onclick="setFilter('unread')">🔵 خوانده‌نشده</button>
+        <button data-f="att" onclick="setFilter('att')">📎 دارای پیوست</button>
+      </div>
+      <div class="otp-card" id="otpCard">
+        <div>
+          <div class="otp-meta">🔑 کد تأیید شناسایی شد</div>
+          <div class="otp-code" id="otpCode">—</div>
+          <div class="otp-src" id="otpSrc"></div>
+        </div>
+        <button class="btn sm primary magnetic" onclick="copyOtp()" style="margin-inline-start:auto">📋 کپی کد</button>
+        <button class="btn sm ghost" onclick="hideOtp()">✕</button>
       </div>
       <div class="msglist" id="msgList"></div>
     </div>
     <div class="glass readpane" id="readPane">
       <div class="empty"><span class="big">✉️</span>ایمیلی انتخاب نشده.<br>از لیست کنار یه ایمیل باز کن، یا با «ایمیل جدید» یکی بفرست.</div>
+    </div>
+  </div>
+
+  <div class="ad-slot compact" onclick="openAdModal()" role="button" aria-label="رزرو محل تبلیغ">
+    <div style="text-align:center">
+      <div class="t">📣 این محل تبلیغ شماست</div>
+      <div class="s">سایز ۷۲۸×۹۰ — در دید کامل کاربران فعال صندوق</div>
     </div>
   </div>
 
@@ -555,21 +868,66 @@ footer .social{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
         <input type="file" id="fileInput" multiple style="display:none">
         <div class="filelist" id="fileList" style="margin-top:10px"></div>
       </div>
-      <div style="display:flex;gap:10px;justify-content:flex-end">
+      <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
         <button class="btn ghost" onclick="hideCompose()">انصراف</button>
+        <button class="btn ghost magnetic" onclick="randomIdentity()" title="برای تست فرم‌ها — کپی در کلیپ‌بورد">🎭 هویت تصادفی</button>
         <button class="btn primary magnetic" id="sendBtn" onclick="doSend()">ارسال ✦</button>
       </div>
     </div>
   </div>
 </div>
 
+<div class="ad-slot" onclick="openAdModal()" role="button" aria-label="رزرو محل تبلیغ">
+  <div style="text-align:center">
+    <div class="t">📣 این محل تبلیغ شماست</div>
+    <div class="s">فوتر — آخرین چیزی که کاربر می‌بینه، اولین چیزی که یادش می‌مونه</div>
+  </div>
+</div>
+
 <footer>
-  <div>ساخته‌شده با ♥ توسط <a href="https://metora.ir" target="_blank" rel="noopener">متورا</a></div>
+  <div>ساخته‌شده با ♥ توسط <a href="https://metora.ir" target="_blank" rel="noopener">متورا</a> · <a href="https://github.com/Daronely/metora-tempmail" target="_blank" rel="noopener">گیت‌هاب</a></div>
   <div class="social">
     <a href="https://t.me/daronelydev" target="_blank" rel="noopener">تلگرام: @daronelydev</a>
     <span>·</span><span>۰۹۹۹۹۹۶۰۲۹۵</span>
   </div>
 </footer>
+
+<!-- ══ AD RESERVATION MODAL ══ -->
+<div class="modal" id="adModal">
+  <div class="box" style="max-width:520px">
+    <h2 style="font-size:1.2rem">📣 رزرو محل تبلیغ</h2>
+    <p class="hint" style="margin-bottom:16px">با تبلیغ در متِمپ، پیامت رو دقیقاً به مخاطبی برسون که هر روز با ایمیل سروکار داره.</p>
+    <div style="display:grid;gap:10px;margin-bottom:18px">
+      <div style="display:flex;justify-content:space-between;padding:11px 15px;border:1px solid var(--card-br);border-radius:12px">
+        <span>🎯 بازدید هدفمند کاربران فعال ایمیل</span><span class="mono" style="color:var(--acc)">✓</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:11px 15px;border:1px solid var(--card-br);border-radius:12px">
+        <span>📐 بنر ریسپانسیو یا متن + آیکون</span><span class="mono" style="color:var(--acc)">✓</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:11px 15px;border:1px solid var(--card-br);border-radius:12px">
+        <span>📅 بازه‌ی دلخواه: هفتگی / ماهانه</span><span class="mono" style="color:var(--acc)">✓</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:11px 15px;border:1px solid var(--card-br);border-radius:12px">
+        <span>📊 گزارش کلیک (به‌زودی)</span><span class="mono" style="color:var(--warn)">به‌زودی</span>
+      </div>
+    </div>
+    <a class="btn primary magnetic" style="width:100%" href="https://t.me/daronelydev" target="_blank" rel="noopener">💬 رزرو و تعرفه‌ها در تلگرام ←</a>
+    <button class="btn ghost" style="width:100%;margin-top:8px" onclick="document.getElementById('adModal').classList.remove('open')">بستن</button>
+  </div>
+</div>
+
+<!-- ══ QR MODAL ══ -->
+<div class="modal" id="qrModal">
+  <div class="box" style="max-width:360px">
+    <h2 style="font-size:1.1rem">📱 آدرست رو اسکن کن</h2>
+    <p class="hint" style="margin-bottom:10px">با دوربین گوشی اسکن کن تا آدرس ایمیلت رو سریع روی موبایل داشته باشی.</p>
+    <div class="qr-box">
+      <canvas id="qrCanvas" width="220" height="220"></canvas>
+      <div class="qr-addr" id="qrAddr"></div>
+      <button class="btn ghost" style="width:100%" onclick="document.getElementById('qrModal').classList.remove('open')">بستن</button>
+    </div>
+  </div>
+</div>
 
 <div id="toast"></div>
 
@@ -721,14 +1079,30 @@ function esc(s){ return (s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;
 
 /* ═════════════ EFFECT 2: word-by-word reveal ═════════════ */
 (function wordReveal(){
+  // split into words without breaking embedded HTML tags:
+  // walk child nodes; text nodes are split per word, elements are kept whole
+  function wrapWords(node){
+    [...node.childNodes].forEach(ch => {
+      if (ch.nodeType === 3) {                          // text node
+        const frag = document.createDocumentFragment();
+        ch.textContent.split(/(\s+)/).forEach(tok => {
+          if (!tok) return;
+          if (/^\s+$/.test(tok)) frag.appendChild(document.createTextNode(tok));
+          else {
+            const s = document.createElement('span');
+            s.className = 'word'; s.textContent = tok;
+            frag.appendChild(s);
+          }
+        });
+        ch.replaceWith(frag);
+      } else if (ch.nodeType === 1 && ch.tagName !== 'BR' && !ch.classList.contains('word')) {
+        wrapWords(ch);                                  // recurse into elements
+      }
+    });
+  }
   document.querySelectorAll('h2').forEach(h => {
     if (h.closest('#app')) return;
-    h.innerHTML = h.innerHTML.split(/(<br\s*\/?>)/).map(chunk => {
-      if (/^<br/.test(chunk)) return chunk;
-      return chunk.split(' ').map(w =>
-        w.trim() ? `<span class="word">${w}</span>` : w
-      ).join(' ');
-    }).join('');
+    wrapWords(h);
   });
   const words = [...document.querySelectorAll('.word')];
   const io = new IntersectionObserver(es => {
@@ -924,6 +1298,8 @@ let MAIL_TAB = 'inbox';
 function mailTab(t){
   MAIL_TAB = t;
   ['inbox','sent','sched'].forEach(x => $('mt-'+x).className = x===t ? 'on' : '');
+  $('filterBar').style.display = t === 'sched' ? 'none' : 'flex';
+  $('expBtn').style.display = t === 'sched' ? 'none' : '';
   if (t === 'sched') { loadSched(); return; }
   switchFolder(t);
 }
@@ -1048,6 +1424,7 @@ async function openMsg(id, folder){
     ${atts ? `<div class="attbar">${atts}</div>` : ''}
     <div class="actionsbar">
       <button class="btn sm ghost" onclick="replyTo(${id})">↩︎ پاسخ</button>
+      <button class="btn sm ghost" onclick="exportEMLFor(${id})">📤 EML</button>
       <button class="btn sm danger" onclick="delMsg(${id})">🗑 حذف</button>
     </div>`;
   hideCompose();
@@ -1159,6 +1536,290 @@ async function doSend(){
 
 /* auto-refresh inbox every 45s */
 setInterval(() => { if (ME && MAIL_TAB === 'inbox') loadFolder('inbox'); }, 45000);
+
+/* ═════════════════ v4 FEATURES ═════════════════ */
+
+/* ── theme (dark/light) ── */
+function toggleTheme(){
+  const cur = document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+  const next = cur === 'light' ? 'dark' : 'light';
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem('tm_theme', next); } catch(e){}
+  const ic = next === 'light' ? '☀️' : '🌙';
+  const a = $('themeBtn'), b = $('themeBtnNav');
+  if (a) a.textContent = ic;
+  if (b) b.textContent = ic;
+}
+(function initTheme(){
+  let t = 'dark';
+  try { t = localStorage.getItem('tm_theme') || 'dark'; } catch(e){}
+  if (t === 'light') document.documentElement.dataset.theme = 'light';
+  const ic = t === 'light' ? '☀️' : '🌙';
+  const setIc = () => { const a=$('themeBtn'),b=$('themeBtnNav'); if(a)a.textContent=ic; if(b)b.textContent=ic; };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setIc); else setIc();
+})();
+
+/* ── ad / qr modals ── */
+function openAdModal(){ $('adModal').classList.add('open'); }
+['adModal','qrModal'].forEach(id => $(id).addEventListener('click', e => { if (e.target.id === id) e.target.classList.remove('open'); }));
+
+/* ── email generator ── */
+const GEN_DOMAINS = ['metora.ir'];   // available domains (mail domain + aliases)
+const ADJ = ['swift','neo','dark','cyber','lunar','solar','rapid','silent','atomic','quantum','shadow','prime'];
+const NOUN = ['fox','wolf','wave','node','byte','pixel','raven','tiger','falcon','spark','storm','comet'];
+function randFrom(a){ return a[Math.floor(Math.random()*a.length)]; }
+function randomName(){
+  const style = Math.floor(Math.random()*3);
+  let n;
+  if (style === 0) n = randFrom(ADJ) + randFrom(NOUN) + Math.floor(Math.random()*90+10);
+  else if (style === 1) n = randFrom(NOUN) + '_' + Math.floor(Math.random()*9000+1000);
+  else n = 'user' + Math.random().toString(36).slice(2, 9);
+  $('genName').value = n;
+  genPreview();
+}
+function genPassGen(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%';
+  let p = '';
+  const rnd = new Uint32Array(14); crypto.getRandomValues(rnd);
+  for (const r of rnd) p += chars[r % chars.length];
+  return p;
+}
+function newGenPass(){ $('genPass').textContent = genPassGen(); }
+function genPreview(){
+  const name = ($('genName').value.trim().toLowerCase() || 'esm');
+  const dom = $('genDomain').value || GEN_DOMAINS[0];
+  $('genAddr').textContent = name + '@' + dom;
+}
+function copyAddr(){
+  navigator.clipboard.writeText($('genAddr').textContent)
+    .then(() => toast('کپی شد: ' + $('genAddr').textContent))
+    .catch(() => toast('کپی نشد — دستی انتخاب کن', 1));
+}
+async function genRegister(){
+  const name = $('genName').value.trim().toLowerCase();
+  if (!name) { randomName(); return toast('یک نام بنویس یا تاس بنداز 🎲', 1); }
+  const j = await api('/api/auth.php', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'register', username:name, password: $('genPass').textContent || genPassGen()})});
+  if (!j.ok) return toast(j.error || 'ساخت ناموفق', 1);
+  toast('ساخته شد ✓ واردت می‌کنم...');
+  setTimeout(() => location.reload(), 700);
+}
+(function initGen(){
+  $('genDomain').innerHTML = GEN_DOMAINS.map(d => `<option value="${d}">@${d}</option>`).join('');
+  randomName(); newGenPass(); genPreview();
+})();
+
+/* ── QR modal ── */
+function showQR(){
+  if (!ME) return toast('اول وارد شو', 1);
+  const addr = ME.email;
+  $('qrAddr').textContent = addr;
+  $('qrModal').classList.add('open');
+  try {
+    const qr = qrcode(0, 'M');
+    qr.addData('mailto:' + addr);
+    qr.make();
+    const cv = $('qrCanvas'), ctx = cv.getContext('2d');
+    const n = qr.getModuleCount(), cell = Math.floor(220 / (n + 4));
+    const dim = cell * (n + 4);
+    cv.width = cv.height = dim;
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, dim, dim);
+    ctx.fillStyle = '#070808';
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++)
+      if (qr.isDark(r, c)) ctx.fillRect((c + 2) * cell, (r + 2) * cell, cell, cell);
+  } catch(e) { toast('ساخت QR ناموفق بود', 1); }
+}
+
+/* ── auto refresh (visible toggle, default off) ── */
+let AR_ON = false, AR_TIMER = null;
+function toggleAutoRefresh(){
+  AR_ON = !AR_ON;
+  $('arBtn').classList.toggle('on', AR_ON);
+  $('arBtn').textContent = AR_ON ? '⚡ برروزرسانی خودکار: روشن' : '⚡ برروزرسانی خودکار: خاموش';
+  clearInterval(AR_TIMER);
+  if (AR_ON) { AR_TIMER = setInterval(() => { if (ME && MAIL_TAB === 'inbox') loadFolder('inbox', true); }, 10000); toast('هر ۱۰ ثانیه صندوق چک می‌شه'); }
+  else toast('بروزرسانی خودکار خاموش شد');
+}
+
+/* ── sound notification (default on) ── */
+let SND_ON = true;
+function toggleSound(){
+  SND_ON = !SND_ON;
+  $('sndBtn').classList.toggle('on', SND_ON);
+  $('sndBtn').textContent = SND_ON ? '🔔 صدای دریافت: روشن' : '🔔 صدای دریافت: خاموش';
+}
+function ping(){
+  if (!SND_ON) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    const ctx = ping._c || (ping._c = new AC());
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'sine'; o.frequency.value = 880;
+    g.gain.setValueAtTime(.001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.25, ctx.currentTime + .02);
+    g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + .5);
+    o.connect(g).connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime + .55);
+  } catch(e){}
+}
+
+/* ── OTP extractor ── */
+function extractOtp(text){
+  if (!text) return null;
+  // kill separators inside digits, then look for 4-8 digit standalone codes
+  const flat = String(text).replace(/(\d)[\s\-–.](\d)/g, '$1$2');
+  const m = flat.match(/(?:^|[^\d])(\d{4,8})(?:$|[^\d])/);
+  return m ? m[1] : null;
+}
+let LAST_OTP_KEY = null;
+let OTP_SKIP = new Set();   // message ids the user dismissed
+async function maybeShowOtp(msgs){
+  for (const m of msgs) {
+    if (OTP_SKIP.has(m.id)) continue;
+    // subject-only fast path first
+    let code = extractOtp(m.subject || '');
+    if (!code) {
+      // body is not in the list payload — fetch the message itself (unread only, inbox only)
+      if (m.folder && m.folder !== 'inbox') continue;
+      if (+m.is_read) continue;
+      try {
+        const j = await api('/api/message.php?peek=1&id=' + m.id);
+        if (!j.ok) continue;
+        code = extractOtp((j.message.subject || '') + ' ' + (j.message.body_text || ''));
+      } catch(e) { continue; }
+    }
+    if (code) {
+      const key = m.id + ':' + code;
+      if (key === LAST_OTP_KEY) return;
+      LAST_OTP_KEY = key;
+      $('otpCode').textContent = code;
+      $('otpSrc').textContent = 'از: ' + (m.from_addr || '?') + (m.subject ? ' — ' + m.subject.slice(0, 40) : '');
+      $('otpCard').classList.add('show');
+      ping();
+      return;
+    }
+  }
+}
+function copyOtp(){
+  navigator.clipboard.writeText($('otpCode').textContent)
+    .then(() => toast('کد کپی شد ✓'))
+    .catch(() => toast('کپی نشد', 1));
+}
+function hideOtp(){
+  // remember dismissed id so it doesn't pop again on next refresh
+  const m = CACHE.list && CACHE.list.find(x => x.id && (x.subject||'').length && LAST_OTP_KEY && LAST_OTP_KEY.startsWith(x.id+':'));
+  if (m) OTP_SKIP.add(m.id);
+  $('otpCard').classList.remove('show');
+}
+
+/* ── favorites ── */
+let FAVS = new Set(), FILTER = 'all';
+(function initFavs(){ try { FAVS = new Set(JSON.parse(localStorage.getItem('tm_favs') || '[]')); } catch(e){} })();
+function saveFavs(){ try { localStorage.setItem('tm_favs', JSON.stringify([...FAVS])); } catch(e){} }
+function toggleFav(id){
+  FAVS.has(id) ? FAVS.delete(id) : FAVS.add(id);
+  saveFavs(); renderList(CACHE.list || []);
+}
+function setFilter(f){
+  FILTER = f;
+  document.querySelectorAll('#filterBar button').forEach(b => b.classList.toggle('on', b.dataset.f === f));
+  renderList(CACHE.list || []);
+}
+
+/* ── cached list render (folder-aware + filter + stars) ── */
+const CACHE = { list: [] };
+function renderList(msgs){
+  let rows = msgs;
+  if (FILTER === 'fav') rows = msgs.filter(m => FAVS.has(m.id));
+  if (FILTER === 'unread') rows = msgs.filter(m => !+m.is_read);
+  if (FILTER === 'att') rows = msgs.filter(m => +m.att_count > 0);
+  const list = $('msgList');
+  if (MAIL_TAB === 'sched') return;   // sched renders its own
+  if (!rows.length) {
+    list.innerHTML = `<div class="empty"><span class="big">${FILTER==='fav'?'⭐':FILTER==='unread'?'🔵':FILTER==='att'?'📎':'📭'}</span>${FILTER==='all' ? (MAIL_TAB==='inbox'?'صندوق خالیه':'چیزی نفرستادی') : 'هیچ ایمیلی با این فیلتر نیست'}</div>`;
+    return;
+  }
+  const f = MAIL_TAB;
+  list.innerHTML = rows.map(m => {
+    const who = f === 'inbox' ? m.from_addr : m.to_addr;
+    const un = f === 'inbox' && !+m.is_read;
+    return `<div class="msgrow ${SEL_ID===m.id?'sel':''}" onclick="openMsg(${m.id},'${f}')">
+      <div class="from">
+        <span class="who-l"><button class="star ${FAVS.has(m.id)?'on':''}" onclick="event.stopPropagation();toggleFav(${m.id})" title="مهم">⭐</button>${un?'<span class="dot-un"></span>':''}${esc(who)}</span>
+        <span class="t">${fmtDate(m.created_at)}</span>
+      </div>
+      <div class="subj">${esc(m.subject || '(بدون موضوع)')}</div>
+      <div class="prev">${+m.att_count ? '📎 ' : ''}${fmtSize(+m.size_bytes)}</div>
+    </div>`;
+  }).join('');
+}
+
+/* patched loadFolder: cache + OTP + sound + favorite-aware render */
+const _loadFolder = loadFolder;
+loadFolder = async function(f, silent){
+  const j = await api('/api/messages.php?folder=' + f);
+  if (!j.ok) return;
+  CACHE.list = j.messages;
+  const cnt = f === 'inbox' ? 'cntInbox' : 'cntSent';
+  $(cnt).textContent = faNum(j.messages.length);
+  if (MAIL_TAB === f) renderList(j.messages);
+  if (f === 'inbox') maybeShowOtp(j.messages);
+};
+
+/* ── EML export ── */
+function exportEML(){ exportEMLFor(SEL_ID); }
+function exportEMLFor(id){
+  if (!id) return toast('اول یه ایمیل باز کن', 1);
+  window.open('/api/export.php?id=' + id, '_blank');
+}
+
+/* ── cycle countdown (resets at 00/06/12/18 server-UTC) ── */
+function tickCycle(){
+  const now = new Date();
+  const h = now.getUTCHours();
+  const next = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), (Math.floor(h/6)+1)*6, 0, 0));
+  let s = Math.max(0, Math.floor((next - now) / 1000));
+  const hh = String(Math.floor(s/3600)).padStart(2,'0'),
+        mm = String(Math.floor(s%3600/60)).padStart(2,'0'),
+        ss = String(s%60).padStart(2,'0');
+  const el = $('cycleTimer');
+  if (el) el.textContent = `${hh}:${mm}:${ss}`;
+}
+setInterval(tickCycle, 1000); tickCycle();
+
+/* ── random identity (for testing forms) ── */
+const FIRST = ['آرش','سارا','کیان','نگار','امیر','مینا','بردیا','رها','هومن','الناز'];
+const LAST  = ['احمدی','رضایی','کریمی','موسوی','جلالی','تهرانی','صادقی','نوری'];
+const STREETS = ['خیابان آزادی','بلوار فردوسی','خیابان ولیعصر','بلوار کارگر','خیابان انقلاب','بلوار امیرکبیر'];
+function randomIdentity(){
+  const city = 'تهران', first = randFrom(FIRST), last = randFrom(LAST);
+  const ident = {
+    name: first + ' ' + last,
+    email: $('genName') ? $('genAddr').textContent : (ME ? ME.email : ''),
+    phone: '0912' + String(Math.floor(Math.random()*9000000+1000000)),
+    address: randFrom(STREETS) + '، پلاک ' + Math.floor(Math.random()*120+1) + '، واحد ' + Math.floor(Math.random()*9+1),
+    city, zip: String(Math.floor(Math.random()*90000000000+10000000000)).slice(0,10),
+    company: 'شرکت ' + last + ' ' + randFrom(['دیجیتال','تهران','نوین','آریا','پارس']),
+    user: 'user' + Math.random().toString(36).slice(2,8),
+    pass: genPassGen(),
+  };
+  const txt = `نام: ${ident.name}\nایمیل: ${ident.email}\nموبایل: ${ident.phone}\nآدرس: ${ident.address}\nشهر: ${ident.city}\nکدپستی: ${ident.zip}\nشرکت: ${ident.company}\nنام کاربری: ${ident.user}\nرمز پیشنهادی: ${ident.pass}`;
+  if (navigator.clipboard) navigator.clipboard.writeText(txt).then(() => toast('هویت کامل کپی شد ✓ (برای چسباندن Ctrl+V)')).catch(()=>{});
+  else toast('مرورگرت کلیپ‌بورد ندارد', 1);
+  return ident;
+}
+
+/* ── guide tabs ── */
+function guideTab(n){
+  document.querySelectorAll('.guide-tabs button').forEach((b,i) => b.classList.toggle('on', i===n));
+  document.querySelectorAll('.gpanel').forEach((p,i) => p.classList.toggle('on', i===n));
+}
+
+/* keyboard: g = generator focus */
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input,textarea,select')) return;
+  if (e.key === 'g' || e.key === 'G') { const g = $('genName'); if (g && !ME) { g.focus(); g.select(); } }
+});
 </script>
 </body>
 </html>
