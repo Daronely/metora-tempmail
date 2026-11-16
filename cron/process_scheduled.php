@@ -5,7 +5,7 @@
  * Sends due scheduled messages, drops expired ones (>5 pending), TTL-purges sent history.
  * Uses GET_LOCK so overlapping runs are safe.
  */
-$home = '/home3/qvjdxmzt/temp.metora.ir';
+$home = dirname(__DIR__);   // works from any docroot layout
 require_once $home . '/includes/config.php';
 require_once $home . '/includes/helpers_standalone.php';
 
