@@ -13,13 +13,13 @@ if ($to === $u['email']) json_error('نمی‌توانید به خودتان ا�
 if (mb_strlen($subject) > 500) json_error('موضوع خیلی طولانی است');
 if (mb_strlen($body) > 100000) json_error('متن ایمیل خیلی طولانی است');
 
-// quota check
+// quota check (limit = PHP_INT_MAX for unlimited → never blocks)
 $used = send_quota_used((int)$u['id']);
 $limit = send_quota_limit($u);
-if ($used >= $limit) {
-    json_error($u['role'] === 'admin'
-        ? 'سهمیه ارسال شما در این سیکل پر شده است'
-        : "سهمیه ارسال رایگان ($limit ایمیل در هر ۶ ساعت) پر شده است. برای ارسال نامحدود پرمیوم شوید.", 429);
+if ($limit !== PHP_INT_MAX && $used >= $limit) {
+    json_error(is_premium($u)
+        ? "سهمیه ارسال پرمیوم ($limit ایمیل در هر ۶ ساعت) پر شده است."
+        : "سهمیه ارسال رایگان ($limit ایمیل در هر ۶ ساعت) پر شده است. برای ارسال بیشتر پرمیوم شوید.", 429);
 }
 
 // attachments
@@ -55,4 +55,4 @@ db()->prepare("INSERT INTO send_log (account_id, cycle_id) VALUES (?,?)")
     ->execute([$u['id'], current_cycle_id()]);
 
 json_out(['ok' => true, 'sent_to' => $to,
-          'quota_left' => max(0, $limit - $used - 1)]);
+          'quota_left' => $limit === PHP_INT_MAX ? null : max(0, $limit - $used - 1)]);

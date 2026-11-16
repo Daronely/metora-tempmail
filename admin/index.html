@@ -2,72 +2,148 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>پنل ادمین — متِمپ</title>
+<meta name="theme-color" content="#070808">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2308090A'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='%23ff6b6b' font-family='monospace' font-weight='bold'>A</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#08090A; --fg:#F4F3EE; --muted:rgba(244,243,238,.52);
-  --acc:#3CF2D3; --card:#0E1011; --line:rgba(244,243,238,.09); --line2:rgba(244,243,238,.16);
-  --danger:#ff6b6b; --warn:#ffb86b; --mono:'JetBrains Mono','Vazirmatn',monospace;
+  --bg:#070808; --fg:#F4F3EE; --muted:rgba(244,243,238,.5);
+  --acc:#3CF2D3; --acc-soft:rgba(60,242,211,.12);
+  --glass:rgba(16,19,21,.55); --glass-br:rgba(255,255,255,.12);
+  --card-br:rgba(255,255,255,.08);
+  --danger:#FF6B6B; --warn:#FFC46B;
+  --mono:'JetBrains Mono','Vazirmatn',monospace;
+  --font:'Vazirmatn','Segoe UI',Tahoma,sans-serif;
+  --r-lg:20px; --ease:cubic-bezier(.22,1,.36,1);
+  --sh-glow:0 0 34px rgba(60,242,211,.2);
 }
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--fg);font-family:'Vazirmatn','Segoe UI',Tahoma,sans-serif;min-height:100vh}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);min-height:100vh;line-height:1.7;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
 .mono{font-family:var(--mono);direction:ltr}
+::selection{background:var(--acc);color:#04110E}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:99px}
+.aurora{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none}
+.aurora b{position:absolute;border-radius:50%;filter:blur(110px);opacity:.11}
+.aurora b:nth-child(1){width:46vw;height:46vw;background:#FF6B6B;top:-20vw;left:-10vw}
+.aurora b:nth-child(2){width:40vw;height:40vw;background:#3CF2D3;bottom:-16vw;right:-10vw}
+.glass{background:var(--glass);border:1px solid var(--glass-br);border-radius:var(--r-lg);
+  backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);
+  box-shadow:0 14px 44px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.06)}
 
 header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
-  padding:18px clamp(16px,4vw,36px);border-bottom:1px solid var(--line)}
-header h1{font-size:1.1rem;display:flex;align-items:center;gap:10px}
+  padding:18px clamp(14px,3vw,32px);position:sticky;top:12px;z-index:40;margin:12px clamp(10px,2vw,24px) 0;
+  border-radius:18px}
+header h1{font-size:1.05rem;display:flex;align-items:center;gap:10px;font-weight:900}
 header h1 .dot{width:10px;height:10px;background:var(--danger);border-radius:3px;box-shadow:0 0 14px var(--danger)}
-.btn{display:inline-flex;align-items:center;gap:8px;cursor:pointer;border:none;border-radius:10px;
-  font-family:inherit;font-size:.85rem;font-weight:700;padding:9px 16px;transition:.2s}
-.btn.primary{background:var(--acc);color:#04110E}
-.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line2)}
-.btn.ghost:hover{border-color:var(--acc);color:var(--acc)}
-.btn.danger{background:rgba(255,107,107,.12);color:var(--danger);border:1px solid rgba(255,107,107,.3)}
-.btn.sm{padding:5px 11px;font-size:.75rem;border-radius:8px}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;
+  border:none;border-radius:12px;font-family:inherit;font-size:.84rem;font-weight:700;padding:10px 17px;
+  transition:.25s var(--ease);overflow:hidden}
+.btn.primary{background:var(--acc);color:#04110E;box-shadow:var(--sh-glow)}
+.btn.primary:hover{box-shadow:0 8px 36px rgba(60,242,211,.4)}
+.btn.ghost{background:rgba(255,255,255,.05);color:var(--fg);border:1px solid var(--glass-br)}
+.btn.ghost:hover{border-color:rgba(60,242,211,.5);color:var(--acc)}
+.btn.danger{background:rgba(255,107,107,.1);color:var(--danger);border:1px solid rgba(255,107,107,.3)}
+.btn.danger:hover{box-shadow:0 0 26px rgba(255,107,107,.25)}
+.btn.warn{background:rgba(255,196,107,.1);color:var(--warn);border:1px solid rgba(255,196,107,.3)}
+.btn.sm{padding:6px 12px;font-size:.74rem;border-radius:9px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
 
-.tabs{display:flex;gap:4px;padding:14px clamp(16px,4vw,36px) 0;flex-wrap:wrap}
-.tabs button{background:none;border:1px solid var(--line);border-radius:10px;color:var(--muted);
-  font-family:inherit;font-size:.83rem;font-weight:600;padding:9px 18px;cursor:pointer;transition:.2s}
-.tabs button.on{color:var(--acc);border-color:rgba(60,242,211,.4);background:rgba(60,242,211,.07)}
+.tabs{display:flex;gap:6px;padding:18px clamp(12px,3vw,30px) 0;flex-wrap:wrap;max-width:1280px;margin:0 auto}
+.tabs button{background:var(--glass);border:1px solid var(--card-br);border-radius:13px;color:var(--muted);
+  font-family:inherit;font-size:.82rem;font-weight:700;padding:10px 19px;cursor:pointer;transition:.25s var(--ease);
+  backdrop-filter:blur(12px)}
+.tabs button:hover{color:var(--fg)}
+.tabs button.on{color:var(--acc);border-color:rgba(60,242,211,.4);background:var(--acc-soft)}
 
-main{padding:22px clamp(16px,4vw,36px) 60px;max-width:1280px;margin:0 auto}
+main{padding:22px clamp(12px,3vw,30px) 60px;max-width:1280px;margin:0 auto}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:26px}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
-.stat .v{font-size:1.6rem;font-weight:900;font-family:var(--mono);color:var(--acc)}
-.stat .k{font-size:.74rem;color:var(--muted);margin-top:6px}
+.stat{padding:20px;transition:.3s var(--ease)}
+.stat:hover{transform:translateY(-3px)}
+.stat .v{font-size:1.55rem;font-weight:900;font-family:var(--mono);color:var(--acc)}
+.stat.warn .v{color:var(--warn)}
+.stat .k{font-size:.72rem;color:var(--muted);margin-top:6px}
+.stat{opacity:0;transform:translateY(16px);animation:up .55s var(--ease) forwards}
+@keyframes up{to{opacity:1;transform:none}}
 
-.tablewrap{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:auto}
-table{width:100%;border-collapse:collapse;font-size:.82rem;min-width:700px}
-th{color:var(--muted);font-weight:600;font-size:.74rem;padding:13px 14px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
-td{padding:11px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tablewrap{overflow:auto;border-radius:var(--r-lg)}
+table{width:100%;border-collapse:collapse;font-size:.8rem;min-width:760px}
+th{color:var(--muted);font-weight:600;font-size:.72rem;padding:14px;border-bottom:1px solid var(--card-br);text-align:right;white-space:nowrap}
+td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.04);white-space:nowrap}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(244,243,238,.025)}
-.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.7rem;font-family:var(--mono)}
-.pill.prem{background:rgba(60,242,211,.14);color:var(--acc);border:1px solid rgba(60,242,211,.3)}
-.pill.free{background:rgba(244,243,238,.07);color:var(--muted);border:1px solid var(--line2)}
-.pill.admin{background:rgba(255,107,107,.12);color:var(--danger);border:1px solid rgba(255,107,107,.3)}
+tr{transition:background .2s}
+tr:hover td{background:rgba(255,255,255,.025)}
+.pill{display:inline-block;padding:3px 11px;border-radius:999px;font-size:.68rem;font-family:var(--mono);font-weight:600}
+.pill.prem{background:var(--acc-soft);color:var(--acc);border:1px solid rgba(60,242,211,.3)}
+.pill.free{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--card-br)}
+.pill.admin{background:rgba(255,107,107,.1);color:var(--danger);border:1px solid rgba(255,107,107,.3)}
 .empty{padding:60px;text-align:center;color:var(--muted)}
-#msgViewer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;margin-top:14px;display:none}
-#msgViewer h3{font-size:1rem;margin-bottom:12px;line-height:1.7}
-#msgViewer .row{font-size:.78rem;color:var(--muted);margin-bottom:5px}
-#msgViewer .body{font-size:.85rem;line-height:2;white-space:pre-wrap;word-break:break-word;margin-top:14px;border-top:1px solid var(--line);padding-top:14px}
-.warnbar{background:rgba(255,184,107,.09);border:1px solid rgba(255,184,107,.3);color:var(--warn);
-  border-radius:12px;padding:14px 18px;font-size:.83rem;margin-bottom:22px;line-height:1.9;display:none}
-#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:200;background:var(--card);
-  border:1px solid var(--acc);padding:12px 20px;border-radius:12px;font-size:.83rem;opacity:0;transition:.3s;pointer-events:none}
-#toast.show{opacity:1}
+#msgViewer{padding:26px;margin-top:14px;display:none}
+#msgViewer h3{font-size:1rem;margin-bottom:12px;line-height:1.7;font-weight:800}
+#msgViewer .row{font-size:.77rem;color:var(--muted);margin-bottom:5px}
+#msgViewer .body{font-size:.84rem;line-height:2.1;white-space:pre-wrap;word-break:break-word;margin-top:14px;border-top:1px solid var(--card-br);padding-top:14px}
+
+.warnbar{background:rgba(255,196,107,.08);border:1px solid rgba(255,196,107,.3);color:var(--warn);
+  border-radius:15px;padding:14px 20px;font-size:.82rem;margin:18px auto 0;line-height:1.9;display:none;
+  max-width:1256px;backdrop-filter:blur(12px)}
+
+#toast{position:fixed;bottom:26px;left:50%;transform:translate(-50%,20px);z-index:200;
+  background:rgba(17,20,22,.92);border:1px solid var(--acc);padding:13px 22px;border-radius:13px;
+  font-size:.82rem;opacity:0;pointer-events:none;transition:.4s var(--ease);
+  box-shadow:0 14px 50px rgba(0,0,0,.55),var(--sh-glow);backdrop-filter:blur(14px)}
+#toast.show{opacity:1;transform:translate(-50%,0)}
 #toast.bad{border-color:var(--danger)}
-.field input{width:100%;background:var(--bg);border:1px solid var(--line2);border-radius:10px;padding:11px 13px;color:var(--fg);font-family:var(--mono);font-size:.85rem;outline:none}
-.field input:focus{border-color:var(--acc)}
-.field{margin-bottom:14px}.field label{display:block;font-size:.76rem;color:var(--muted);margin-bottom:7px}
+
+/* settings form */
+.setgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.setcard{padding:26px}
+.setcard h3{font-size:.95rem;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:9px}
+.setcard .desc{font-size:.76rem;color:var(--muted);margin-bottom:18px;line-height:1.9}
+.qrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px dashed rgba(255,255,255,.06)}
+.qrow:last-of-type{border-bottom:none}
+.qrow label{font-size:.8rem;color:rgba(244,243,238,.85)}
+.qrow small{display:block;font-size:.68rem;color:var(--muted);margin-top:2px}
+.qrow input[type=number]{width:96px;background:rgba(0,0,0,.3);border:1px solid var(--glass-br);border-radius:10px;
+  padding:8px 12px;color:var(--fg);font-family:var(--mono);font-size:.85rem;outline:none;text-align:center;
+  transition:border-color .25s}
+.qrow input[type=number]:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(60,242,211,.12)}
+.toggle{position:relative;width:46px;height:25px;flex-shrink:0;cursor:pointer}
+.toggle input{opacity:0;width:0;height:0}
+.toggle .tr{position:absolute;inset:0;background:rgba(255,255,255,.1);border:1px solid var(--glass-br);
+  border-radius:99px;transition:.3s}
+.toggle .tr::before{content:'';position:absolute;width:17px;height:17px;border-radius:50%;background:var(--muted);
+  top:3px;right:3px;transition:.3s var(--ease)}
+.toggle input:checked + .tr{background:var(--acc-soft);border-color:rgba(60,242,211,.5)}
+.toggle input:checked + .tr::before{transform:translateX(-20px);background:var(--acc);box-shadow:0 0 12px var(--acc)}
+.maintenance{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.mcard{padding:22px;border:1px solid var(--card-br);border-radius:15px;background:rgba(255,255,255,.02);
+  transition:.3s var(--ease)}
+.mcard:hover{border-color:rgba(60,242,211,.3);transform:translateY(-2px)}
+.mcard .t{font-weight:800;font-size:.88rem;margin-bottom:8px;display:flex;gap:8px;align-items:center}
+.mcard p{font-size:.73rem;color:var(--muted);line-height:1.9;margin-bottom:14px;min-height:52px}
+.field input{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--glass-br);border-radius:12px;
+  padding:12px 14px;color:var(--fg);font-family:var(--mono);font-size:.85rem;outline:none;transition:.25s}
+.field input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(60,242,211,.12)}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.75rem;color:var(--muted);margin-bottom:7px;margin-inline-start:4px}
+.hint{font-size:.73rem;color:var(--muted);line-height:1.9}
+
+@media(max-width:640px){
+  .stat .v{font-size:1.2rem}
+  header{position:static;margin-top:0;border-radius:0}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
+<div class="aurora"><b></b><b></b></div>
 
-<header>
+<header class="glass">
   <h1><span class="dot"></span>پنل ادمین متِمپ</h1>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
     <a class="btn ghost" href="/">→ صندوق</a>
@@ -76,40 +152,36 @@ tr:hover td{background:rgba(244,243,238,.025)}
 </header>
 
 <div class="warnbar" id="seedWarn">
-  ⚠️ رمز ادمین هنوز رمز اولیه است — لطفاً از تب «تنظیمات» سریع‌تر رمز جدید بگذارید.
+  ⚠️ رمز ادمین هنوز رمز اولیه است — از تب «تنظیمات» سریع‌تر رمز جدید بگذارید.
 </div>
 
 <div class="tabs">
   <button id="t-stats" class="on" onclick="tab('stats')">📊 آمار</button>
   <button id="t-accounts" onclick="tab('accounts')">👥 اکانت‌ها</button>
   <button id="t-messages" onclick="tab('messages')">📨 ایمیل‌ها</button>
-  <button id="t-settings" onclick="tab('settings')">⚙️ تنظیمات</button>
+  <button id="t-settings" onclick="tab('settings')">⚙️ تنظیمات و سهمیه‌ها</button>
+  <button id="t-maintenance" onclick="tab('maintenance')">🧹 نگهداری و ریست</button>
 </div>
 
 <main>
   <div id="v-stats">
     <div class="stats" id="statsGrid"></div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn danger" onclick="resetNow()">🔄 ریست دستی دیتابیس (سیکل جدید)</button>
-    </div>
-    <p style="color:var(--muted);font-size:.78rem;margin-top:12px;line-height:1.9">
-      ریست دستی همان کاری است که کرون‌جاب هر ۶ ساعت انجام می‌دهد: همه پیام‌ها و پیوست‌ها پاک می‌شوند، اکانت‌ها می‌مانند.
-    </p>
+    <p class="hint" style="text-align:center">آمار زنده — «یتیم‌ها» فایل‌های پیوستی روی دیسک هستند که به هیچ پیامی وصل نیستند.</p>
   </div>
 
   <div id="v-accounts" style="display:none">
-    <div class="tablewrap"><table id="accTable">
+    <div class="glass tablewrap"><table id="accTable">
       <thead><tr><th>#</th><th>ایمیل</th><th>نقش</th><th>پلن</th><th>پرمیوم تا</th><th>آخرین فعالیت</th><th>عملیات</th></tr></thead>
       <tbody></tbody>
     </table></div>
   </div>
 
   <div id="v-messages" style="display:none">
-    <div class="tablewrap"><table id="msgTable">
+    <div class="glass tablewrap"><table id="msgTable">
       <thead><tr><th>#</th><th>از</th><th>به</th><th>موضوع</th><th>پوشه</th><th>حجم</th><th>زمان</th><th>عملیات</th></tr></thead>
       <tbody></tbody>
     </table></div>
-    <div id="msgViewer">
+    <div class="glass" id="msgViewer">
       <h3 id="mvSubj"></h3>
       <div class="row" id="mvFrom"></div><div class="row" id="mvTo"></div><div class="row" id="mvTime"></div>
       <div class="body" id="mvBody"></div>
@@ -117,16 +189,81 @@ tr:hover td{background:rgba(244,243,238,.025)}
     </div>
   </div>
 
-  <div id="v-settings" style="display:none;max-width:460px">
-    <div class="stats" style="margin-bottom:22px">
-      <div class="stat"><div class="v" id="stPrice"></div><div class="k">قیمت پرمیوم (دلار)</div></div>
-      <div class="stat"><div class="v" id="stTg"></div><div class="k">تلگرام پشتیبانی</div></div>
+  <div id="v-settings" style="display:none">
+    <div class="setgrid">
+      <div class="glass setcard">
+        <h3>✉️ سهمیه ارسال</h3>
+        <div class="desc">تعداد ایمیل‌هایی که هر کاربر در هر سیکل ۶ ساعته می‌تواند بفرستد.</div>
+        <div class="qrow"><label>رایگان<small>کاربران عادی</small></label><input type="number" id="s_send_free" min="0"></div>
+        <div class="qrow"><label>پرمیوم<small>کاربران پرمیوم</small></label><input type="number" id="s_send_prem" min="0"></div>
+        <div class="qrow"><label>ادمین<small>وقتی حالت نامحدود خاموش باشد</small></label><input type="number" id="s_send_admin" min="0"></div>
+      </div>
+      <div class="glass setcard">
+        <h3>📥 سهمیه دریافت</h3>
+        <div class="desc">حداکثر ایمیل‌های نگهداری‌شده در صندوق هر کاربر (قدیمی‌ها خودکار پاک می‌شوند).</div>
+        <div class="qrow"><label>رایگان</label><input type="number" id="s_inbox_free" min="1"></div>
+        <div class="qrow"><label>پرمیوم</label><input type="number" id="s_inbox_prem" min="1"></div>
+        <div class="qrow"><label>ادمین<small>وقتی حالت نامحدود خاموش باشد</small></label><input type="number" id="s_inbox_admin" min="1"></div>
+      </div>
+      <div class="glass setcard">
+        <h3>📎 پیوست‌ها</h3>
+        <div class="desc">تعداد فایل‌های مجاز در هر ایمیل. حجم هر فایل روی ۲ مگابایت ثابت است.</div>
+        <div class="qrow"><label>رایگان</label><input type="number" id="s_att_free" min="0"></div>
+        <div class="qrow"><label>پرمیوم</label><input type="number" id="s_att_prem" min="0"></div>
+        <div class="qrow"><label>ادمین<small>همیشه فعال، حتی در حالت نامحدود</small></label><input type="number" id="s_att_admin" min="0"></div>
+      </div>
+      <div class="glass setcard">
+        <h3>💎 پرمیوم</h3>
+        <div class="desc">قیمت پلن پرمیوم که در صفحه اصلی نمایش داده می‌شود (دلار).</div>
+        <div class="qrow"><label>قیمت ماهانه<small>نمایش در صفحه اصلی</small></label><input type="number" id="s_price" min="0"></div>
+        <div class="qrow" style="border-bottom:none">
+          <label>ادمین نامحدود<small>سهمیه‌ها هرگز برای شما اعمال نمی‌شوند</small></label>
+          <label class="toggle"><input type="checkbox" id="s_unlimited" checked><span class="tr"></span></label>
+        </div>
+      </div>
     </div>
-    <h3 style="font-size:.95rem;margin-bottom:14px">تغییر رمز ادمین</h3>
-    <div class="field"><label>رمز جدید (حداقل ۸ کاراکتر)</label><input type="password" id="npass" autocomplete="new-password"></div>
-    <button class="btn primary" onclick="changePass()">ثبت رمز جدید</button>
-    <p style="color:var(--muted);font-size:.76rem;margin-top:18px;line-height:1.9">
-      پشتیبانی: <span class="mono">@daronelydev</span> · <span class="mono">09999960295</span>
+    <div style="display:flex;justify-content:flex-end;margin-top:18px;gap:10px">
+      <button class="btn ghost" onclick="loadSettings()">بازگردانی</button>
+      <button class="btn primary" id="saveSetBtn" onclick="saveSettings()">💾 ذخیره تنظیمات</button>
+    </div>
+
+    <div class="glass setcard" style="margin-top:22px;max-width:460px">
+      <h3>🔐 تغییر رمز ادمین</h3>
+      <div class="desc">رمز جدید باید حداقل ۸ کاراکتر باشد و با رمز اولیه فرق کند.</div>
+      <div class="field"><label>رمز جدید</label><input type="password" id="npass" autocomplete="new-password"></div>
+      <button class="btn primary" onclick="changePass()">ثبت رمز جدید</button>
+      <p class="hint" style="margin-top:16px">
+        پشتیبانی: <span class="mono">@daronelydev</span> · <span class="mono">09999960295</span>
+      </p>
+    </div>
+  </div>
+
+  <div id="v-maintenance" style="display:none">
+    <div class="maintenance">
+      <div class="glass mcard">
+        <div class="t">🔄 ریست کامل</div>
+        <p>همه پیام‌ها، پیوست‌ها و لاگ ارسال همه کاربران پاک می‌شود (دقیقاً مثل ریست ۶ ساعته). اکانت‌ها می‌مانند.</p>
+        <button class="btn danger" onclick="resetAction('reset_now')">ریست کامل دیتابیس</button>
+      </div>
+      <div class="glass mcard">
+        <div class="t">📭 پاک‌کردن صندوق خودم</div>
+        <p>فقط دریافتی‌ها و ارسالی‌های <b>خودتان</b> پاک می‌شود — برای اینکه دیتابیس و هاست پر نشود، بدون دست‌زدن به کاربران.</p>
+        <button class="btn warn" onclick="resetAction('reset_self')">پاک‌کردن صندوق من</button>
+      </div>
+      <div class="glass mcard">
+        <div class="t">🧹 حذف فایل‌های یتیم</div>
+        <p>فایل‌های پیوستی که روی دیسک مانده‌اند ولی به هیچ پیامی وصل نیستند (باقی‌مانده ریست‌های قبلی) حذف می‌شوند.</p>
+        <button class="btn warn" onclick="resetAction('reset_orphans')">پاک‌کردن یتیم‌ها</button>
+      </div>
+      <div class="glass mcard">
+        <div class="t">👻 حذف بی‌استفاده‌ها</div>
+        <p>اکانت‌هایی که بیش از ۱۰ روز هیچ فعالیتی نداشته‌اند به‌طور کامل حذف می‌شوند (همان کاری که کرون روزانه می‌کند).</p>
+        <button class="btn danger" onclick="resetAction('purge_inactive_now')">حذف اکانت‌های بی‌استفاده</button>
+      </div>
+    </div>
+    <p class="hint" style="margin-top:20px;line-height:2">
+      💡 ریست خودکار هر ۶ ساعت (۰۰:۰۰، ۰۶:۰۰، ۱۲:۰۰، ۱۸:۰۰ به وقت سرور) اجرا می‌شود و پاک‌سازی بی‌استفاده‌ها هر روز ساعت ۰۳:۳۰.
+      این دکمه‌ها برای وقتی‌اند که می‌خواهید همین حالا انجام شود.
     </p>
   </div>
 </main>
@@ -136,8 +273,9 @@ tr:hover td{background:rgba(244,243,238,.025)}
 <script>
 const $ = id => document.getElementById(id);
 let viewingId = null;
+const faNum = n => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
 
-function toast(m, bad){ const t=$('toast'); t.textContent=m; t.className=bad?'bad show':'show'; setTimeout(()=>t.className='',3000); }
+function toast(m, bad){ const t=$('toast'); t.textContent=m; t.className=bad?'bad show':'show'; clearTimeout(t._h); t._h=setTimeout(()=>t.className='',3000); }
 async function api(url, opts){
   const r = await fetch(url, Object.assign({credentials:'same-origin'}, opts));
   const j = await r.json().catch(()=>({ok:false,error:'پاسخ نامعتبر'}));
@@ -145,17 +283,16 @@ async function api(url, opts){
   return j;
 }
 function fmtSize(b){ if(b>1048576) return (b/1048576).toFixed(1)+'MB'; if(b>1024) return Math.round(b/1024)+'KB'; return b+'B'; }
-function fmtDate(s){ const d=new Date(s.replace(' ','T')); return d.toLocaleDateString('fa-IR')+' '+d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'}); }
+function fmtDate(s){ const d=new Date(s.replace(' ','T')); return faNum(d.toLocaleDateString('fa-IR'))+' '+faNum(d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})); }
 function esc(s){ return (s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 async function boot(){
   const me = await api('/api/me.php');
-  if (!me.authenticated) { location.href='/'; return; }
-  if (me.role !== 'admin') { location.href='/'; return; }
+  if (!me.authenticated || me.role !== 'admin') { location.href='/'; return; }
   loadStats();
 }
 function tab(t){
-  ['stats','accounts','messages','settings'].forEach(x=>{
+  ['stats','accounts','messages','settings','maintenance'].forEach(x=>{
     $('v-'+x).style.display = x===t?'block':'none';
     $('t-'+x).className = x===t?'on':'';
   });
@@ -170,14 +307,16 @@ async function loadStats(){
   if (!j.ok) return;
   const s = j.stats;
   $('statsGrid').innerHTML = `
-    <div class="stat"><div class="v">${s.accounts}</div><div class="k">اکانت‌ها</div></div>
-    <div class="stat"><div class="v">${s.premium}</div><div class="k">پرمیوم‌ها</div></div>
-    <div class="stat"><div class="v">${s.messages}</div><div class="k">کل پیام‌ها</div></div>
-    <div class="stat"><div class="v">${s.inbox}</div><div class="k">دریافتی‌ها</div></div>
-    <div class="stat"><div class="v">${s.sent}</div><div class="k">ارسالی‌ها</div></div>
-    <div class="stat"><div class="v">${s.attachments}</div><div class="k">پیوست‌ها</div></div>
-    <div class="stat"><div class="v">${s.sends_this_cycle}</div><div class="k">ارسال این سیکل</div></div>
-    <div class="stat"><div class="v">${s.cycles}</div><div class="k">سیکل‌ها (هر ۶ ساعت)</div></div>`;
+    <div class="glass stat" style="animation-delay:.02s"><div class="v">${faNum(s.accounts)}</div><div class="k">اکانت‌ها</div></div>
+    <div class="glass stat" style="animation-delay:.06s"><div class="v">${faNum(s.premium)}</div><div class="k">پرمیوم‌ها</div></div>
+    <div class="glass stat" style="animation-delay:.1s"><div class="v">${faNum(s.messages)}</div><div class="k">کل پیام‌ها</div></div>
+    <div class="glass stat" style="animation-delay:.14s"><div class="v">${faNum(s.inbox)}</div><div class="k">دریافتی‌ها</div></div>
+    <div class="glass stat" style="animation-delay:.18s"><div class="v">${faNum(s.sent)}</div><div class="k">ارسالی‌ها</div></div>
+    <div class="glass stat" style="animation-delay:.22s"><div class="v">${faNum(s.attachments)}</div><div class="k">پیوست‌ها</div></div>
+    <div class="glass stat" style="animation-delay:.26s"><div class="v">${faNum(s.sends_this_cycle)}</div><div class="k">ارسال این سیکل</div></div>
+    <div class="glass stat" style="animation-delay:.3s"><div class="v">${faNum(s.cycles)}</div><div class="k">سیکل‌ها (۶ ساعته)</div></div>
+    <div class="glass stat warn" style="animation-delay:.34s"><div class="v">${faNum(s.orphans)}</div><div class="k">فایل‌های یتیم</div></div>
+    <div class="glass stat" style="animation-delay:.38s"><div class="v">${fmtSize(s.db_size||0)}</div><div class="k">حجم دیتابیس</div></div>`;
 }
 
 async function loadAccounts(){
@@ -191,8 +330,8 @@ async function loadAccounts(){
       <td class="mono">${esc(a.email)}</td>
       <td>${a.role==='admin'?'<span class="pill admin">ADMIN</span>':'<span class="pill free">user</span>'}</td>
       <td>${a.is_premium==1?'<span class="pill prem">پرمیوم</span>':'<span class="pill free">رایگان</span>'}</td>
-      <td class="mono" style="font-size:.75rem">${a.premium_until?fmtDate(a.premium_until):'—'}</td>
-      <td class="mono" style="font-size:.75rem">${fmtDate(a.last_active_at)}</td>
+      <td class="mono" style="font-size:.72rem">${a.premium_until?fmtDate(a.premium_until):'—'}</td>
+      <td class="mono" style="font-size:.72rem">${fmtDate(a.last_active_at)}</td>
       <td>${a.role!=='admin'?`
         <button class="btn sm ${a.is_premium==1?'ghost':'primary'}" onclick="togglePrem(${a.id},${a.is_premium==1?0:1})">${a.is_premium==1?'لغو پرمیوم':'پرمیوم کن'}</button>
         <button class="btn sm danger" onclick="delAcc(${a.id},'${esc(a.email)}')">حذف</button>`:'—'}
@@ -208,12 +347,12 @@ async function loadMessages(){
   tb.innerHTML = j.messages.map(m=>`
     <tr>
       <td class="mono">${m.id}</td>
-      <td class="mono" style="font-size:.75rem">${esc(m.from_addr)}</td>
-      <td class="mono" style="font-size:.75rem">${esc(m.to_addr)}</td>
+      <td class="mono" style="font-size:.72rem">${esc(m.from_addr)}</td>
+      <td class="mono" style="font-size:.72rem">${esc(m.to_addr)}</td>
       <td>${esc(m.subject||'(بدون موضوع)')}</td>
       <td>${m.folder==='inbox'?'📥':'📤'}</td>
       <td class="mono">${fmtSize(+m.size_bytes)}</td>
-      <td class="mono" style="font-size:.72rem">${fmtDate(m.created_at)}</td>
+      <td class="mono" style="font-size:.68rem">${fmtDate(m.created_at)}</td>
       <td>
         <button class="btn sm ghost" onclick="viewMsg(${m.id})">مشاهده</button>
         <button class="btn sm danger" onclick="delMsg(${m.id})">حذف</button>
@@ -251,17 +390,53 @@ async function delMsg(id){
     body: JSON.stringify({action:'delete_message', id})});
   j.ok ? (toast('حذف شد'), $('msgViewer').style.display='none', loadMessages()) : toast(j.error,1);
 }
-async function resetNow(){
-  if (!confirm('کل دیتابیس پیام‌ها ریست بشه؟ (اکانت‌ها می‌مانند)')) return;
-  const j = await api('/api/admin.php', {method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({action:'reset_now'})});
-  j.ok ? (toast('سیکل جدید شروع شد'), loadStats()) : toast(j.error,1);
-}
+
+/* ── settings ── */
+const SET_MAP = {
+  s_send_free:'send_limit_free', s_send_prem:'send_limit_premium', s_send_admin:'send_limit_admin',
+  s_inbox_free:'inbox_limit_free', s_inbox_prem:'inbox_limit_premium', s_inbox_admin:'inbox_limit_admin',
+  s_att_free:'att_limit_free', s_att_prem:'att_limit_premium', s_att_admin:'att_limit_admin',
+  s_price:'premium_price',
+};
 async function loadSettings(){
-  const me = await api('/api/me.php');
-  $('stPrice').textContent = '$' + (me.price||10);
-  $('stTg').textContent = '@' + (me.telegram||'daronelydev');
+  const j = await api('/api/admin.php?action=settings');
+  if (!j.ok) { toast(j.error,1); return; }
+  const s = j.settings;
+  for (const [inp, key] of Object.entries(SET_MAP)) $(inp).value = s[key] ?? 0;
+  $('s_unlimited').checked = String(s.admin_unlimited) === '1';
 }
+async function saveSettings(){
+  const body = {action:'save_settings', admin_unlimited: $('s_unlimited').checked ? 1 : 0};
+  for (const [inp, key] of Object.entries(SET_MAP)) {
+    const v = parseInt($(inp).value, 10);
+    if (isNaN(v) || v < 0) { toast('مقدارها باید عدد صحیح و نامنفی باشند', 1); return; }
+    body[key] = v;
+  }
+  const btn = $('saveSetBtn'); btn.disabled = true;
+  const j = await api('/api/admin.php', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+  btn.disabled = false;
+  j.ok ? toast('تنظیمات ذخیره شد ✓ (برای کاربران از سیکل بعد اعمال می‌شود)') : toast(j.error,1);
+}
+
+/* ── maintenance ── */
+const CONFIRM_TEXT = {
+  reset_now: 'ریست کامل انجام بشه؟ همه پیام‌های همه کاربران پاک می‌شوند (اکانت‌ها می‌مانند).',
+  reset_self: 'صندوق خودت پاک بشه؟ همه دریافتی‌ها و ارسالی‌های تو حذف می‌شوند.',
+  reset_orphans: 'فایل‌های یتیم حذف بشن؟',
+  purge_inactive_now: 'اکانت‌های بی‌استفاده (۱۰+ روز) حذف بشن؟',
+};
+async function resetAction(action){
+  if (!confirm(CONFIRM_TEXT[action] || 'مطمئنی؟')) return;
+  const j = await api('/api/admin.php', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action})});
+  if (j.ok) {
+    if (action === 'reset_orphans') toast(`${faNum(j.deleted||0)} فایل یتیم حذف شد`);
+    else if (action === 'purge_inactive_now') toast(`${faNum(j.deleted||0)} اکانت بی‌استفاده حذف شد`);
+    else toast('انجام شد ✓');
+    loadStats();
+  } else toast(j.error,1);
+}
+
 async function changePass(){
   const p = $('npass').value;
   if (p.length < 8){ toast('حداقل ۸ کاراکتر',1); return; }

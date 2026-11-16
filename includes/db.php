@@ -81,6 +81,22 @@ function db_install(): void {
       v TEXT
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
+    // seed settings (editable from admin panel; config constants are fallback defaults)
+    $defaults = [
+        'send_limit_free'    => defined('SEND_LIMIT_FREE') ? SEND_LIMIT_FREE : 10,
+        'send_limit_premium' => defined('SEND_LIMIT_PREMIUM') ? SEND_LIMIT_PREMIUM : 100,
+        'send_limit_admin'   => 100000,
+        'inbox_limit_free'   => defined('INBOX_LIMIT_FREE') ? INBOX_LIMIT_FREE : 50,
+        'inbox_limit_premium' => defined('INBOX_LIMIT_PREMIUM') ? INBOX_LIMIT_PREMIUM : 500,
+        'inbox_limit_admin'  => 100000,
+        'att_limit_free'     => defined('ATTACH_LIMIT_FREE') ? ATTACH_LIMIT_FREE : 1,
+        'att_limit_premium'  => defined('ATTACH_LIMIT_PREMIUM') ? ATTACH_LIMIT_PREMIUM : 5,
+        'att_limit_admin'    => 10,
+        'premium_price'      => defined('PREMIUM_PRICE') ? PREMIUM_PRICE : 10,
+    ];
+    $seed = $pdo->prepare("INSERT IGNORE INTO settings (k, v) VALUES (?,?)");
+    foreach ($defaults as $k => $v) $seed->execute([$k, (string)$v]);
+
     // seed admin account (password is the seed and must be changed)
     $stmt = $pdo->prepare("SELECT id FROM accounts WHERE email = ?");
     $stmt->execute([ADMIN_EMAIL]);
@@ -91,8 +107,27 @@ function db_install(): void {
                        password_hash(ADMIN_SEED_PASSWORD . PEPPER, PASSWORD_BCRYPT, ['cost' => BCRYPT_COST]),
                        'admin']);
     }
-    // seed first cycle
-    $pdo->exec("INSERT INTO cycles (started_at) VALUES (NOW())");
+    // seed first cycle only if table empty
+    if (!(int)$pdo->query("SELECT COUNT(*) c FROM cycles")->fetch()['c']) {
+        $pdo->exec("INSERT INTO cycles (started_at) VALUES (NOW())");
+    }
+}
+
+/** fetch a runtime setting with fallback */
+function get_setting(string $k, $fallback = null) {
+    static $cache = null;
+    if ($cache === null) {
+        $cache = [];
+        try {
+            foreach (db()->query("SELECT k, v FROM settings") as $r) $cache[$r['k']] = $r['v'];
+        } catch (Throwable $e) { /* settings table missing → use fallbacks */ }
+    }
+    return isset($cache[$k]) ? $cache[$k] : $fallback;
+}
+
+function set_setting(string $k, $v): void {
+    db()->prepare("INSERT INTO settings (k, v) VALUES (?,?)
+                   ON DUPLICATE KEY UPDATE v = VALUES(v)")->execute([$k, (string)$v]);
 }
 
 function current_cycle_id(): int {

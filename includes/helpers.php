@@ -78,16 +78,37 @@ function send_quota_used(int $account_id): int {
     return (int)$stmt->fetch()['c'];
 }
 
+/** unlimited = true means quotas never apply */
+function is_unlimited(array $u): bool {
+    return $u['role'] === 'admin' && get_setting('admin_unlimited', '1') === '1';
+}
+
 function send_quota_limit(array $u): int {
-    return is_premium($u) ? SEND_LIMIT_PREMIUM : SEND_LIMIT_FREE;
+    if (is_unlimited($u)) return PHP_INT_MAX;
+    if ($u['role'] === 'admin') return (int)get_setting('send_limit_admin', 100000);
+    return is_premium($u)
+        ? (int)get_setting('send_limit_premium', SEND_LIMIT_PREMIUM)
+        : (int)get_setting('send_limit_free', SEND_LIMIT_FREE);
 }
 
 function inbox_limit(array $u): int {
-    return is_premium($u) ? INBOX_LIMIT_PREMIUM : INBOX_LIMIT_FREE;
+    if (is_unlimited($u)) return PHP_INT_MAX;
+    if ($u['role'] === 'admin') return (int)get_setting('inbox_limit_admin', 100000);
+    return is_premium($u)
+        ? (int)get_setting('inbox_limit_premium', INBOX_LIMIT_PREMIUM)
+        : (int)get_setting('inbox_limit_free', INBOX_LIMIT_FREE);
 }
 
 function att_limit(array $u): int {
-    return is_premium($u) ? ATTACH_LIMIT_PREMIUM : ATTACH_LIMIT_FREE;
+    if (is_unlimited($u)) return (int)get_setting('att_limit_admin', 10);
+    return is_premium($u)
+        ? (int)get_setting('att_limit_premium', ATTACH_LIMIT_PREMIUM)
+        : (int)get_setting('att_limit_free', ATTACH_LIMIT_FREE);
+}
+
+/** human-friendly quota number for JSON output (null = unlimited) */
+function quota_display(int $limit): ?int {
+    return $limit >= PHP_INT_MAX ? null : $limit;
 }
 
 /** store an uploaded file in STORAGE_DIR, return relative path */
