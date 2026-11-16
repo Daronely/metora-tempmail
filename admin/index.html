@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پنل ادمین — متِمپ</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2308090A'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='%23ff6b6b' font-family='monospace' font-weight='bold'>A</text></svg>">
+<style>
+:root{
+  --bg:#08090A; --fg:#F4F3EE; --muted:rgba(244,243,238,.52);
+  --acc:#3CF2D3; --card:#0E1011; --line:rgba(244,243,238,.09); --line2:rgba(244,243,238,.16);
+  --danger:#ff6b6b; --warn:#ffb86b; --mono:'JetBrains Mono','Vazirmatn',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:'Vazirmatn','Segoe UI',Tahoma,sans-serif;min-height:100vh}
+a{color:inherit;text-decoration:none}
+.mono{font-family:var(--mono);direction:ltr}
+
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  padding:18px clamp(16px,4vw,36px);border-bottom:1px solid var(--line)}
+header h1{font-size:1.1rem;display:flex;align-items:center;gap:10px}
+header h1 .dot{width:10px;height:10px;background:var(--danger);border-radius:3px;box-shadow:0 0 14px var(--danger)}
+.btn{display:inline-flex;align-items:center;gap:8px;cursor:pointer;border:none;border-radius:10px;
+  font-family:inherit;font-size:.85rem;font-weight:700;padding:9px 16px;transition:.2s}
+.btn.primary{background:var(--acc);color:#04110E}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line2)}
+.btn.ghost:hover{border-color:var(--acc);color:var(--acc)}
+.btn.danger{background:rgba(255,107,107,.12);color:var(--danger);border:1px solid rgba(255,107,107,.3)}
+.btn.sm{padding:5px 11px;font-size:.75rem;border-radius:8px}
+
+.tabs{display:flex;gap:4px;padding:14px clamp(16px,4vw,36px) 0;flex-wrap:wrap}
+.tabs button{background:none;border:1px solid var(--line);border-radius:10px;color:var(--muted);
+  font-family:inherit;font-size:.83rem;font-weight:600;padding:9px 18px;cursor:pointer;transition:.2s}
+.tabs button.on{color:var(--acc);border-color:rgba(60,242,211,.4);background:rgba(60,242,211,.07)}
+
+main{padding:22px clamp(16px,4vw,36px) 60px;max-width:1280px;margin:0 auto}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:26px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.stat .v{font-size:1.6rem;font-weight:900;font-family:var(--mono);color:var(--acc)}
+.stat .k{font-size:.74rem;color:var(--muted);margin-top:6px}
+
+.tablewrap{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:.82rem;min-width:700px}
+th{color:var(--muted);font-weight:600;font-size:.74rem;padding:13px 14px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(244,243,238,.025)}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.7rem;font-family:var(--mono)}
+.pill.prem{background:rgba(60,242,211,.14);color:var(--acc);border:1px solid rgba(60,242,211,.3)}
+.pill.free{background:rgba(244,243,238,.07);color:var(--muted);border:1px solid var(--line2)}
+.pill.admin{background:rgba(255,107,107,.12);color:var(--danger);border:1px solid rgba(255,107,107,.3)}
+.empty{padding:60px;text-align:center;color:var(--muted)}
+#msgViewer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;margin-top:14px;display:none}
+#msgViewer h3{font-size:1rem;margin-bottom:12px;line-height:1.7}
+#msgViewer .row{font-size:.78rem;color:var(--muted);margin-bottom:5px}
+#msgViewer .body{font-size:.85rem;line-height:2;white-space:pre-wrap;word-break:break-word;margin-top:14px;border-top:1px solid var(--line);padding-top:14px}
+.warnbar{background:rgba(255,184,107,.09);border:1px solid rgba(255,184,107,.3);color:var(--warn);
+  border-radius:12px;padding:14px 18px;font-size:.83rem;margin-bottom:22px;line-height:1.9;display:none}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:200;background:var(--card);
+  border:1px solid var(--acc);padding:12px 20px;border-radius:12px;font-size:.83rem;opacity:0;transition:.3s;pointer-events:none}
+#toast.show{opacity:1}
+#toast.bad{border-color:var(--danger)}
+.field input{width:100%;background:var(--bg);border:1px solid var(--line2);border-radius:10px;padding:11px 13px;color:var(--fg);font-family:var(--mono);font-size:.85rem;outline:none}
+.field input:focus{border-color:var(--acc)}
+.field{margin-bottom:14px}.field label{display:block;font-size:.76rem;color:var(--muted);margin-bottom:7px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="dot"></span>پنل ادمین متِمپ</h1>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <a class="btn ghost" href="/">→ صندوق</a>
+    <button class="btn danger" onclick="doLogout()">خروج</button>
+  </div>
+</header>
+
+<div class="warnbar" id="seedWarn">
+  ⚠️ رمز ادمین هنوز رمز اولیه است — لطفاً از تب «تنظیمات» سریع‌تر رمز جدید بگذارید.
+</div>
+
+<div class="tabs">
+  <button id="t-stats" class="on" onclick="tab('stats')">📊 آمار</button>
+  <button id="t-accounts" onclick="tab('accounts')">👥 اکانت‌ها</button>
+  <button id="t-messages" onclick="tab('messages')">📨 ایمیل‌ها</button>
+  <button id="t-settings" onclick="tab('settings')">⚙️ تنظیمات</button>
+</div>
+
+<main>
+  <div id="v-stats">
+    <div class="stats" id="statsGrid"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn danger" onclick="resetNow()">🔄 ریست دستی دیتابیس (سیکل جدید)</button>
+    </div>
+    <p style="color:var(--muted);font-size:.78rem;margin-top:12px;line-height:1.9">
+      ریست دستی همان کاری است که کرون‌جاب هر ۶ ساعت انجام می‌دهد: همه پیام‌ها و پیوست‌ها پاک می‌شوند، اکانت‌ها می‌مانند.
+    </p>
+  </div>
+
+  <div id="v-accounts" style="display:none">
+    <div class="tablewrap"><table id="accTable">
+      <thead><tr><th>#</th><th>ایمیل</th><th>نقش</th><th>پلن</th><th>پرمیوم تا</th><th>آخرین فعالیت</th><th>عملیات</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </div>
+
+  <div id="v-messages" style="display:none">
+    <div class="tablewrap"><table id="msgTable">
+      <thead><tr><th>#</th><th>از</th><th>به</th><th>موضوع</th><th>پوشه</th><th>حجم</th><th>زمان</th><th>عملیات</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <div id="msgViewer">
+      <h3 id="mvSubj"></h3>
+      <div class="row" id="mvFrom"></div><div class="row" id="mvTo"></div><div class="row" id="mvTime"></div>
+      <div class="body" id="mvBody"></div>
+      <div style="margin-top:14px;display:flex;gap:8px"><button class="btn sm danger" onclick="delMsg(viewingId)">🗑 حذف</button></div>
+    </div>
+  </div>
+
+  <div id="v-settings" style="display:none;max-width:460px">
+    <div class="stats" style="margin-bottom:22px">
+      <div class="stat"><div class="v" id="stPrice"></div><div class="k">قیمت پرمیوم (دلار)</div></div>
+      <div class="stat"><div class="v" id="stTg"></div><div class="k">تلگرام پشتیبانی</div></div>
+    </div>
+    <h3 style="font-size:.95rem;margin-bottom:14px">تغییر رمز ادمین</h3>
+    <div class="field"><label>رمز جدید (حداقل ۸ کاراکتر)</label><input type="password" id="npass" autocomplete="new-password"></div>
+    <button class="btn primary" onclick="changePass()">ثبت رمز جدید</button>
+    <p style="color:var(--muted);font-size:.76rem;margin-top:18px;line-height:1.9">
+      پشتیبانی: <span class="mono">@daronelydev</span> · <span class="mono">09999960295</span>
+    </p>
+  </div>
+</main>
+
+<div id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+let viewingId = null;
+
+function toast(m, bad){ const t=$('toast'); t.textContent=m; t.className=bad?'bad show':'show'; setTimeout(()=>t.className='',3000); }
+async function api(url, opts){
+  const r = await fetch(url, Object.assign({credentials:'same-origin'}, opts));
+  const j = await r.json().catch(()=>({ok:false,error:'پاسخ نامعتبر'}));
+  if (!r.ok && !j.error) j.error = 'خطای '+r.status;
+  return j;
+}
+function fmtSize(b){ if(b>1048576) return (b/1048576).toFixed(1)+'MB'; if(b>1024) return Math.round(b/1024)+'KB'; return b+'B'; }
+function fmtDate(s){ const d=new Date(s.replace(' ','T')); return d.toLocaleDateString('fa-IR')+' '+d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'}); }
+function esc(s){ return (s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+async function boot(){
+  const me = await api('/api/me.php');
+  if (!me.authenticated) { location.href='/'; return; }
+  if (me.role !== 'admin') { location.href='/'; return; }
+  loadStats();
+}
+function tab(t){
+  ['stats','accounts','messages','settings'].forEach(x=>{
+    $('v-'+x).style.display = x===t?'':'none';
+    $('t-'+x).className = x===t?'on':'';
+  });
+  if (t==='stats') loadStats();
+  if (t==='accounts') loadAccounts();
+  if (t==='messages') loadMessages();
+  if (t==='settings') loadSettings();
+}
+
+async function loadStats(){
+  const j = await api('/api/admin.php?action=stats');
+  if (!j.ok) return;
+  const s = j.stats;
+  $('statsGrid').innerHTML = `
+    <div class="stat"><div class="v">${s.accounts}</div><div class="k">اکانت‌ها</div></div>
+    <div class="stat"><div class="v">${s.premium}</div><div class="k">پرمیوم‌ها</div></div>
+    <div class="stat"><div class="v">${s.messages}</div><div class="k">کل پیام‌ها</div></div>
+    <div class="stat"><div class="v">${s.inbox}</div><div class="k">دریافتی‌ها</div></div>
+    <div class="stat"><div class="v">${s.sent}</div><div class="k">ارسالی‌ها</div></div>
+    <div class="stat"><div class="v">${s.attachments}</div><div class="k">پیوست‌ها</div></div>
+    <div class="stat"><div class="v">${s.sends_this_cycle}</div><div class="k">ارسال این سیکل</div></div>
+    <div class="stat"><div class="v">${s.cycles}</div><div class="k">سیکل‌ها (هر ۶ ساعت)</div></div>`;
+}
+
+async function loadAccounts(){
+  const j = await api('/api/admin.php?action=accounts');
+  if (!j.ok) return;
+  const tb = $('accTable').querySelector('tbody');
+  if (!j.accounts.length){ tb.innerHTML = '<tr><td colspan="7" class="empty">اکانتی نیست</td></tr>'; return; }
+  tb.innerHTML = j.accounts.map(a=>`
+    <tr>
+      <td class="mono">${a.id}</td>
+      <td class="mono">${esc(a.email)}</td>
+      <td>${a.role==='admin'?'<span class="pill admin">ADMIN</span>':'<span class="pill free">user</span>'}</td>
+      <td>${a.is_premium==1?'<span class="pill prem">پرمیوم</span>':'<span class="pill free">رایگان</span>'}</td>
+      <td class="mono" style="font-size:.75rem">${a.premium_until?fmtDate(a.premium_until):'—'}</td>
+      <td class="mono" style="font-size:.75rem">${fmtDate(a.last_active_at)}</td>
+      <td>${a.role!=='admin'?`
+        <button class="btn sm ${a.is_premium==1?'ghost':'primary'}" onclick="togglePrem(${a.id},${a.is_premium==1?0:1})">${a.is_premium==1?'لغو پرمیوم':'پرمیوم کن'}</button>
+        <button class="btn sm danger" onclick="delAcc(${a.id},'${esc(a.email)}')">حذف</button>`:'—'}
+      </td>
+    </tr>`).join('');
+}
+
+async function loadMessages(){
+  const j = await api('/api/admin.php?action=messages');
+  if (!j.ok) return;
+  const tb = $('msgTable').querySelector('tbody');
+  if (!j.messages.length){ tb.innerHTML = '<tr><td colspan="8" class="empty">پیامی نیست</td></tr>'; return; }
+  tb.innerHTML = j.messages.map(m=>`
+    <tr>
+      <td class="mono">${m.id}</td>
+      <td class="mono" style="font-size:.75rem">${esc(m.from_addr)}</td>
+      <td class="mono" style="font-size:.75rem">${esc(m.to_addr)}</td>
+      <td>${esc(m.subject||'(بدون موضوع)')}</td>
+      <td>${m.folder==='inbox'?'📥':'📤'}</td>
+      <td class="mono">${fmtSize(+m.size_bytes)}</td>
+      <td class="mono" style="font-size:.72rem">${fmtDate(m.created_at)}</td>
+      <td>
+        <button class="btn sm ghost" onclick="viewMsg(${m.id})">مشاهده</button>
+        <button class="btn sm danger" onclick="delMsg(${m.id})">حذف</button>
+      </td>
+    </tr>`).join('');
+}
+
+async function viewMsg(id){
+  const j = await api('/api/admin.php?action=message&id='+id);
+  if (!j.ok){ toast(j.error,1); return; }
+  const m = j.message; viewingId = id;
+  $('msgViewer').style.display='';
+  $('mvSubj').textContent = m.subject || '(بدون موضوع)';
+  $('mvFrom').innerHTML = '<b>از:</b> <span class="mono">'+esc(m.from_addr)+'</span>';
+  $('mvTo').innerHTML = '<b>به:</b> <span class="mono">'+esc(m.to_addr)+'</span>';
+  $('mvTime').innerHTML = '<b>زمان:</b> <span class="mono">'+fmtDate(m.created_at)+'</span>';
+  $('mvBody').textContent = m.body_text || m.body_html || '(بدون متن)';
+  $('msgViewer').scrollIntoView({behavior:'smooth'});
+}
+
+async function togglePrem(id, on){
+  const j = await api('/api/admin.php', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'premium', id, on, days:30})});
+  j.ok ? (toast('انجام شد'), loadAccounts()) : toast(j.error,1);
+}
+async function delAcc(id, email){
+  if (!confirm('اکانت '+email+' کامل حذف بشه؟')) return;
+  const j = await api('/api/admin.php', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'delete_account', id})});
+  j.ok ? (toast('حذف شد'), loadAccounts()) : toast(j.error,1);
+}
+async function delMsg(id){
+  if (!confirm('این پیام حذف بشه؟')) return;
+  const j = await api('/api/admin.php', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'delete_message', id})});
+  j.ok ? (toast('حذف شد'), $('msgViewer').style.display='none', loadMessages()) : toast(j.error,1);
+}
+async function resetNow(){
+  if (!confirm('کل دیتابیس پیام‌ها ریست بشه؟ (اکانت‌ها می‌مانند)')) return;
+  const j = await api('/api/admin.php', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'reset_now'})});
+  j.ok ? (toast('سیکل جدید شروع شد'), loadStats()) : toast(j.error,1);
+}
+async function loadSettings(){
+  const me = await api('/api/me.php');
+  $('stPrice').textContent = '$' + (me.price||10);
+  $('stTg').textContent = '@' + (me.telegram||'daronelydev');
+}
+async function changePass(){
+  const p = $('npass').value;
+  if (p.length < 8){ toast('حداقل ۸ کاراکتر',1); return; }
+  const j = await api('/api/admin.php', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'change_password', password:p})});
+  if (j.ok){ toast('رمز عوض شد ✓'); $('npass').value=''; $('seedWarn').style.display='none'; }
+  else toast(j.error,1);
+}
+async function doLogout(){ await api('/api/logout.php',{method:'POST'}); location.href='/'; }
+
+boot();
+</script>
+</body>
+</html>

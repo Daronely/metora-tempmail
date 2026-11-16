@@ -1,0 +1,9 @@
+# runtime / private — never commit
+includes/config.php
+storage/att/*
+!storage/att/.gitkeep
+state/*
+!state/.gitkeep
+error_log
+*.log
+.DS_Store
