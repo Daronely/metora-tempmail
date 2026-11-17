@@ -1,35 +1,66 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>متِمپ — ایمیل موقت متورا</title>
-<meta name="description" content="ایمیل موقت رایگان متورا — ثبت‌نام ساده، ارسال و دریافت ایمیل واقعی با آدرس @metora.ir">
-<meta name="theme-color" content="#08090A">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metora — Disposable Email, Done Right</title>
+<meta name="description" content="Free temporary email with real send &amp; receive, attachments, scheduled sending and automatic OTP code extraction. No spam, no phone number.">
+<meta name="keywords" content="temp mail, disposable email, temporary email, burner inbox, fake email, 10 minute mail, throwaway email, ایمیل موقت, ایمیل_fake, tempmail, временная почта, одноразовая почта">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#070808">
+<link rel="canonical" href="https://temp.metora.ir/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Metora TempMail">
+<meta property="og:title" content="Metora — Disposable Email, Done Right">
+<meta property="og:description" content="Real send &amp; receive. Attachments. Automatic OTP extraction. Self-destructs every 6 hours.">
+<meta property="og:url" content="https://temp.metora.ir/">
+<meta property="og:image" content="https://temp.metora.ir/assets/landing.png">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="fa_IR">
+<meta property="og:locale:alternate" content="ru_RU">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Metora — Disposable Email, Done Right">
+<meta name="twitter:description" content="The last burner inbox you'll ever need. Real send &amp; receive, OTP auto-extraction, self-destructing by design.">
+<meta name="twitter:image" content="https://temp.metora.ir/assets/landing.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Metora TempMail",
+ "url":"https://temp.metora.ir/","applicationCategory":"CommunicationApplication",
+ "operatingSystem":"Any","description":"Disposable email with real send & receive, attachments, OTP auto-extraction and scheduled sending.",
+ "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},
+ "featureList":["Real incoming email","Real outgoing email","Attachments","OTP auto-extraction","Scheduled sending","QR phone hand-off","Dark/Light themes"],
+ "inLanguage":["en","fa","ru"],"author":{"@type":"Organization","name":"Metora","url":"https://metora.ir"}}
+</script>
+
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2308090A'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='%233CF2D3' font-family='monospace' font-weight='bold'>M</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="/assets/js/i18n.js"></script>
 <script src="/assets/js/qrcode.min.js"></script>
 <style>
-/* ═══════════════ TOKENS ═══════════════ */
+/* ═══════════════════════════════════════════════════════════
+   METORA TEMPMAIL — v5 REDESIGN
+   Layout system: consistent 8px rhythm, 3 tiers of elevation,
+   one accent, clear visual hierarchy. RTL-first.
+   ═══════════════════════════════════════════════════════════ */
 :root{
-  --bg:#070808; --bg2:#0B0D0E; --fg:#F4F3EE; --muted:rgba(244,243,238,.5);
+  --bg:#070808; --bg2:#0B0D0E; --fg:#F4F3EE; --muted:rgba(244,243,238,.55);
   --acc:#3CF2D3; --acc-soft:rgba(60,242,211,.14);
   --card:rgba(255,255,255,.028); --card-br:rgba(255,255,255,.08);
-  --glass:rgba(16,19,21,.55); --glass-br:rgba(255,255,255,.12);
+  --glass:rgba(16,19,21,.62); --glass-br:rgba(255,255,255,.12);
   --danger:#FF6B6B; --warn:#FFC46B;
   --mono:'JetBrains Mono','Vazirmatn',monospace;
   --font:'Vazirmatn','Segoe UI',Tahoma,sans-serif;
   --r-lg:22px; --r-md:16px; --r-sm:11px;
   --sh-glow:0 0 40px rgba(60,242,211,.22);
   --ease:cubic-bezier(.22,1,.36,1);
+  --sp:8px;                      /* base spacing unit */
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;overflow-x:clip}
 body{
   background:var(--bg); color:var(--fg); font-family:var(--font);
-  min-height:100vh; overflow-x:hidden; line-height:1.7;
+  min-height:100vh; overflow-x:clip; line-height:1.7;
   text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased;
 }
 ::selection{background:var(--acc); color:#04110E}
@@ -41,313 +72,354 @@ img,svg{display:block;max-width:100%}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:99px}
 ::-webkit-scrollbar-thumb:hover{background:rgba(60,242,211,.4)}
 
-/* ═══════════════ BACKDROP AURORA ═══════════════ */
 .aurora{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none}
-.aurora b{position:absolute;border-radius:50%;filter:blur(110px);opacity:.13;will-change:transform}
-.aurora b:nth-child(1){width:52vw;height:52vw;background:#3CF2D3;top:-22vw;right:-12vw;animation:au1 26s var(--ease) infinite alternate}
-.aurora b:nth-child(2){width:44vw;height:44vw;background:#2B7FFF;bottom:-18vw;left:-14vw;animation:au2 32s var(--ease) infinite alternate}
-.aurora b:nth-child(3){width:30vw;height:30vw;background:#B14BFF;top:38%;left:30%;animation:au3 38s var(--ease) infinite alternate;opacity:.07}
-@keyframes au1{to{transform:translate(-9vw,12vh) scale(1.18)}}
-@keyframes au2{to{transform:translate(10vw,-10vh) scale(.86)}}
-@keyframes au3{to{transform:translate(-12vw,-14vh) scale(1.3)}}
-.grain{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.05;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E")}
+.aurora .b{position:absolute;border-radius:50%;filter:blur(110px);opacity:.55}
+.aurora .b1{width:52vw;height:52vw;background:rgba(60,242,211,.09);top:-22vw;inset-inline-end:-14vw;animation:fl 13s var(--ease) infinite alternate}
+.aurora .b2{width:44vw;height:44vw;background:rgba(43,127,255,.07);bottom:-18vw;inset-inline-start:-12vw;animation:fl 17s var(--ease) infinite alternate-reverse}
+.aurora .b3{width:34vw;height:34vw;background:rgba(150,110,255,.06);top:32%;inset-inline-start:28%;animation:fl 21s var(--ease) infinite alternate}
+@keyframes fl{to{transform:translate(calc(var(--sp)*6),calc(var(--sp)*-4)) scale(1.12)}}
+.grain{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.06;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
-/* ═══════════════ NAV — liquid glass ═══════════════ */
-nav{position:fixed;top:14px;inset-inline:14px;z-index:60;height:60px;
-  display:flex;align-items:center;justify-content:space-between;padding:0 10px 0 18px;
-  border-radius:18px;border:1px solid var(--glass-br);
-  background:var(--glass);backdrop-filter:blur(22px) saturate(1.5);-webkit-backdrop-filter:blur(22px) saturate(1.5);
-  box-shadow:0 8px 34px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.07)}
-.brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:1.12rem;letter-spacing:-.01em}
-.brand .logo{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;
-  background:linear-gradient(135deg,rgba(60,242,211,.2),rgba(60,242,211,.04));
-  border:1px solid rgba(60,242,211,.35);box-shadow:var(--sh-glow)}
-.brand .logo svg{width:16px;height:16px}
-.brand em{font-style:normal;color:var(--acc)}
-nav .links{display:flex;gap:4px;align-items:center}
-nav .links>a{padding:9px 15px;border-radius:11px;color:var(--muted);font-size:.88rem;font-weight:500;transition:.25s var(--ease)}
-nav .links>a:hover{color:var(--fg);background:rgba(255,255,255,.07)}
+/* ── glass card (single elevation tier for surfaces) ── */
+.glass{
+  background:var(--glass); border:1px solid var(--glass-br); border-radius:var(--r-lg);
+  backdrop-filter:blur(28px) saturate(1.5); -webkit-backdrop-filter:blur(28px) saturate(1.5);
+  box-shadow:0 14px 44px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+/* ── buttons: 4 sizes, 3 variants — one system ── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:calc(var(--sp)*1);
+  font-family:inherit;font-weight:700;cursor:pointer;border-radius:13px;
+  border:1px solid transparent;transition:transform .18s var(--ease),box-shadow .18s,border-color .18s,background .18s;
+  white-space:nowrap;user-select:none;position:relative;overflow:hidden;
+}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--acc);color:#04110E;box-shadow:0 6px 24px rgba(60,242,211,.28)}
+.btn.primary:hover{box-shadow:0 10px 34px rgba(60,242,211,.44);transform:translateY(-1px)}
+.btn.ghost{background:rgba(255,255,255,.04);border-color:var(--card-br);color:var(--fg)}
+.btn.ghost:hover{border-color:rgba(60,242,211,.4);background:rgba(60,242,211,.06)}
+.btn.danger{background:rgba(255,107,107,.1);border-color:rgba(255,107,107,.35);color:var(--danger)}
+.btn.danger:hover{background:rgba(255,107,107,.18)}
+.btn.lg{padding:15px 30px;font-size:.95rem}
+.btn.md{padding:12px 22px;font-size:.88rem}
+.btn.sm{padding:8px 15px;font-size:.78rem}
+.btn.xs{padding:5px 11px;font-size:.7rem;border-radius:9px}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.35);transform:scale(0);animation:rip .55s var(--ease);pointer-events:none}
+@keyframes rip{to{transform:scale(2.6);opacity:0}}
+
+/* ── nav ── */
+nav{
+  position:fixed;top:0;inset-inline:0;z-index:50;height:66px;
+  display:flex;align-items:center;gap:calc(var(--sp)*3);
+  padding:0 clamp(16px,4vw,44px);
+  background:rgba(7,8,8,.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--card-br);
+}
+nav .brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:1.14rem}
+nav .brand em{color:var(--acc);font-style:normal}
+nav .logo{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+  background:linear-gradient(135deg,rgba(60,242,211,.16),rgba(43,127,255,.1));border:1px solid rgba(60,242,211,.3)}
+nav .links{display:flex;align-items:center;gap:calc(var(--sp)*2.5);margin-inline-start:auto;font-size:.85rem;font-weight:600}
+nav .links > a{color:var(--muted);transition:.2s;padding:6px 2px}
+nav .links > a:hover{color:var(--acc)}
 #navUser{display:none;align-items:center;gap:10px}
-#navUser .email{font-family:var(--mono);font-size:.78rem;color:var(--acc);direction:ltr;
-  max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#navUser .email{font-family:var(--mono);font-size:.76rem;color:var(--acc);direction:ltr}
 
-/* ═══════════════ BUTTONS ═══════════════ */
-.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:9px;
-  cursor:pointer;border:none;border-radius:13px;font-family:inherit;font-size:.92rem;font-weight:700;
-  padding:13px 26px;transition:transform .3s var(--ease),box-shadow .3s var(--ease),background .3s;
-  will-change:transform;overflow:hidden}
-.btn.primary{background:var(--acc);color:#04110E;box-shadow:var(--sh-glow)}
-.btn.primary:hover{box-shadow:0 10px 46px rgba(60,242,211,.42)}
-.btn.primary::after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.5) 50%,transparent 70%);
-  transform:translateX(150%);transition:transform .7s var(--ease)}
-.btn.primary:hover::after{transform:translateX(-150%)}
-.btn.ghost{background:rgba(255,255,255,.05);color:var(--fg);border:1px solid var(--glass-br);
-  backdrop-filter:blur(12px)}
-.btn.ghost:hover{border-color:rgba(60,242,211,.5);color:var(--acc)}
-.btn.danger{background:rgba(255,107,107,.1);color:var(--danger);border:1px solid rgba(255,107,107,.3)}
-.btn.sm{padding:8px 15px;font-size:.8rem;border-radius:10px}
-.btn:disabled{opacity:.4;cursor:not-allowed}
-.btn .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.35);transform:scale(0);
-  animation:rip .6s ease-out forwards;pointer-events:none}
-@keyframes rip{to{transform:scale(4);opacity:0}}
-
-/* ═══════════════ HERO ═══════════════ */
-.hero{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;text-align:center;padding:120px 20px 60px;max-width:1200px;margin:0 auto}
-.scroll-hint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);color:var(--muted);
-  font-size:.72rem;letter-spacing:.3em;animation:bob 2.2s ease-in-out infinite;opacity:.7}
-@keyframes bob{50%{transform:translate(-50%,8px)}}
-.hero .tag{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--glass-br);
-  border-radius:999px;padding:8px 18px;font-size:.78rem;color:var(--muted);margin-bottom:34px;
-  background:var(--glass);backdrop-filter:blur(12px)}
-.hero .tag .pulse{width:7px;height:7px;border-radius:50%;background:var(--acc);animation:pulse 1.9s infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(60,242,211,.55)}50%{box-shadow:0 0 0 7px rgba(60,242,211,0)}}
-#pcanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
-.hero>*:not(#pcanvas){position:relative;z-index:1}
-h1.display{font-size:clamp(2.4rem,7.2vw,5.4rem);font-weight:900;line-height:1.12;letter-spacing:-.025em}
-h1 .grad{background:linear-gradient(92deg,var(--acc) 0%,#8FFCE8 45%,#E9FFF9 90%);
-  -webkit-background-clip:text;background-clip:text;color:transparent}
-.hero p.sub{color:var(--muted);font-size:clamp(.94rem,1.9vw,1.12rem);max-width:600px;margin:26px auto 44px;line-height:2.05}
-.hero .cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-.hero .email-chip{margin-top:52px;display:inline-flex;align-items:center;gap:12px;direction:ltr;
-  font-family:var(--mono);font-size:clamp(.8rem,2.4vw,1.05rem);color:var(--muted);
-  border:1px dashed rgba(60,242,211,.35);border-radius:14px;padding:13px 22px;
-  background:rgba(60,242,211,.045)}
-.hero .email-chip b{color:var(--acc);font-weight:600}
-.hero .email-chip .cursor{display:inline-block;width:9px;height:1.15em;background:var(--acc);
-  vertical-align:text-bottom;animation:blink 1s steps(1) infinite;border-radius:2px}
+/* ── hero ── */
+.hero{position:relative;min-height:92vh;display:flex;flex-direction:column;justify-content:center;
+  align-items:center;text-align:center;padding:110px 20px 70px;overflow:hidden}
+#pcanvas{position:absolute;inset:0;width:100%;height:100%}
+.hero .tag{position:relative;display:inline-flex;align-items:center;gap:8px;font-size:.76rem;font-weight:700;
+  color:var(--acc);background:rgba(60,242,211,.08);border:1px solid rgba(60,242,211,.28);
+  padding:7px 16px;border-radius:99px;margin-bottom:calc(var(--sp)*3.5)}
+.hero .pulse{width:7px;height:7px;border-radius:50%;background:var(--acc);animation:pu 1.6s infinite}
+@keyframes pu{0%,100%{box-shadow:0 0 0 0 rgba(60,242,211,.5)}55%{box-shadow:0 0 0 7px rgba(60,242,211,0)}}
+.display{position:relative;font-weight:900;font-size:clamp(2.4rem,6.2vw,4.6rem);line-height:1.22;letter-spacing:-.01em}
+.display .grad{background:linear-gradient(120deg,var(--acc) 20%,#7AB8FF 90%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{position:relative;max-width:640px;color:var(--muted);font-size:clamp(.92rem,1.6vw,1.06rem);margin:calc(var(--sp)*2.5) auto 0}
+.cta-row{position:relative;display:flex;gap:calc(var(--sp)*1.5);margin-top:calc(var(--sp)*4);flex-wrap:wrap;justify-content:center}
+.email-chip{position:relative;display:inline-flex;align-items:center;gap:10px;margin-top:calc(var(--sp)*4);
+  font-family:var(--mono);font-size:clamp(.82rem,2.4vw,1.05rem);direction:ltr;
+  background:rgba(0,0,0,.35);border:1px solid var(--card-br);border-radius:99px;padding:11px 22px}
+.email-chip b{color:var(--acc)}
+.cursor{width:9px;height:1.15em;background:var(--acc);animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
+.scroll-hint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);font-family:var(--mono);
+  font-size:.62rem;letter-spacing:.3em;color:var(--muted);animation:sh 2s infinite}
+@keyframes sh{50%{transform:translate(-50%,8px);opacity:.4}}
 
-/* word-by-word reveal */
+/* ── marquee ── */
+.marquee{overflow:hidden;border-block:1px solid var(--card-br);background:rgba(0,0,0,.18);
+  -webkit-mask:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.marquee .track{display:flex;gap:0;width:max-content;animation:mq 30s linear infinite}
+.marquee span{display:inline-flex;align-items:center;gap:18px;padding:13px 22px;font-size:.82rem;color:var(--muted);white-space:nowrap}
+.marquee b{color:var(--acc);font-weight:800}
+@keyframes mq{to{transform:translateX(50%)}}
+
+/* ── sections ── */
+.section{max-width:1120px;margin:0 auto;padding:clamp(56px,9vw,104px) clamp(16px,4vw,40px)}
+.sec-head{margin-bottom:clamp(28px,5vw,48px)}
+.sec-head .num{display:inline-block;font-family:var(--mono);font-size:.68rem;font-weight:700;letter-spacing:.22em;
+  color:var(--acc);background:rgba(60,242,211,.08);border:1px solid rgba(60,242,211,.25);
+  padding:5px 13px;border-radius:99px;margin-bottom:14px}
+.sec-head h2{font-size:clamp(1.7rem,3.6vw,2.6rem);font-weight:900;line-height:1.3}
+.sec-head p{color:var(--muted);max-width:620px;margin-top:12px;font-size:.95rem}
 .word{display:inline-block;opacity:0;transform:translateY(26px) rotate(2deg);filter:blur(6px);
-  transition:opacity .7s var(--ease),transform .7s var(--ease),filter .7s var(--ease)}
+  transition:opacity .6s var(--ease),transform .6s var(--ease),filter .6s var(--ease)}
 .word.in{opacity:1;transform:none;filter:none}
-/* scroll reveal generic */
-.sr{opacity:0;transform:translateY(36px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.sr{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
 .sr.in{opacity:1;transform:none}
-.sr[data-d="1"]{transition-delay:.1s}.sr[data-d="2"]{transition-delay:.22s}
-.sr[data-d="3"]{transition-delay:.34s}.sr[data-d="4"]{transition-delay:.46s}
 
-/* ═══════════════ MARQUEE ═══════════════ */
-.marquee{overflow:hidden;border-block:1px solid var(--card-br);padding:16px 0;white-space:nowrap;position:relative}
-.marquee::before,.marquee::after{content:'';position:absolute;top:0;bottom:0;width:120px;z-index:2;pointer-events:none}
-.marquee::before{right:0;background:linear-gradient(to left,var(--bg),transparent)}
-.marquee::after{left:0;background:linear-gradient(to right,var(--bg),transparent)}
-.marquee .track{display:inline-flex;gap:44px;animation:mar 30s linear infinite;color:var(--muted);
-  font-family:var(--mono);font-size:.8rem;direction:ltr}
-.marquee .track b{color:var(--acc);font-weight:600}
-@keyframes mar{from{transform:translateX(0)}to{transform:translateX(50%)}}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:calc(var(--sp)*2)}
+.fcard{padding:26px 24px;transition:transform .3s var(--ease),border-color .3s;position:relative}
+.fcard:hover{transform:translateY(-5px);border-color:rgba(60,242,211,.35)}
+.fcard .ic{font-size:1.55rem;display:inline-grid;place-items:center;width:52px;height:52px;border-radius:15px;
+  background:rgba(60,242,211,.09);border:1px solid rgba(60,242,211,.22);margin-bottom:16px}
+.fcard h3{font-size:1.02rem;font-weight:800;margin-bottom:8px}
+.fcard p{font-size:.84rem;color:var(--muted)}
+.fcard .idx{position:absolute;top:18px;inset-inline-start:20px;font-family:var(--mono);font-size:.62rem;color:rgba(255,255,255,.22)}
 
-/* ═══════════════ SECTIONS / GLASS CARDS ═══════════════ */
-.section{max-width:1150px;margin:0 auto;padding:clamp(64px,9vw,110px) clamp(16px,4vw,40px)}
-.sec-head{margin-bottom:44px}
-.sec-head .num{font-family:var(--mono);color:var(--acc);font-size:.72rem;letter-spacing:.32em;display:block;margin-bottom:14px}
-.sec-head h2{font-size:clamp(1.55rem,4.2vw,2.5rem);font-weight:900;letter-spacing:-.02em;line-height:1.3}
-.sec-head p{color:var(--muted);margin-top:14px;max-width:560px;line-height:2}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:calc(var(--sp)*2)}
+.step{padding:26px 24px;position:relative}
+.step .n{font-family:var(--mono);font-weight:800;font-size:.86rem;color:var(--acc);
+  display:inline-grid;place-items:center;width:44px;height:44px;border-radius:14px;margin-bottom:14px;
+  background:linear-gradient(135deg,rgba(60,242,211,.16),rgba(43,127,255,.08));border:1px solid rgba(60,242,211,.3)}
+.step h3{font-size:1rem;font-weight:800;margin-bottom:8px}
+.step p{font-size:.84rem;color:var(--muted)}
 
-.glass{background:var(--glass);border:1px solid var(--glass-br);border-radius:var(--r-lg);
-  backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);
-  box-shadow:0 14px 44px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.06)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px}
-.fcard{padding:28px;position:relative;overflow:hidden;transition:transform .45s var(--ease),border-color .45s,box-shadow .45s}
-.fcard:hover{transform:translateY(-6px);border-color:rgba(60,242,211,.38);box-shadow:0 20px 54px rgba(0,0,0,.5),0 0 34px rgba(60,242,211,.09)}
-.fcard .ic{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;font-size:1.25rem;
-  margin-bottom:18px;background:linear-gradient(135deg,rgba(60,242,211,.16),rgba(60,242,211,.03));
-  border:1px solid rgba(60,242,211,.28)}
-.fcard h3{font-size:1.02rem;margin-bottom:10px;font-weight:800}
-.fcard p{color:var(--muted);font-size:.86rem;line-height:2}
-.fcard .idx{position:absolute;top:18px;left:20px;font-family:var(--mono);font-size:.68rem;color:rgba(255,255,255,.16)}
-.fcard::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;
-  background:linear-gradient(135deg,rgba(60,242,211,.5),transparent 40%,transparent 60%,rgba(60,242,211,.25));
-  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-  -webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .45s;pointer-events:none}
-.fcard:hover::before{opacity:1}
+/* ── pricing ── */
+.price-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:calc(var(--sp)*2.5);max-width:820px;margin-inline:auto}
+.plan{padding:30px 28px;display:flex;flex-direction:column;position:relative}
+.plan .pname{font-size:.82rem;font-weight:800;letter-spacing:.08em;color:var(--muted)}
+.plan .amount{font-size:2.6rem;font-weight:900;margin:10px 0 4px}
+.plan .amount small{font-size:.85rem;font-weight:500;color:var(--muted)}
+.plan ul{list-style:none;margin:18px 0 24px;display:grid;gap:11px;flex:1}
+.plan li{font-size:.86rem;color:var(--muted);display:flex;gap:10px;align-items:baseline}
+.plan li::before{content:'✓';color:var(--acc);font-weight:900;flex-shrink:0}
+.plan.hot{border-color:rgba(60,242,211,.45);box-shadow:0 0 60px rgba(60,242,211,.09)}
+.plan .badge{position:absolute;top:-13px;inset-inline-start:26px;background:var(--acc);color:#04110E;
+  font-size:.68rem;font-weight:900;padding:4px 14px;border-radius:99px}
 
-/* ═══════════════ HOW IT WORKS ═══════════════ */
-.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
-.step{padding:28px;position:relative}
-.step .n{font-family:var(--mono);font-size:2.6rem;font-weight:800;color:transparent;
-  -webkit-text-stroke:1.4px rgba(60,242,211,.5);line-height:1;margin-bottom:16px}
-.step h3{font-size:1rem;margin-bottom:10px;font-weight:800}
-.step p{color:var(--muted);font-size:.85rem;line-height:2}
+/* ── language switcher (mirrors theme button placement) ── */
+.langSwitch{display:inline-flex;background:rgba(0,0,0,.3);border:1px solid var(--glass-br);border-radius:12px;padding:3px;gap:2px}
+.langSwitch button{background:none;border:none;color:var(--muted);font-family:var(--mono);font-size:.66rem;font-weight:800;
+  padding:6px 10px;border-radius:8px;cursor:pointer;transition:.2s;letter-spacing:.04em}
+.langSwitch button:hover{color:var(--fg)}
+.langSwitch button.on{background:rgba(60,242,211,.16);color:var(--acc)}
+.rq-sel{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--glass-br);border-radius:13px;padding:12px 14px;
+  color:var(--fg);font-family:inherit;font-size:.88rem;outline:none;cursor:pointer}
+.rq-sel option{background:#14171a;color:var(--fg)}
+.rq-item{border:1px solid var(--card-br);border-radius:12px;padding:10px 14px;font-size:.76rem;background:rgba(0,0,0,.2)}
+.rq-item .st{font-weight:800;font-size:.68rem;padding:2px 10px;border-radius:99px;border:1px solid}
+.rq-item .st.pending{color:var(--warn);border-color:rgba(255,196,107,.4)}
+.rq-item .st.approved{color:var(--acc);border-color:rgba(60,242,211,.4)}
+.rq-item .st.rejected{color:var(--danger);border-color:rgba(255,107,107,.4)}
+@media (max-width:640px){ .langSwitch{order:2} }
+</style>
+<style>
+/* ═══ PART 2: app shell, mail client, modals, features v4 ═══ */
 
-/* ═══════════════ PRICING ═══════════════ */
-.price-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:20px;max-width:840px;margin:0 auto}
-.plan{padding:36px 30px;position:relative;transition:transform .45s var(--ease)}
-.plan:hover{transform:translateY(-5px)}
-.plan.hot{border-color:rgba(60,242,211,.5);box-shadow:0 0 60px rgba(60,242,211,.1),0 18px 50px rgba(0,0,0,.4)}
-.plan .badge{position:absolute;top:-14px;inset-inline-start:28px;background:var(--acc);color:#04110E;
-  font-size:.7rem;font-weight:800;padding:6px 14px;border-radius:999px;box-shadow:var(--sh-glow)}
-.plan h3{font-size:1.05rem;margin-bottom:4px;font-weight:800}
-.plan .amount{font-size:2.8rem;font-weight:900;font-family:var(--mono);margin:18px 0;direction:ltr;display:flex;align-items:baseline;gap:6px}
-.plan .amount small{font-size:.95rem;color:var(--muted);font-weight:400;font-family:var(--font)}
-.plan ul{list-style:none;margin:20px 0 28px;display:grid;gap:12px}
-.plan li{display:flex;gap:11px;align-items:flex-start;color:var(--muted);font-size:.87rem;line-height:1.8}
-.plan li svg{flex-shrink:0;margin-top:4px}
-.plan li.no{opacity:.4}
-.plan .btn{width:100%}
+/* ── generator (landing) ── */
+.gen-box{max-width:740px;margin:0 auto;padding:clamp(20px,4vw,30px);display:grid;gap:14px}
+.gen-row{display:grid;grid-template-columns:1fr 170px;gap:10px}
+.gen-row input,.gen-row select{background:rgba(0,0,0,.3);border:1px solid var(--glass-br);border-radius:14px;
+  padding:14px 16px;color:var(--fg);font-family:var(--mono);font-size:.95rem;outline:none;direction:ltr;transition:.2s;width:100%}
+.gen-row input:focus,.gen-row select:focus{border-color:var(--acc);box-shadow:0 0 0 4px rgba(60,242,211,.13)}
+.gen-row select{font-family:var(--font);direction:rtl;cursor:pointer}
+.gen-preview{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;
+  padding:18px;border:1.5px dashed rgba(60,242,211,.35);border-radius:16px;background:rgba(60,242,211,.05)}
+.gen-preview .addr{font-family:var(--mono);font-size:clamp(.95rem,2.6vw,1.15rem);font-weight:800;color:var(--acc);direction:ltr;word-break:break-all}
+.gen-hint{font-size:.74rem;color:var(--muted);text-align:center}
+.dice{cursor:pointer;border:none;background:none;font-size:1.25rem;color:var(--acc);transition:.3s}
+.dice:hover{transform:rotate(180deg) scale(1.15)}
 
-/* ═══════════════ FOOTER ═══════════════ */
-footer{border-top:1px solid var(--card-br);margin-top:90px;padding:40px clamp(16px,4vw,40px);
-  display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between;
-  color:var(--muted);font-size:.82rem}
-footer a{color:var(--acc)}
-footer .social{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+/* ── ad slots ── */
+.ad-slot{position:relative;display:grid;place-items:center;min-height:110px;margin:14px auto;
+  border:1.5px dashed rgba(255,196,107,.4);border-radius:18px;
+  background:repeating-linear-gradient(45deg,rgba(255,196,107,.045) 0 14px,transparent 14px 28px);
+  cursor:pointer;transition:.3s;max-width:1000px}
+.ad-slot:hover{border-color:var(--warn);box-shadow:0 0 34px rgba(255,196,107,.12)}
+.ad-slot .t{font-size:.86rem;font-weight:800;color:var(--warn)}
+.ad-slot .s{font-size:.7rem;color:var(--muted)}
+.ad-slot.compact{min-height:84px;margin:10px 0}
 
-/* ═══════════════ MODAL ═══════════════ */
+/* ── deploy guide ── */
+.guide-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.guide-tabs button{background:rgba(0,0,0,.25);border:1px solid var(--card-br);color:var(--muted);
+  font-family:inherit;font-size:.8rem;font-weight:700;padding:10px 16px;border-radius:11px;cursor:pointer;transition:.25s}
+.guide-tabs button.on{color:var(--acc);border-color:rgba(60,242,211,.45);background:rgba(60,242,211,.09)}
+.gpanel{display:none;animation:mup .35s var(--ease)}
+.gpanel.on{display:block}
+@keyframes mup{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.step-card{display:flex;gap:16px;padding:18px 20px;border:1px solid var(--card-br);border-radius:17px;
+  background:var(--card);margin-bottom:12px;transition:.25s}
+.step-card:hover{border-color:rgba(60,242,211,.3);transform:translateX(-4px)}
+.step-num{flex:0 0 44px;height:44px;border-radius:13px;display:grid;place-items:center;
+  background:linear-gradient(135deg,rgba(60,242,211,.16),rgba(43,127,255,.1));
+  border:1px solid rgba(60,242,211,.35);font-family:var(--mono);font-weight:800;color:var(--acc)}
+.step-body{flex:1;min-width:0}
+.step-body h3{font-size:.95rem;font-weight:800;margin-bottom:6px}
+.step-body p{font-size:.82rem;color:var(--muted);line-height:2}
+.step-body code{font-family:var(--mono);background:rgba(60,242,211,.08);border:1px solid rgba(60,242,211,.2);
+  border-radius:7px;padding:2px 8px;font-size:.76rem;color:var(--acc);direction:ltr;display:inline-block}
+.step-shot{margin-top:12px;border-radius:13px;border:1px solid var(--card-br);overflow:hidden;background:rgba(0,0,0,.3)}
+.step-shot img{width:100%;display:block}
+.guide-cta{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:22px}
+
+/* ═══════════ THE APP ═══════════ */
+#app{display:none;max-width:1240px;margin:0 auto;padding:86px clamp(12px,3vw,28px) 40px}
+
+/* appbar: identity left, actions right — one row, clear hierarchy */
+.appbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 18px;margin-bottom:14px}
+.appbar .who{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.appbar .who .email{font-family:var(--mono);font-size:clamp(.85rem,2.4vw,1.05rem);font-weight:800;color:var(--acc);
+  direction:ltr;text-align:right;word-break:break-all}
+.appbar .who .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.72rem;color:var(--muted)}
+.badge-admin,.badge-prem,.badge-inf{font-size:.62rem;font-weight:900;letter-spacing:.06em;
+  border:1px solid;border-radius:99px;padding:2px 10px}
+.badge-admin{color:#FF9F6B;border-color:rgba(255,159,107,.4);background:rgba(255,159,107,.08)}
+.badge-prem{color:var(--acc);border-color:rgba(60,242,211,.4);background:rgba(60,242,211,.08)}
+.badge-inf{color:#9D8CFF;border-color:rgba(157,140,255,.4);background:rgba(157,140,255,.08)}
+.appbar .acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* toolbar: contextual tools under appbar, subtle background */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;
+  padding:10px 14px;border:1px solid var(--card-br);border-radius:15px;background:var(--card)}
+.toolbtn{background:rgba(0,0,0,.22);border:1px solid var(--card-br);color:var(--muted);
+  font-family:inherit;font-size:.76rem;font-weight:700;padding:8px 13px;border-radius:10px;
+  cursor:pointer;transition:.22s;display:inline-flex;gap:6px;align-items:center}
+.toolbtn:hover{color:var(--acc);border-color:rgba(60,242,211,.4)}
+.toolbtn.on{color:var(--acc);border-color:rgba(60,242,211,.45);background:rgba(60,242,211,.09)}
+.cyclebar{margin-inline-start:auto;display:flex;gap:8px;align-items:center;font-size:.72rem;color:var(--muted)}
+.cyclebar .mono{color:var(--acc);font-weight:700}
+
+/* client: list + reader two-pane, sane proportions */
+.client{display:grid;grid-template-columns:minmax(280px,5fr) minmax(0,7fr);gap:14px;align-items:start;min-width:0}
+.client > *{min-width:0;max-width:100%}
+.listpane{padding:14px;display:flex;flex-direction:column;min-height:520px;max-height:78vh}
+.readpane{padding:22px;min-height:520px;max-height:78vh;overflow-y:auto}
+
+/* tabs — single row, pill style, clear active state */
+.tabrow{display:flex;gap:4px;padding:4px;background:rgba(0,0,0,.25);border:1px solid var(--card-br);border-radius:13px;margin-bottom:12px}
+.tabrow button{flex:1;background:none;border:none;color:var(--muted);font-family:inherit;font-size:.8rem;
+  font-weight:700;padding:9px 6px;border-radius:9px;cursor:pointer;transition:.22s;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.tabrow button:hover{color:var(--fg)}
+.tabrow button.on{color:#04110E;background:var(--acc);box-shadow:0 4px 16px rgba(60,242,211,.25)}
+.tabrow .cnt{font-family:var(--mono);font-size:.62rem;background:rgba(0,0,0,.25);border-radius:99px;padding:1px 7px}
+.tabrow button.on .cnt{background:rgba(0,0,0,.18)}
+
+/* filter chips */
+.filterbar{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.filterbar button{background:rgba(0,0,0,.22);border:1px solid var(--card-br);color:var(--muted);border-radius:99px;
+  font-family:inherit;font-size:.7rem;font-weight:700;padding:5px 13px;cursor:pointer;transition:.2s}
+.filterbar button.on{color:var(--acc);border-color:rgba(60,242,211,.45);background:rgba(60,242,211,.09)}
+
+/* OTP card — the star of the show */
+.otp-card{display:none;margin:0 0 12px;padding:18px 20px;border-radius:17px;
+  border:1.5px solid rgba(60,242,211,.5);background:linear-gradient(135deg,rgba(60,242,211,.10),rgba(43,127,255,.06));
+  box-shadow:var(--sh-glow);animation:mup .4s var(--ease);align-items:center;gap:16px;flex-wrap:wrap}
+.otp-card.show{display:flex}
+.otp-code{font-family:var(--mono);font-size:clamp(1.7rem,5vw,2.3rem);font-weight:900;letter-spacing:.28em;color:var(--acc);
+  direction:ltr;text-shadow:0 0 26px rgba(60,242,211,.45)}
+.otp-meta{font-size:.72rem;color:var(--muted)}
+.otp-src{font-family:var(--mono);font-size:.74rem;color:var(--fg);opacity:.8;direction:ltr}
+
+/* message rows — scannable: sender bold, subject regular, meta right */
+.msglist{overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:6px;padding-inline-end:2px}
+.msgrow{border:1px solid transparent;border-radius:13px;padding:11px 13px;cursor:pointer;transition:.18s;background:rgba(255,255,255,.02)}
+.msgrow:hover{background:rgba(60,242,211,.05);border-color:rgba(60,242,211,.2)}
+.msgrow.sel{background:rgba(60,242,211,.09);border-color:rgba(60,242,211,.4)}
+.msgrow .from{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.msgrow .who-l{display:inline-flex;align-items:center;gap:6px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-weight:700;font-size:.8rem;direction:ltr}
+.msgrow .t{font-size:.66rem;color:var(--muted);font-family:var(--mono);flex-shrink:0}
+.msgrow .subj{font-size:.8rem;color:var(--fg);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.msgrow .prev{font-size:.68rem;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dot-un{width:8px;height:8px;border-radius:50%;background:var(--acc);flex-shrink:0;box-shadow:0 0 8px rgba(60,242,211,.7)}
+.star{cursor:pointer;background:none;border:none;font-size:.9rem;opacity:.3;transition:.2s;padding:2px 4px;flex-shrink:0}
+.star:hover{opacity:.8;transform:scale(1.2)}
+.star.on{opacity:1;filter:drop-shadow(0 0 6px rgba(255,196,107,.8))}
+.empty{display:grid;place-items:center;text-align:center;color:var(--muted);font-size:.84rem;padding:44px 16px;line-height:2.2}
+.empty .big{font-size:2.2rem;display:block;margin-bottom:8px}
+
+/* reader */
+.readpane .hd{border-bottom:1px solid var(--card-br);padding-bottom:14px;margin-bottom:14px}
+.readpane .hd h3{font-size:1.12rem;font-weight:800;line-height:1.5;margin-bottom:10px}
+.readpane .row{display:flex;gap:8px;font-size:.76rem;color:var(--muted);align-items:baseline}
+.readpane .row b{color:var(--fg);font-size:.72rem;flex-shrink:0}
+.readpane .body{font-size:.9rem;line-height:2.1;white-space:pre-wrap;word-break:break-word;min-height:80px}
+.attbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.att{display:inline-flex;gap:8px;align-items:center;font-size:.76rem;padding:9px 14px;border:1px solid var(--card-br);
+  border-radius:11px;background:rgba(0,0,0,.2);transition:.2s}
+.att:hover{border-color:var(--acc)}
+.actionsbar{display:flex;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--card-br);flex-wrap:wrap}
+
+/* compose — modal-like panel, clear field rhythm */
+.compose-wrap{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;
+  background:rgba(4,5,6,.72);backdrop-filter:blur(8px);padding:16px}
+.compose-wrap.on{display:flex}
+.compose{width:min(680px,100%);max-height:92vh;overflow-y:auto;padding:24px;animation:mup .3s var(--ease)}
+.compose h3{font-size:1.05rem;font-weight:800;margin-bottom:16px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.74rem;font-weight:700;color:var(--muted);margin-bottom:6px}
+.field input,.field textarea,.wrap input{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--glass-br);
+  border-radius:13px;padding:12px 14px;color:var(--fg);font-family:inherit;font-size:.88rem;outline:none;transition:.2s}
+.field input:focus,.field textarea:focus{border-color:var(--acc);box-shadow:0 0 0 4px rgba(60,242,211,.12)}
+.field textarea{min-height:130px;resize:vertical;line-height:1.9}
+.mono-in{font-family:var(--mono)!important;direction:ltr;text-align:left}
+.dropzone{border:1.5px dashed var(--card-br);border-radius:13px;padding:18px;text-align:center;
+  font-size:.78rem;color:var(--muted);cursor:pointer;transition:.2s}
+.dropzone.drag,.dropzone:hover{border-color:rgba(60,242,211,.45);color:var(--acc);background:rgba(60,242,211,.04)}
+.filepill{display:inline-flex;gap:8px;align-items:center;font-size:.72rem;background:rgba(60,242,211,.08);
+  border:1px solid rgba(60,242,211,.25);border-radius:99px;padding:5px 12px;margin:4px 2px}
+.filepill button{background:none;border:none;color:var(--danger);cursor:pointer;font-size:.8rem}
+.sched-toggle{display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.22);border:1px solid var(--card-br);
+  border-radius:12px;padding:11px 14px;cursor:pointer;user-select:none;transition:.25s;margin-top:4px}
+.sched-toggle:hover{border-color:rgba(60,242,211,.3)}
+.sched-toggle.on{border-color:rgba(60,242,211,.45);background:rgba(60,242,211,.06)}
+.sched-fields{display:none;gap:10px;margin-top:10px;grid-template-columns:1fr 1fr}
+.sched-fields.on{display:grid}
+.sched-fields input{background:rgba(0,0,0,.3);border:1px solid var(--glass-br);border-radius:12px;
+  padding:10px 12px;color:var(--fg);font-family:var(--mono);font-size:.84rem;outline:none;width:100%}
+.sched-note{font-size:.7rem;color:var(--muted);margin-top:6px}
+.sched-item{border:1px solid var(--card-br);border-radius:15px;padding:16px 18px;background:rgba(0,0,0,.22);
+  display:flex;justify-content:space-between;gap:12px;align-items:center}
+.sched-item .to{font-family:var(--mono);font-size:.8rem;direction:ltr;font-weight:700}
+.sched-item .subj{font-size:.78rem;color:var(--muted);margin-top:3px}
+.sched-item .cnt{font-size:.72rem;color:var(--muted)}
+.countdown{font-family:var(--mono);font-size:.78rem;font-weight:800;color:var(--warn);direction:ltr}
+
+/* modals */
 .modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;
-  background:rgba(3,4,5,.72);backdrop-filter:blur(10px);padding:18px}
+  background:rgba(4,5,6,.75);backdrop-filter:blur(10px);padding:16px}
 .modal.open{display:flex}
-.modal .box{background:rgba(17,20,22,.82);border:1px solid var(--glass-br);border-radius:var(--r-lg);
-  width:100%;max-width:430px;padding:34px 30px;animation:mup .45s var(--ease);
-  backdrop-filter:blur(28px) saturate(1.5);box-shadow:0 30px 80px rgba(0,0,0,.6)}
-@keyframes mup{from{transform:translateY(28px) scale(.97);opacity:0}to{transform:none;opacity:1}}
-.modal h2{font-size:1.32rem;margin-bottom:6px;font-weight:900}
-.modal p.hint{color:var(--muted);font-size:.82rem;margin-bottom:26px;line-height:1.9}
-.field{margin-bottom:16px}
-.field label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:8px;margin-inline-start:4px}
-.field .wrap{position:relative}
-.field input{width:100%;background:rgba(0,0,0,.32);border:1px solid var(--glass-br);border-radius:13px;
-  padding:13px 16px;color:var(--fg);font-family:var(--mono);font-size:.9rem;outline:none;
-  transition:border-color .3s,box-shadow .3s;direction:ltr;text-align:left}
-.field input:focus{border-color:var(--acc);box-shadow:0 0 0 4px rgba(60,242,211,.13)}
-.err{color:var(--danger);font-size:.79rem;min-height:1.3em;margin-bottom:12px;line-height:1.7}
-.switch{display:flex;justify-content:center;gap:4px;margin-top:20px;font-size:.85rem;
-  background:rgba(0,0,0,.25);border-radius:12px;padding:4px}
-.switch button{flex:1;background:none;border:none;color:var(--muted);cursor:pointer;font-family:inherit;
-  padding:9px;border-radius:9px;transition:.25s;font-weight:600}
-.switch button.on{color:#04110E;background:var(--acc)}
-
-/* ═══════════════ MAIL APP ═══════════════ */
-#app{display:none;max-width:1280px;margin:0 auto;padding:104px clamp(12px,3vw,26px) 44px}
-.appbar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin-bottom:18px}
-.appbar .who{display:flex;flex-direction:column;gap:6px;min-width:0}
-.appbar .who .email{font-family:var(--mono);color:var(--acc);font-size:1.04rem;direction:ltr;font-weight:600;
-  text-shadow:0 0 22px rgba(60,242,211,.35)}
-.appbar .who .meta{color:var(--muted);font-size:.76rem;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.badge-prem{background:var(--acc-soft);border:1px solid rgba(60,242,211,.35);color:var(--acc);
-  padding:3px 11px;border-radius:999px;font-size:.68rem;font-weight:700}
-.badge-admin{background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.35);color:var(--danger);
-  padding:3px 11px;border-radius:999px;font-size:.68rem;font-weight:700}
-.badge-inf{background:rgba(255,196,107,.1);border:1px solid rgba(255,196,107,.35);color:var(--warn);
-  padding:3px 11px;border-radius:999px;font-size:.68rem;font-weight:700}
-.client{display:grid;grid-template-columns:300px 1fr;gap:16px;min-height:560px}
-.listpane{display:flex;flex-direction:column;overflow:hidden}
-.tabs{display:flex;border-bottom:1px solid var(--card-br)}
-.tabs button{flex:1;background:none;border:none;color:var(--muted);font-family:inherit;padding:15px;
-  cursor:pointer;font-size:.85rem;font-weight:700;border-bottom:2px solid transparent;transition:.25s;position:relative}
-.tabs button.on{color:var(--acc);border-bottom-color:var(--acc)}
-.tabs button .cnt{position:absolute;top:9px;inset-inline-end:14px;font-family:var(--mono);font-size:.62rem;
-  background:rgba(255,255,255,.08);border-radius:99px;padding:1px 7px}
-.msglist{flex:1;overflow-y:auto;max-height:560px}
-.msgrow{padding:15px 17px;border-bottom:1px solid rgba(255,255,255,.045);cursor:pointer;transition:background .2s;position:relative}
-.msgrow:hover{background:rgba(255,255,255,.035)}
-.msgrow.sel{background:rgba(60,242,211,.075)}
-.msgrow.sel::before{content:'';position:absolute;inset-inline-start:0;top:0;bottom:0;width:3px;background:var(--acc)}
-.msgrow .from{font-size:.85rem;font-weight:700;margin-bottom:5px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
-.msgrow .from .who-l{direction:ltr;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.msgrow .from .t{color:var(--muted);font-weight:400;font-size:.7rem;font-family:var(--mono);flex-shrink:0}
-.msgrow .subj{font-size:.8rem;color:rgba(244,243,238,.78);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px}
-.msgrow .prev{font-size:.72rem;color:var(--muted);opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:right}
-.msgrow .dot-un{width:8px;height:8px;background:var(--acc);border-radius:50%;display:inline-block;margin-inline-end:7px;box-shadow:0 0 10px var(--acc)}
-.empty{padding:54px 20px;text-align:center;color:var(--muted);font-size:.85rem;line-height:2.2}
-.empty .big{font-size:2rem;display:block;margin-bottom:10px;opacity:.6}
-.readpane{overflow-y:auto;max-height:614px;padding:28px}
-.readpane .hd{border-bottom:1px solid var(--card-br);padding-bottom:20px;margin-bottom:20px}
-.readpane .hd h3{font-size:1.14rem;margin-bottom:12px;line-height:1.65;font-weight:800}
-.readpane .hd .row{display:flex;gap:8px;font-size:.77rem;color:var(--muted);margin-bottom:7px;line-height:1.8}
-.readpane .hd .row b{color:rgba(244,243,238,.85);font-weight:600}
-.readpane .body{font-size:.89rem;line-height:2.15;white-space:pre-wrap;word-break:break-word;color:rgba(244,243,238,.9)}
-.attbar{display:flex;flex-wrap:wrap;gap:9px;margin-top:22px}
-.att{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--glass-br);border-radius:12px;
-  padding:9px 15px;font-size:.76rem;color:var(--muted);transition:.25s;background:rgba(0,0,0,.2)}
-.att:hover{border-color:var(--acc);color:var(--acc);box-shadow:var(--sh-glow)}
-.actionsbar{display:flex;gap:9px;margin-top:24px;flex-wrap:wrap}
-.compose-wrap{position:relative}
-.compose{display:none;flex-direction:column;gap:14px;margin-top:16px;padding:28px}
-.compose.on{display:flex;animation:mup .4s var(--ease)}
-.compose input,.compose textarea{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--glass-br);border-radius:13px;
-  padding:13px 16px;color:var(--fg);font-family:inherit;font-size:.89rem;outline:none;transition:border-color .3s,box-shadow .3s}
-.compose input:focus,.compose textarea:focus{border-color:var(--acc);box-shadow:0 0 0 4px rgba(60,242,211,.12)}
-.compose .mono-in{font-family:var(--mono);direction:ltr;text-align:left}
-.compose textarea{min-height:230px;resize:vertical;line-height:2}
-.dropzone{border:1.5px dashed rgba(255,255,255,.18);border-radius:14px;padding:20px;text-align:center;color:var(--muted);
-  font-size:.79rem;cursor:pointer;transition:.3s}
-.dropzone:hover,.dropzone.drag{border-color:var(--acc);color:var(--acc);background:rgba(60,242,211,.045)}
-.filelist{display:flex;flex-wrap:wrap;gap:8px}
-.filepill{display:inline-flex;align-items:center;gap:8px;background:rgba(60,242,211,.09);
-  border:1px solid rgba(60,242,211,.3);border-radius:999px;padding:6px 14px;font-size:.72rem;font-family:var(--mono);direction:ltr}
-.filepill button{background:none;border:none;color:var(--danger);cursor:pointer;font-size:.9rem;padding:0 2px}
-.quota{font-size:.73rem;color:var(--muted);font-family:var(--mono);direction:ltr}
-.quota b{color:var(--acc)}
-#typefx{position:absolute;inset:0;pointer-events:none;z-index:5}
-
-/* scheduled-send UI */
-.sched-toggle{display:flex;align-items:center;gap:10px;padding:12px 15px;border-radius:12px;
-  background:rgba(0,0,0,.22);border:1px solid var(--glass-br);cursor:pointer;user-select:none;transition:.25s}
-.sched-toggle:hover{border-color:rgba(60,242,211,.4)}
-.sched-toggle.on{background:rgba(60,242,211,.08);border-color:rgba(60,242,211,.45)}
-.sched-toggle .lbl{font-size:.83rem;font-weight:600}
-.sched-toggle .sub{font-size:.68rem;color:var(--muted);display:block;margin-top:2px}
-.sched-fields{display:none;gap:14px}
-.sched-fields.on{display:grid;grid-template-columns:1fr 1fr;animation:mup .35s var(--ease)}
-.sched-fields input{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--glass-br);border-radius:12px;
-  padding:12px 14px;color:var(--fg);font-family:var(--mono);font-size:.85rem;outline:none;direction:ltr;text-align:center}
-.sched-fields input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(60,242,211,.12)}
-.sched-note{font-size:.7rem;color:var(--muted);line-height:1.9;background:rgba(255,196,107,.06);
-  border:1px solid rgba(255,196,107,.22);border-radius:11px;padding:9px 13px}
-.sched-drop{border:1.5px dashed rgba(255,196,107,.3);border-radius:12px;padding:13px;text-align:center;
-  color:var(--muted);font-size:.75rem;cursor:pointer;transition:.25s}
-.sched-drop:hover,.sched-drop.drag{border-color:var(--warn);color:var(--warn)}
-.sched-drop.has{border-style:solid;border-color:rgba(60,242,211,.4);color:var(--acc)}
-.tabrow{display:flex;gap:4px;margin-bottom:14px}
-.tabrow button{flex:1;background:rgba(0,0,0,.25);border:1px solid var(--card-br);color:var(--muted);
-  font-family:inherit;font-size:.8rem;font-weight:700;padding:10px;border-radius:11px;cursor:pointer;transition:.25s}
-.tabrow button.on{color:var(--acc);border-color:rgba(60,242,211,.4);background:rgba(60,242,211,.08)}
-.sched-list{display:grid;gap:12px}
-.sched-item{border:1px solid var(--glass-br);border-radius:15px;padding:18px 20px;background:rgba(0,0,0,.22);
-  display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap;transition:.25s}
-.sched-item:hover{border-color:rgba(60,242,211,.35)}
-.sched-item .info{min-width:0}
-.sched-item .to{font-family:var(--mono);direction:ltr;color:var(--acc);font-size:.85rem;font-weight:600;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sched-item .subj{font-size:.8rem;margin-top:4px;opacity:.85}
-.sched-item .cnt{font-family:var(--mono);font-size:.75rem;color:var(--warn);margin-top:6px;direction:ltr}
-.countdown{font-family:var(--mono);font-size:1.02rem;font-weight:800;color:var(--acc);direction:ltr;white-space:nowrap}
-.clockchip{display:inline-flex;gap:8px;align-items:center;border:1px dashed rgba(60,242,211,.3);
-  border-radius:10px;padding:5px 12px;font-size:.72rem;color:var(--muted)}
-.clockchip b{color:var(--acc);font-family:var(--mono)}
+.modal .box{background:rgba(17,20,22,.92);border:1px solid var(--glass-br);border-radius:var(--r-lg);
+  box-shadow:0 14px 50px rgba(0,0,0,.55),var(--sh-glow);backdrop-filter:blur(14px);
+  max-width:min(90vw,440px);width:100%;padding:28px;animation:mup .3s var(--ease)}
+.modal h2{font-size:1.08rem;font-weight:800;margin-bottom:6px}
+.modal .hint{font-size:.78rem;color:var(--muted);margin-bottom:16px}
+.modal .err{color:var(--danger);font-size:.76rem;min-height:1.2em;margin:8px 0}
+.modal .switch{display:flex;background:rgba(0,0,0,.3);border-radius:12px;padding:4px;margin-top:14px}
+.modal .switch button{flex:1;background:none;border:none;color:var(--muted);font-family:inherit;font-weight:700;
+  font-size:.8rem;padding:9px;border-radius:9px;cursor:pointer;transition:.2s}
+.modal .switch button.on{background:rgba(60,242,211,.14);color:var(--acc)}
+.qr-box{display:grid;place-items:center;gap:14px;padding:8px}
+.qr-box canvas{border-radius:14px;background:#fff;padding:10px;max-width:100%}
+.qr-addr{font-family:var(--mono);direction:ltr;font-size:.88rem;color:var(--acc);font-weight:700;word-break:break-all}
 
 /* toast */
 #toast{position:fixed;bottom:26px;left:50%;transform:translate(-50%,20px);z-index:200;
-  background:rgba(17,20,22,.9);border:1px solid var(--acc);color:var(--fg);padding:14px 24px;border-radius:14px;
-  font-size:.84rem;opacity:0;pointer-events:none;transition:.4s var(--ease);
-  box-shadow:0 14px 50px rgba(0,0,0,.55),var(--sh-glow);backdrop-filter:blur(14px);max-width:min(90vw,480px);text-align:center}
+  background:rgba(17,22,24,.92);border:1px solid rgba(60,242,211,.4);color:var(--fg);
+  padding:13px 24px;border-radius:99px;font-size:.82rem;font-weight:600;opacity:0;pointer-events:none;
+  transition:.35s var(--ease);backdrop-filter:blur(10px);box-shadow:0 14px 50px rgba(0,0,0,.55);max-width:90vw;text-align:center}
 #toast.show{opacity:1;transform:translate(-50%,0)}
-#toast.bad{border-color:var(--danger);box-shadow:0 14px 50px rgba(0,0,0,.55),0 0 30px rgba(255,107,107,.2)}
+#toast.bad{border-color:var(--danger)}
 
-/* ═══════════════ RESPONSIVE ═══════════════ */
-@media(max-width:920px){
-  .client{grid-template-columns:1fr}
-  .msglist{max-height:300px}
-  nav .links a.hide-m{display:none}
-  .readpane{max-height:none}
-}
-@media(max-width:560px){
-  nav{inset-inline:10px;height:56px}
-  .brand span.t{display:none}
-  .hero{padding-top:104px}
-  .hero .cta-row .btn{width:100%}
-  .plan .amount{font-size:2.2rem}
-  .appbar .who .email{font-size:.9rem}
-}
-@media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
-  .word,.sr{opacity:1!important;transform:none!important;filter:none!important}
-}
-
-/* ══════════ LIGHT THEME ══════════ */
+/* light theme */
 html[data-theme="light"]{
   --bg:#F2F3F0; --bg2:#E8EAE6; --fg:#0E1613; --muted:rgba(14,22,19,.55);
   --acc:#0BA88A; --acc-soft:rgba(11,168,138,.12);
@@ -359,423 +431,436 @@ html[data-theme="light"]{
 html[data-theme="light"] .aurora .b1{background:rgba(11,168,138,.13)}
 html[data-theme="light"] .aurora .b2{background:rgba(43,127,255,.10)}
 html[data-theme="light"] .aurora .b3{background:rgba(150,110,255,.09)}
+html[data-theme="light"] body{background:var(--bg)}
+html[data-theme="light"] nav{background:rgba(242,243,240,.85)}
 html[data-theme="light"] .glass{background:var(--glass);border-color:var(--glass-br);
   box-shadow:0 10px 34px rgba(20,40,34,.10), inset 0 1px 0 rgba(255,255,255,.8)}
-html[data-theme="light"] .glass input,html[data-theme="light"] .glass textarea,
-html[data-theme="light"] .sched-fields input,html[data-theme="light"] .tabrow button,
+html[data-theme="light"] .gen-row input,html[data-theme="light"] .gen-row select,
+html[data-theme="light"] .field input,html[data-theme="light"] .field textarea,
+html[data-theme="light"] .sched-fields input,html[data-theme="light"] .tabrow,
 html[data-theme="light"] .sched-toggle,html[data-theme="light"] .sched-item,
-html[data-theme="light"] .sched-note{background:rgba(255,255,255,.8)}
-html[data-theme="light"] .field input,html[data-theme="light"] .compose input,
-html[data-theme="light"] .compose textarea{background:rgba(255,255,255,.85);color:var(--fg)}
+html[data-theme="light"] .toolbtn,html[data-theme="light"] .filterbar button,
+html[data-theme="light"] .guide-tabs button{background:rgba(255,255,255,.85)}
+html[data-theme="light"] .msgrow{background:rgba(255,255,255,.6)}
+html[data-theme="light"] .msgrow:hover{background:rgba(11,168,138,.07)}
 html[data-theme="light"] .modal .box{background:#fff}
-html[data-theme="light"] .toastbase{background:#fff;color:var(--fg)}
-html[data-theme="light"] .nav{background:rgba(242,243,240,.85)}
+html[data-theme="light"] #toast{background:#fff;color:var(--fg)}
+html[data-theme="light"] .email-chip{background:rgba(255,255,255,.9)}
 html[data-theme="light"] .grain{opacity:.05}
+html[data-theme="light"] .btn.ghost{background:rgba(14,22,19,.05)}
 html[data-theme="light"] .btn.primary{color:#fff}
-html[data-theme="light"] .btn.ghost{background:rgba(14,22,19,.05);border-color:var(--card-br);color:var(--fg)}
-html[data-theme="light"] .badge-admin,html[data-theme="light"] .badge-prem,html[data-theme="light"] .badge-inf{border-color:rgba(14,22,19,.2)}
+html[data-theme="light"] .compose-wrap{background:rgba(240,242,238,.7)}
+html[data-theme="light"] .tabrow button.on{color:#fff}
 
-/* ══════════ THEME SWITCH BUTTON ══════════ */
+/* theme button */
 .themeBtn{background:none;border:1px solid var(--glass-br);border-radius:12px;width:38px;height:38px;
   cursor:pointer;font-size:1.05rem;display:inline-flex;align-items:center;justify-content:center;
-  color:var(--fg);transition:.25s;vertical-align:middle}
+  color:var(--fg);transition:.25s;flex-shrink:0}
 .themeBtn:hover{border-color:var(--acc);box-shadow:var(--sh-glow)}
 
-/* ══════════ MAIL TOOLBAR (new row in appbar) ══════════ */
-.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0 4px;
-  padding:10px 12px;border:1px solid var(--card-br);border-radius:15px;background:var(--card)}
-.toolbtn{background:rgba(0,0,0,.22);border:1px solid var(--card-br);color:var(--muted);
-  font-family:inherit;font-size:.78rem;font-weight:600;padding:8px 13px;border-radius:10px;
-  cursor:pointer;transition:.22s;display:inline-flex;gap:6px;align-items:center}
-.toolbtn:hover{color:var(--acc);border-color:rgba(60,242,211,.4)}
-.toolbtn.on{color:var(--acc);border-color:rgba(60,242,211,.45);background:rgba(60,242,211,.09)}
-html[data-theme="light"] .toolbtn{background:rgba(255,255,255,.7)}
-.cyclebar{margin-inline-start:auto;display:flex;gap:8px;align-items:center;font-size:.72rem;color:var(--muted)}
-.cyclebar .mono{color:var(--acc);font-weight:700}
+footer{border-top:1px solid var(--card-br);padding:34px 20px;display:flex;gap:14px;flex-wrap:wrap;
+  align-items:center;justify-content:space-between;max-width:1120px;margin:0 auto;font-size:.8rem;color:var(--muted)}
+footer a:hover{color:var(--acc)}
 
-/* ══════════ GENERATOR (landing) ══════════ */
-.gen-box{max-width:760px;margin:0 auto;padding:26px;display:grid;gap:14px}
-.gen-row{display:grid;grid-template-columns:1fr 168px;gap:10px}
-.gen-row input,.gen-row select{background:rgba(0,0,0,.28);border:1px solid var(--glass-br);border-radius:13px;
-  padding:13px 15px;color:var(--fg);font-family:var(--mono);font-size:.95rem;outline:none;direction:ltr}
-html[data-theme="light"] .gen-row input,html[data-theme="light"] .gen-row select{background:rgba(255,255,255,.85)}
-.gen-row input:focus,.gen-row select:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(60,242,211,.14)}
-.gen-row select{font-family:var(--font);direction:rtl;cursor:pointer}
-.gen-preview{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;
-  padding:16px;border:1.5px dashed rgba(60,242,211,.35);border-radius:14px;background:rgba(60,242,211,.05)}
-.gen-preview .addr{font-family:var(--mono);font-size:1.06rem;font-weight:700;color:var(--acc);direction:ltr;word-break:break-all}
-.gen-hint{font-size:.72rem;color:var(--muted);text-align:center}
-.dice{cursor:pointer;border:none;background:none;font-size:1.2rem;color:var(--acc);transition:.3s}
-.dice:hover{transform:rotate(180deg) scale(1.15)}
-
-/* ══════════ OTP CARD ══════════ */
-.otp-card{display:none;margin:0 0 14px;padding:20px 22px;border-radius:17px;
-  border:1.5px solid rgba(60,242,211,.5);background:linear-gradient(135deg,rgba(60,242,211,.10),rgba(43,127,255,.06));
-  box-shadow:var(--sh-glow);animation:mup .4s var(--ease);align-items:center;gap:16px;flex-wrap:wrap}
-.otp-card.show{display:flex}
-.otp-code{font-family:var(--mono);font-size:2.3rem;font-weight:900;letter-spacing:.28em;color:var(--acc);
-  direction:ltr;text-shadow:0 0 26px rgba(60,242,211,.45)}
-.otp-meta{font-size:.72rem;color:var(--muted)}
-.otp-src{font-family:var(--mono);font-size:.74rem;color:var(--fg);opacity:.8;direction:ltr}
-
-/* ══════════ FAVORITES / STARS ══════════ */
-.star{cursor:pointer;background:none;border:none;font-size:.95rem;opacity:.35;transition:.2s;padding:2px 4px}
-.star:hover{opacity:.8;transform:scale(1.2)}
-.star.on{opacity:1;filter:drop-shadow(0 0 6px rgba(255,196,107,.8))}
-.msgrow .who-l{display:inline-flex;align-items:center;gap:6px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.filterbar{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
-.filterbar button{background:rgba(0,0,0,.22);border:1px solid var(--card-br);color:var(--muted);border-radius:99px;
-  font-family:inherit;font-size:.72rem;font-weight:600;padding:5px 13px;cursor:pointer;transition:.2s}
-.filterbar button.on{color:var(--acc);border-color:rgba(60,242,211,.45);background:rgba(60,242,211,.09)}
-html[data-theme="light"] .filterbar button{background:rgba(255,255,255,.7)}
-
-/* ══════════ QR MODAL ══════════ */
-.qr-box{display:grid;place-items:center;gap:14px;padding:8px}
-.qr-box canvas{border-radius:14px;background:#fff;padding:10px}
-.qr-addr{font-family:var(--mono);direction:ltr;font-size:.9rem;color:var(--acc);font-weight:700;word-break:break-all}
-
-/* ══════════ AD SLOTS ══════════ */
-.ad-slot{position:relative;display:grid;place-items:center;min-height:120px;margin:14px auto;
-  border:1.5px dashed rgba(255,196,107,.4);border-radius:18px;background:
-  repeating-linear-gradient(45deg,rgba(255,196,107,.045) 0 14px,transparent 14px 28px);
-  cursor:pointer;transition:.3s;max-width:1000px}
-.ad-slot:hover{border-color:var(--warn);box-shadow:0 0 34px rgba(255,196,107,.12);transform:translateY(-2px)}
-.ad-slot .t{font-size:.86rem;font-weight:700;color:var(--warn)}
-.ad-slot .s{font-size:.7rem;color:var(--muted)}
-.ad-slot.compact{min-height:86px;margin:10px 0}
-
-/* ══════════ DEPLOY GUIDE SECTION ══════════ */
-.guide-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
-.guide-tabs button{background:rgba(0,0,0,.25);border:1px solid var(--card-br);color:var(--muted);
-  font-family:inherit;font-size:.8rem;font-weight:700;padding:10px 16px;border-radius:11px;cursor:pointer;transition:.25s}
-.guide-tabs button.on{color:var(--acc);border-color:rgba(60,242,211,.45);background:rgba(60,242,211,.09)}
-html[data-theme="light"] .guide-tabs button{background:rgba(255,255,255,.7)}
-.gpanel{display:none;animation:mup .35s var(--ease)}
-.gpanel.on{display:block}
-.step-card{display:flex;gap:16px;padding:18px 20px;border:1px solid var(--card-br);border-radius:17px;
-  background:var(--card);margin-bottom:12px;transition:.25s}
-.step-card:hover{border-color:rgba(60,242,211,.3);transform:translateX(-4px)}
-.step-num{flex:0 0 44px;height:44px;border-radius:13px;display:grid;place-items:center;
-  background:linear-gradient(135deg,rgba(60,242,211,.16),rgba(43,127,255,.1));
-  border:1px solid rgba(60,242,211,.35);font-family:var(--mono);font-weight:800;color:var(--acc);font-size:1.05rem}
-.step-body{flex:1;min-width:0}
-.step-body h3{font-size:.95rem;font-weight:800;margin-bottom:6px}
-.step-body p{font-size:.82rem;color:var(--muted);line-height:2}
-.step-body code{font-family:var(--mono);background:rgba(60,242,211,.08);border:1px solid rgba(60,242,91,.2);
-  border-radius:7px;padding:2px 8px;font-size:.76rem;color:var(--acc);direction:ltr;display:inline-block}
-.step-shot{margin-top:12px;border-radius:13px;border:1px solid var(--card-br);overflow:hidden;background:rgba(0,0,0,.3)}
-.step-shot img{width:100%;display:block}
-html[data-theme="light"] .step-shot{background:rgba(255,255,255,.6)}
-.guide-cta{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:22px}
+/* responsive: collapse to single column, sticky action row */
+@media (max-width:960px){
+  .client{grid-template-columns:1fr}
+  .listpane{max-height:none;min-height:auto}
+  .readpane{min-height:auto;max-height:none}
+  nav .links > a.hide-m{display:none}
+}
+@media (max-width:640px){
+  .hero{min-height:88vh;padding-top:96px}
+  .cta-row{flex-direction:column;width:100%;max-width:340px;margin-inline:auto}
+  .cta-row .btn{width:100%}
+  .gen-row{grid-template-columns:1fr}
+  .appbar{flex-direction:column;align-items:stretch}
+  .appbar .who .email{text-align:center}
+  .appbar .acts{justify-content:center}
+  .toolbar{justify-content:center}
+  .cyclebar{margin-inline-start:0;width:100%;justify-content:center}
+  .tabrow button{font-size:.72rem;padding:8px 4px}
+  .otp-card{justify-content:center;text-align:center}
+  .plan .amount{font-size:2.2rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  .word,.sr{opacity:1!important;transform:none!important;filter:none!important}
+}
 </style>
 </head>
 <body>
-
-<div class="aurora"><b></b><b></b><b></b></div>
+<div class="aurora"><span class="b b1"></span><span class="b b2"></span><span class="b b3"></span></div>
 <div class="grain"></div>
-
+<!-- ══ NAV ══ -->
 <nav>
   <a class="brand" href="/">
-    <span class="logo"><svg viewBox="0 0 24 24" fill="none"><path d="M3 7L12 13L21 7V17C21 18.1 20.1 19 19 19H5C3.9 19 3 18.1 3 17V7Z" stroke="#3CF2D3" stroke-width="1.8" stroke-linejoin="round"/><path d="M3 7C3 5.9 3.9 5 5 5H19C20.1 5 21 5.9 21 7L12 13L3 7Z" fill="#3CF2D3" fill-opacity=".2"/></svg></span>
-    <span class="t">متِمپ<em>.</em></span>
+    <span class="logo"><svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M3 7L12 13L21 7V17C21 18.1 20.1 19 19 19H5C3.9 19 3 18.1 3 17V7Z" stroke="#3CF2D3" stroke-width="1.8" stroke-linejoin="round"/><path d="M3 7C3 5.9 3.9 5 5 5H19C20.1 5 21 5.9 21 7L12 13L3 7Z" fill="#3CF2D3" fill-opacity=".2"/></svg></span>
+    <span class="t" data-i18n="logo">Metora<em>.</em></span>
   </a>
   <div class="links">
-    <a href="#features" class="hide-m">امکانات</a>
-    <a href="#how" class="hide-m">چطور کار می‌کنه</a>
-    <a href="#pricing" class="hide-m">پرمیوم</a>
-    <a href="#guide" class="hide-m">📚 راهنمای نصب</a>
+    <a href="#features" class="hide-m" data-i18n="nav_features">Features</a>
+    <a href="#how" class="hide-m" data-i18n="nav_how">How it works</a>
+    <a href="#pricing" class="hide-m" data-i18n="nav_pricing">Premium</a>
+    <a href="#guide" class="hide-m" data-i18n="nav_guide">Deploy guide</a>
     <span id="navUser">
       <span class="email" id="navEmail"></span>
-      <button class="btn sm ghost" onclick="doLogout()">خروج</button>
+      <button class="btn sm ghost" onclick="doLogout()" data-i18n="ap_logout">Sign out</button>
     </span>
-    <button class="themeBtn" id="themeBtnNav" onclick="toggleTheme()" title="حالت روشن / تاریک">🌙</button>
-    <a href="#" id="navEnter" class="btn sm primary" onclick="openAuth('login');return false">ورود</a>
+    <span class="langSwitch" id="langSwitch" role="group" aria-label="Language">
+              <button data-lang="en" onclick="setLang('en')">EN</button><button data-lang="fa" onclick="setLang('fa')">FA</button><button data-lang="ru" onclick="setLang('ru')">RU</button>
+            </span>
+            <button class="themeBtn" id="themeBtnNav" onclick="toggleTheme()" title="Dark / Light">🌙</button>
+    <a href="#" id="navEnter" class="btn sm primary" onclick="openAuth('login');return false" data-i18n="nav_login">Sign in</a>
   </div>
 </nav>
 
 <!-- ══ HERO ══ -->
 <header class="hero" id="landing">
   <canvas id="pcanvas"></canvas>
-  <span class="tag"><span class="pulse"></span>ایمیل موقت — بدون دردسر، بدون اسپم</span>
+  <span class="tag"><span class="pulse"></span><span data-i18n="hero_tag">Disposable email — no spam, no strings</span></span>
   <h1 class="display" id="heroTitle">
-    <span>ایمیلی که</span><br>
-    <span><span class="grad">دووم نمیاره</span></span><br>
-    <span>تا وقتی خودت بخوای</span>
+    <span data-i18n="hero_l1">The inbox that</span><br>
+    <span><span class="grad" data-i18n="hero_l2">self-destructs</span></span><br>
+    <span data-i18n="hero_l3">exactly when you want</span>
   </h1>
-  <p class="sub sr" data-d="2">با چند ثانیه ثبت‌نام، یه آدرس <span class="mono">@metora.ir</span> بگیر؛ ایمیل بفرست و بگیر، پیوست بزن — بدون اینکه اسپم‌ها زندگی‌ات رو بسوزنن.</p>
+  <p class="sub sr" data-d="2"><span data-i18n="hero_sub">Sign up in seconds, grab a <span class="mono">@metora.ir</span> address, send and receive real email with attachments — without letting spammers burn your life.</span></p>
   <div class="cta-row sr" data-d="3">
-    <button class="btn primary magnetic" onclick="openAuth('register')">ساخت ایمیل رایگان ←</button>
-    <button class="btn ghost magnetic" onclick="openAuth('login')">ورود به صندوق</button>
+    <button class="btn primary lg magnetic" onclick="scrollToGen()" data-i18n="hero_cta">Create free address</button>
+    <button class="btn ghost lg magnetic" onclick="openAuth('login')" data-i18n="hero_cta2">Open my inbox</button>
   </div>
   <div class="email-chip sr" data-d="4"><span class="cursor"></span><span id="typeTarget" class="mono"></span><b>@metora.ir</b></div>
   <span class="scroll-hint">SCROLL ↓</span>
 </header>
 
 <div class="marquee"><div class="track">
-  <span>⚡ ثبت‌نام <b>۱۰ ثانیه‌ای</b></span><span>✦</span>
-  <span>📥 دریافت و ارسال <b>واقعی</b> ایمیل</span><span>✦</span>
-  <span>📎 پیوست تا <b>2MB</b></span><span>✦</span>
-  <span>🔄 ریست خودکار هر <b>۶ ساعت</b></span><span>✦</span>
-  <span>⏳ حذف اکانت‌های بی‌استفاده پس از <b>۱۰ روز</b></span><span>✦</span>
-  <span>⚡ ثبت‌نام <b>۱۰ ثانیه‌ای</b></span><span>✦</span>
-  <span>📥 دریافت و ارسال <b>واقعی</b> ایمیل</span><span>✦</span>
-  <span>📎 پیوست تا <b>2MB</b></span><span>✦</span>
-  <span>🔄 ریست خودکار هر <b>۶ ساعت</b></span><span>✦</span>
-  <span>⏳ حذف اکانت‌های بی‌استفاده پس از <b>۱۰ روز</b></span><span>✦</span>
+  <span data-i18n="mq1">⚡ <b>10-second</b> signup</span><span>✦</span>
+  <span data-i18n="mq2">📥 Real <b>send &amp; receive</b></span><span>✦</span>
+  <span data-i18n="mq3">🔑 Automatic <b>OTP extraction</b></span><span>✦</span>
+  <span data-i18n="mq4">📎 Attachments up to <b>2MB</b></span><span>✦</span>
+  <span data-i18n="mq5">📱 Phone hand-off via <b>QR</b></span><span>✦</span>
+  <span data-i18n="mq6">⏳ Auto-wipe every <b>6 hours</b></span><span>✦</span>
+  <span data-i18n="mq1">⚡ <b>10-second</b> signup</span><span>✦</span>
+  <span data-i18n="mq2">📥 Real <b>send &amp; receive</b></span><span>✦</span>
+  <span data-i18n="mq3">🔑 Automatic <b>OTP extraction</b></span><span>✦</span>
+  <span data-i18n="mq4">📎 Attachments up to <b>2MB</b></span><span>✦</span>
+  <span data-i18n="mq5">📱 Phone hand-off via <b>QR</b></span><span>✦</span>
+  <span data-i18n="mq6">⏳ Auto-wipe every <b>6 hours</b></span><span>✦</span>
 </div></div>
+
+<!-- ══ GENERATOR ══ -->
+<section class="section" id="generator" style="padding-top:56px">
+  <div class="sec-head sr" style="text-align:center;max-width:640px;margin-inline:auto">
+    <span class="num" style="margin-inline:auto" data-i18n="gen_num">⚡ GENERATOR</span>
+    <h2><span data-i18n="gen_h">آدرست رو خودت بساز</span></h2>
+    <p><span data-i18n="gen_p">Type your favorite name (or roll the dice), pick the domain and register right here — the address is live the same second.</span></p>
+  </div>
+  <div class="glass gen-box sr" data-d="2">
+    <div class="gen-row">
+      <input id="genName" type="text" data-i18n-ph="gen_ph" placeholder="a name you like… e.g. ali_shop" maxlength="32" spellcheck="false" oninput="genPreview()">
+      <select id="genDomain" onchange="genPreview()"></select>
+    </div>
+    <div class="gen-preview">
+      <button class="dice" onclick="randomName()" data-i18n-title="dice_title" title="Random name">🎲</button>
+      <span class="addr" id="genAddr">esm@metora.ir</span>
+      <button class="btn sm ghost" onclick="copyAddr()" data-i18n="gen_copy">Copy</button>
+    </div>
+    <p class="gen-hint"><span data-i18n="gen_hint">English letters, digits and <span class="mono">. _ -</span> only — at least 3 characters.</span></p>
+    <button class="btn primary lg magnetic" style="justify-self:center" onclick="genRegister()" data-i18n="gen_build">⚡ Create this address</button>
+    <p class="gen-hint" style="opacity:.75">🔑 <span data-i18n="gen_pass">🔑 Suggested password:</span> <span class="mono" id="genPass"></span> <button class="btn xs ghost" onclick="newGenPass()" data-i18n="gen_newpass">🎲 another one</button></p>
+  </div>
+</section>
+
+<div class="ad-slot" onclick="openAdModal()" role="button" aria-label="Ad slot — yours">
+  <div style="text-align:center">
+    <div class="t"><span data-i18n="ad1_t">📣 Your ad here</span></div>
+    <div class="s"><span data-i18n="ad1_s">بنر ۹۷۰×۹۰ یا بنر ریسپانسیو — برای مشاهده تعرفه و رزرو کلیک کنید</span></div>
+  </div>
+</div>
 
 <!-- ══ FEATURES ══ -->
 <section class="section" id="features">
   <div class="sec-head sr">
-    <span class="num">01 — FEATURES</span>
-    <h2>همه‌چیز ایمیله،<br>بدون ایمیلی‌بودن</h2>
-    <p>هر چیزی که از یه سرویس ایمیل انتظار داری، با یه تفاوت بزرگ: هیچ‌وقت اسپم نمی‌گیری و هر وقت خواستی، همه‌چیز پاک می‌شه.</p>
+    <span class="num"><span data-i18n="f_num">01 — FEATURES</span></span>
+    <h2><span data-i18n="f_h1">همه‌چیز ایمیله،</span><br><span data-i18n="f_h2">بدون ایمیلی‌بودن</span></h2>
+    <p><span data-i18n="f_p">Everything you expect from a mail service, with one huge difference: you never get spam, and everything can be wiped whenever you choose.</span></p>
   </div>
   <div class="grid">
-    <div class="glass fcard sr" data-d="1"><span class="idx">/01</span><span class="ic">⚡</span><h3>ثبت‌نام برق‌آسا</h3><p>فقط یه نام کاربری و رمز — نه شماره، نه کپچا، نه وریفای. آدرس <span class="mono">@metora.ir</span> تو همون لحظه مال توئه.</p></div>
-    <div class="glass fcard sr" data-d="2"><span class="idx">/02</span><span class="ic">📥</span><h3>دریافت واقعی</h3><p>هر ایمیلی که به آدرست بزنه، مستقیم تو صندوقت ظاهر می‌شه؛ با همون فرمت و پیوست‌هایی که فرستاده.</p></div>
-    <div class="glass fcard sr" data-d="3"><span class="idx">/03</span><span class="ic">📤</span><h3>ارسال واقعی</h3><p>می‌تونی جواب بدی یا از صفر ایمیل بفرستی — با پیوست تا ۲ مگابایت، از روی دسکتاپ یا موبایل.</p></div>
-    <div class="glass fcard sr" data-d="1"><span class="idx">/04</span><span class="ic">🔄</span><h3>ریست هر ۶ ساعت</h3><p>کل صندوق‌ها هر ۶ ساعت پاک می‌شن و جا برای ایمیل‌های تازه باز می‌شه. فقط آدرس و رمزت می‌مونه.</p></div>
-    <div class="glass fcard sr" data-d="2"><span class="idx">/05</span><span class="ic">🧹</span><h3>حذف ۱۰ روزه</h3><p>اگه ۱۰ روز سراغ اکانتت نیای، کامل حذف می‌شه — نه ردی، نه کپی‌ای. دوباره بسازش و ادامه بده.</p></div>
-    <div class="glass fcard sr" data-d="3"><span class="idx">/06</span><span class="ic">💎</span><h3>پرمیوم $۱۰</h3><p>صندوق بزرگ‌تر، ارسال بیشتر و ۵ پیوست در هر ایمیل. برای فعال‌سازی به تلگرام پشتیبانی پیام بده.</p></div>
+    <div class="glass fcard sr" data-d="1"><span class="idx">/01</span><span class="ic">⚡</span><h3 data-i18n="f1_t">Lightning signup</h3><p data-i18n="f1_p">Just a username and a password — no phone number, no captcha. The <span class="mono">@metora.ir</span> address is yours instantly.</p></div>
+    <div class="glass fcard sr" data-d="2"><span class="idx">/02</span><span class="ic">📥</span><h3 data-i18n="f2_t">Real receiving</h3><p data-i18n="f2_p">Any mail sent to your address lands in your inbox — including external senders like Gmail.</p></div>
+    <div class="glass fcard sr" data-d="3"><span class="idx">/03</span><span class="ic">📤</span><h3 data-i18n="f3_t">Real sending</h3><p data-i18n="f3_p">Not receive-only: send email to any address with full subject and body.</p></div>
+    <div class="glass fcard sr" data-d="4"><span class="idx">/04</span><span class="ic">📎</span><h3 data-i18n="f4_t">Attachments</h3><p data-i18n="f4_p">Send and receive files up to 2 MB each; download straight from the inbox.</p></div>
+    <div class="glass fcard sr" data-d="5"><span class="idx">/05</span><span class="ic">🔑</span><h3 data-i18n="f5_t">Automatic OTP</h3><p data-i18n="f5_p">Verification codes inside unread mail are detected automatically and shown in a big glowing card with a copy button.</p></div>
+    <div class="glass fcard sr" data-d="6"><span class="idx">/06</span><span class="ic">⏰</span><h3 data-i18n="f6_t">Scheduled sending</h3><p data-i18n="f6_p">Write now, choose when it leaves — with a live countdown to the send moment.</p></div>
+    <div class="glass fcard sr" data-d="7"><span class="idx">/07</span><span class="ic">📱</span><h3 data-i18n="f7_t">QR & mobile</h3><p data-i18n="f7_p">Beam your address — or an instant login — to your phone with a QR code. No typing, no typos.</p></div>
+    <div class="glass fcard sr" data-d="8"><span class="idx">/08</span><span class="ic">🌗</span><h3 data-i18n="f8_t">Dark / Light</h3><p data-i18n="f8_p">The whole interface flips between neon-dark and minimal-light with one click, and remembers your choice.</p></div>
+    <div class="glass fcard sr" data-d="9"><span class="idx">/09</span><span class="ic">💎</span><h3 data-i18n="f9_t">Premium $10</h3><p data-i18n="f9_p">Bigger inbox, more sends and 5 attachments per mail. Message support on Telegram to activate.</p></div>
   </div>
 </section>
-
-<!-- ══ EMAIL GENERATOR ══ -->
-<section class="section" id="generator" style="padding-top:64px">
-  <div class="sec-head sr">
-    <span class="num">⚡ GENERATOR</span>
-    <h2>آدرست رو خودت بساز</h2>
-    <p>نام دلخواهت رو بنویس (یا تاس بنداز)، دامنه رو انتخاب کن و همین‌جا ثبت‌نام کن — آدرس تو همون لحظه ساخته می‌شه.</p>
-  </div>
-  <div class="glass gen-box sr" data-d="2">
-    <div class="gen-row">
-      <input id="genName" type="text" placeholder="نام دلخواه... مثلاً ali_shop" maxlength="32" spellcheck="false" oninput="genPreview()">
-      <select id="genDomain" onchange="genPreview()"></select>
-    </div>
-    <div class="gen-preview">
-      <button class="dice" onclick="randomName()" title="نام تصادفی">🎲</button>
-      <span class="addr" id="genAddr">esm@metora.ir</span>
-      <button class="btn sm ghost" onclick="copyAddr()">📋 کپی</button>
-    </div>
-    <p class="gen-hint">فقط حروف انگلیسی، عدد و <span class="mono">. _ -</span> — حداقل ۳ کاراکتر. با دکمه‌ی زیر همین‌جا مال تو می‌شه.</p>
-    <button class="btn primary magnetic" style="justify-self:center" onclick="genRegister()">⚡ این آدرس رو بساز</button>
-    <p class="gen-hint" style="opacity:.75">🔑 رمز پیشنهادی: <span class="mono" id="genPass"></span> <button class="btn sm ghost" style="padding:3px 10px;font-size:.68rem" onclick="newGenPass()">🎲 رمز دیگه</button></p>
-  </div>
-</section>
-
-<div class="ad-slot" onclick="openAdModal()" role="button" aria-label="رزرو محل تبلیغ">
-  <div style="text-align:center">
-    <div class="t">📣 این محل تبلیغ شماست</div>
-    <div class="s">بنر ۹۷۰×۹۰ یا بنر ریسپانسیو — برای مشاهده تعرفه و رزرو کلیک کنید</div>
-  </div>
-</div>
-
-<!-- ══ HOW IT WORKS ══ -->
+<!-- ══ HOW ══ -->
 <section class="section" id="how">
   <div class="sec-head sr">
-    <span class="num">02 — HOW IT WORKS</span>
-    <h2>سه قدم تا<br>ایمیل موقتیِ خودت</h2>
+    <span class="num"><span data-i18n="how_num">02 — HOW IT WORKS</span></span>
+    <h2><span data-i18n="how_h">سه قدم تا</span><br><span data-i18n="how_h2">ایمیل موقتیِ خودت</span></h2>
   </div>
   <div class="steps">
-    <div class="glass step sr" data-d="1"><div class="n">01</div><h3>اسمت رو انتخاب کن</h3><p>هر اسمی که دوست داری — <span class="mono">ali</span>، <span class="mono">shop2026</span>، هرچی. با رمزی که خودت می‌ذاری، اکانتت ساخته می‌شه.</p></div>
-    <div class="glass step sr" data-d="2"><div class="n">02</div><h3>آدرست آماده‌ست</h3><p>همون لحظه <span class="mono">esm@metora.ir</span> مال توئه. هرجا که خواستی ثبت‌نام کن، بدون ترس از اسپم.</p></div>
-    <div class="glass step sr" data-d="3"><div class="n">03</div><h3>بفرست و بگیر</h3><p>ایمیل‌های دریافتی تو صندوقت ظاهر می‌شن، می‌تونی جواب بدی و پیوست بفرستی — درست مثل یه ایمیل واقعی.</p></div>
+    <div class="glass step sr" data-d="1"><div class="n">01</div><h3 data-i18n="how1_t">Pick a name</h3><p data-i18n="how1_p">Any name you like — <span class="mono">ali</span>, <span class="mono">shop2026</span>, whatever. Your account is created with your own password.</p></div>
+    <div class="glass step sr" data-d="2"><div class="n">02</div><h3 data-i18n="how2_t">Your address is ready</h3><p data-i18n="how2_p"><span class="mono">name@metora.ir</span> is yours the same second. Sign up anywhere, spam-free.</p></div>
+    <div class="glass step sr" data-d="3"><div class="n">03</div><h3 data-i18n="how3_t">Send & receive</h3><p data-i18n="how3_p">Incoming mail appears in your inbox; reply and attach files — exactly like real email.</p></div>
   </div>
 </section>
 
 <!-- ══ PRICING ══ -->
 <section class="section" id="pricing">
   <div class="sec-head sr" style="text-align:center;max-width:640px;margin-inline:auto">
-    <span class="num" style="margin-inline:auto">03 — PRICING</span>
-    <h2>رایگان شروع کن،<br>خواستی <span style="color:var(--acc)">پرمیوم</span> شو</h2>
+    <span class="num" style="margin-inline:auto"><span data-i18n="pr_num">03 — PRICING</span></span>
+    <h2><span data-i18n="pr_h">رایگان شروع کن،</span><br><span data-i18n="pr_h2">go Premium when you need more</span></h2>
   </div>
   <div class="price-wrap">
     <div class="glass plan sr" data-d="1">
-      <h3>رایگان</h3>
-      <div class="amount">$0<small>/همیشه</small></div>
+      <span class="pname"><span data-i18n="free">Free</span></span>
+      <div class="amount">$0<small><span data-i18n="forever">/forever</span></small></div>
       <ul>
-        <li>آدرس اختصاصی @metora.ir</li>
-        <li data-q="free_send">ارسال ۱۰ ایمیل در هر سیکل ۶ ساعته</li>
-        <li data-q="free_inbox">نگهداری ۵۰ ایمیل دریافتی</li>
-        <li data-q="free_att">۱ پیوست در هر ایمیل (تا ۲MB)</li>
-        <li class="no">پشتیبانی سریع تلگرام</li>
+        <li data-q="free_send"><span data-i18n="free_send">—</span></li>
+        <li data-q="free_inbox"><span data-i18n="free_inbox">—</span></li>
+        <li data-q="free_att"><span data-i18n="free_att">—</span></li>
+        <li><span data-i18n="free_all">All base features + OTP &amp; QR</span></li>
       </ul>
-      <button class="btn ghost magnetic" onclick="openAuth('register')">شروع رایگان</button>
+      <a class="btn ghost md magnetic" href="#generator" data-i18n="pr_start">Get started</a>
     </div>
     <div class="glass plan hot sr" data-d="2">
-      <span class="badge">پیشنهاد متورا</span>
-      <h3>پرمیوم</h3>
-      <div class="amount" id="planPrice">$10<small>/ماه</small></div>
+      <span class="badge" data-i18n="pr_badge">Recommended</span>
+      <span class="pname"><span data-i18n="prem">Premium</span></span>
+      <div class="amount" id="planPrice">$10<small data-i18n="per_month">/mo</small></div>
       <ul>
-        <li>همه امکانات رایگان</li>
-        <li data-q="prem_send">ارسال ۱۰۰ ایمیل در هر سیکل ۶ ساعته</li>
-        <li data-q="prem_inbox">نگهداری ۵۰۰ ایمیل دریافتی</li>
-        <li data-q="prem_att">۵ پیوست در هر ایمیل (هرکدام ۲MB)</li>
-        <li>پشتیبانی سریع تلگرام</li>
+        <li><span data-i18n="prem_all">Everything in Free</span></li>
+        <li data-q="prem_send"><span data-i18n="prem_send">—</span></li>
+        <li data-q="prem_inbox"><span data-i18n="prem_inbox">—</span></li>
+        <li data-q="prem_att"><span data-i18n="prem_att">—</span></li>
+        <li><span data-i18n="prem_sup">Priority Telegram support</span></li>
       </ul>
-      <a class="btn primary magnetic" href="https://t.me/daronelydev" target="_blank" rel="noopener">فعال‌سازی از تلگرام ←</a>
+      <a class="btn primary md magnetic" href="https://t.me/daronelydev" target="_blank" rel="noopener"><span data-i18n="pr_act">Activate via Telegram</span></a>
     </div>
   </div>
 </section>
 
-<div class="ad-slot compact" onclick="openAdModal()" role="button" aria-label="رزرو محل تبلیغ">
+<div class="ad-slot compact" onclick="openAdModal()" role="button" aria-label="Ad slot — yours">
   <div style="text-align:center">
-    <div class="t">📣 این محل تبلیغ شماست</div>
-    <div class="s">بنر ۹۷۰×۲۵۰ — کلیک کنید و همین امروز رزرو کنید</div>
+    <div class="t"><span data-i18n="ad2_t">📣 Your ad here</span></div>
+    <div class="s"><span data-i18n="ad2_s">بنر ۹۷۰×۲۵۰ — کلیک کنید و همین امروز رزرو کنید</span></div>
   </div>
 </div>
 
 <!-- ══ DEPLOY GUIDE ══ -->
 <section class="section" id="guide">
   <div class="sec-head sr">
-    <span class="num">04 — SELF-HOST</span>
-    <h2>روی سی‌پنل خودت<br>راه بندازش</h2>
-    <p>کل پروژه متن‌باز و رایگانه. با این راهنمای تصویری، در کمتر از ۱۵ دقیقه نسخه‌ی خودت رو داشته باش — بدون سرور اختصاصی و بدون هزینه اضافه.</p>
+    <span class="num" data-i18n="g_num">04 — SELF-HOST</span>
+    <h2><span data-i18n="g_h">Run it on your own</span><br><span data-i18n="g_h2">cPanel — in ~20 minutes</span></h2>
+    <p><span data-i18n="g_p">The whole project is free and open source. Follow the visual guide below — a database, a catch-all mailbox and four cron jobs are all it takes.</span></p>
   </div>
 
   <div class="glass sr" style="padding:24px;max-width:980px;margin-inline:auto">
     <div class="guide-cta" style="margin:0 0 20px">
-      <a class="btn primary magnetic" href="https://github.com/Daronely/metora-tempmail" target="_blank" rel="noopener">⭐ گیت‌هاب پروژه (ستاره یادت نره)</a>
-      <a class="btn ghost magnetic" href="https://github.com/Daronely/metora-tempmail/archive/refs/heads/main.zip" target="_blank" rel="noopener">⬇️ دانلود سورس ZIP</a>
+      <a class="btn primary md magnetic" href="https://github.com/Daronely/metora-tempmail" target="_blank" rel="noopener"><span data-i18n="g_gh">⭐ GitHub repo (star it!)</span></a>
+      <a class="btn ghost md magnetic" href="https://github.com/Daronely/metora-tempmail/archive/refs/heads/main.zip" target="_blank" rel="noopener"><span data-i18n="g_zip">⬇️ Download source ZIP</span></a>
     </div>
 
     <div class="guide-tabs">
-      <button class="on" onclick="guideTab(0)">ساخت دیتابیس</button>
-      <button onclick="guideTab(1)">آپلود فایل‌ها</button>
-      <button onclick="guideTab(2)">کانفیگ و ستاپ</button>
-      <button onclick="guideTab(3)">صندوق ایمیل</button>
-      <button onclick="guideTab(4)">کرون‌ها</button>
+      <button class="on" onclick="guideTab(0)" data-i18n="gt1">ساخت دیتابیس</button>
+      <button onclick="guideTab(1)" data-i18n="gt2">آپلود فایل‌ها</button>
+      <button onclick="guideTab(2)" data-i18n="gt3">کانفیگ و ستاپ</button>
+      <button onclick="guideTab(3)" data-i18n="gt4">صندوق ایمیل</button>
+      <button onclick="guideTab(4)" data-i18n="gt5">کرون‌ها</button>
     </div>
 
     <div class="gpanel on" id="gp0">
-      <div class="step-card"><div class="step-num">۱</div><div class="step-body">
-        <h3>وارد سی‌پنل شو و MySQL® Databases رو باز کن</h3>
-        <p>از داشبورد سی‌پنل، بخش <code>Databases</code>، روی <code>MySQL® Databases</code> کلیک کن. اینجا هم دیتابیس می‌سازیم هم کاربرش رو.</p>
-        <div class="step-shot"><img src="assets/guide/step1-db.png" alt="ساخت دیتابیس در cPanel"></div>
+      <div class="step-card"><div class="step-num">1</div>
+<div class="step-body">
+<h3 data-i18n="g1_t">Open cPanel â MySQLÂ® Databases</h3>
+<p data-i18n="g1_p">From the cPanel dashboard, under <code>Databases</code>, open <code>MySQLÂ® Databases</code>. We create the database and its user here.</p>
+        <div class="step-shot"><img src="assets/guide/step1-db.png" alt="Create the database in cPanel" loading="lazy"></div>
       </div></div>
-      <div class="step-card"><div class="step-num">۲</div><div class="step-body">
-        <h3>یک دیتابیس بساز</h3>
-        <p>در فیلد <code>New Database</code> یک نام مثل <code>tempmail</code> بنویس و <code>Create Database</code> رو بزن. نام کامل معمولاً با پسوند کاربری هاستت ساخته می‌شه، مثل <code>user_tempmail</code> — همین نام کامل رو یادداشت کن.</p>
-        <div class="step-shot"><img src="assets/guide/step2-create.png" alt="نام دیتابیس"></div>
+      <div class="step-card"><div class="step-num">2</div>
+<div class="step-body">
+<h3 data-i18n="g2_t">Create a database</h3>
+<p data-i18n="g2_p">In <code>New Database</code> type a name like <code>tempmail</code> and hit <code>Create Database</code>. The full name usually gets your hosting username prefix, like <code>user_tempmail</code> â note that full name down.</p>
+        <div class="step-shot"><img src="assets/guide/step2-create.png" alt="Database name" loading="lazy"></div>
       </div></div>
-      <div class="step-card"><div class="step-num">۳</div><div class="step-body">
-        <h3>کاربر دیتابیس + دسترسی کامل</h3>
-        <p>پایین‌تر در همان صفحه، یک <code>MySQL User</code> با رمز قوی بساز، بعد در بخش <code>Add User To Database</code> کاربر را به دیتابیس وصل کن و در صفحه‌ی بعد <code>ALL PRIVILEGES</code> را تیک بزن.</p>
-        <div class="step-shot"><img src="assets/guide/step3-user.png" alt="ساخت کاربر و دسترسی‌ها"></div>
+      <div class="step-card"><div class="step-num">3</div>
+<div class="step-body">
+<h3 data-i18n="g3_t">Database user + full privileges</h3>
+<p data-i18n="g3_p">Further down the same page, create a <code>MySQL User</code> with a strong password, then in <code>Add User To Database</code> connect the user to the database and tick <code>ALL PRIVILEGES</code> on the next screen.</p>
+        <div class="step-shot"><img src="assets/guide/step3-user.png" alt="Create user and privileges" loading="lazy"></div>
       </div></div>
     </div>
 
     <div class="gpanel" id="gp1">
-      <div class="step-card"><div class="step-num">۴</div><div class="step-body">
-        <h3>سورس پروژه رو دانلود کن</h3>
-        <p>از گیت‌هاب پروژه، دکمه‌ی سبز <code>Code</code> → <code>Download ZIP</code> رو بزن (یا با گیت کلون کن). فایل ZIP رو سیستم‌ات باز کن.</p>
-        <div class="step-shot"><img src="assets/guide/step4-zip.png" alt="دانلود سورس از گیت‌هاب"></div>
+      <div class="step-card"><div class="step-num">4</div>
+<div class="step-body">
+<h3 data-i18n="g4_t">Download the source</h3>
+<p data-i18n="g4_p">On the GitHub repo click the green <code>Code</code> button â <code>Download ZIP</code> (or git clone). Extract the ZIP on your machine.</p>
+        <div class="step-shot"><img src="assets/guide/step4-zip.png" alt="Download source from GitHub" loading="lazy"></div>
       </div></div>
-      <div class="step-card"><div class="step-num">۵</div><div class="step-body">
-        <h3>File Manager → پوشه‌ی ساب‌دامین</h3>
-        <p>در سی‌پنل <code>File Manager</code> رو باز کن. اگر ساب‌دامین نداری، اول از بخش <code>Subdomains</code> یکی بساز (مثل <code>temp.yoursite.com</code>)، بعد همه‌ی محتویات پوشه‌ی سورس را در پوشه‌ی آن ساب‌دامین (معمولاً <code>public_html/temp</code>) آپلود کن — <code>Extract</code> یادت نره.</p>
-        <div class="step-shot"><img src="assets/guide/step5-upload.png" alt="آپلود در File Manager"></div>
+      <div class="step-card"><div class="step-num">5</div>
+<div class="step-body">
+<h3 data-i18n="g5_t">File Manager â subdomain folder</h3>
+<p data-i18n="g5_p">Open <code>File Manager</code> in cPanel. If you have no subdomain yet, create one first under <code>Subdomains</code> (like <code>temp.yoursite.com</code>), then upload the source into that subdomain’s folder (usually <code>public_html/temp</code>) â don’t forget <code>Extract</code>.</p>
+        <div class="step-shot"><img src="assets/guide/step5-upload.png" alt="Upload in File Manager" loading="lazy"></div>
       </div></div>
-      <div class="step-card"><div class="step-num">۶</div><div class="step-body">
-        <h3>ساختار نهایی باید این شکلی باشه</h3>
-        <p>یعنی فایل <code>index.html</code> و پوشه‌های <code>api</code> ، <code>includes</code> ، <code>cron</code> ، <code>pipe</code> مستقیم داخل پوشه‌ی ساب‌دامین باشن. پوشه‌های <code>storage</code> و <code>state</code> خودکار ساخته می‌شن.</p>
-        <div class="step-shot"><img src="assets/guide/step6-structure.png" alt="ساختار فایل‌ها"></div>
+      <div class="step-card"><div class="step-num">6</div>
+<div class="step-body">
+<h3 data-i18n="g6_t">The final structure looks like this</h3>
+<p data-i18n="g6_p">That means <code>index.html</code> and the <code>api</code>, <code>includes</code>, <code>cron</code>, <code>pipe</code> folders sit directly inside the subdomain folder. <code>storage</code> and <code>state</code> are created automatically.</p>
+        <div class="step-shot"><img src="assets/guide/step6-structure.png" alt="File structure" loading="lazy"></div>
       </div></div>
     </div>
 
     <div class="gpanel" id="gp2">
-      <div class="step-card"><div class="step-num">۷</div><div class="step-body">
-        <h3>فایل کانفیگ رو بساز</h3>
-        <p>در پوشه‌ی <code>includes</code> یک کپی از <code>config.sample.php</code> با نام <code>config.php</code> بساز و بازش کن برای ویرایش.</p>
-        <div class="step-shot"><img src="assets/guide/step7-copy.png" alt="کپی کانفیگ نمونه"></div>
+      <div class="step-card"><div class="step-num">7</div>
+<div class="step-body">
+<h3 data-i18n="g7_t">Create the config file</h3>
+<p data-i18n="g7_p">In the <code>includes</code> folder make a copy of <code>config.sample.php</code> named <code>config.php</code> and open it for editing.</p>
+        <div class="step-shot"><img src="assets/guide/step7-copy.png" alt="Copy the sample config" loading="lazy"></div>
       </div></div>
-      <div class="step-card"><div class="step-num">۸</div><div class="step-body">
-        <h3>مقادیر رو پر کن</h3>
-        <p>مشخصات دیتابیس (همون <code>user_tempmail</code> و رمزش)، دامنه‌ی ایمیلت، و مشخصات ادمین seed. همه‌ی ثابت‌ها کامنت فارسی دارند.</p>
-        <div class="step-shot"><img src="assets/guide/step8-config.png" alt="ویرایش مقادیر کانفیگ"></div>
+      <div class="step-card"><div class="step-num">8</div>
+<div class="step-body">
+<h3 data-i18n="g8_t">Fill in the values</h3>
+<p data-i18n="g8_p">Database credentials (the <code>user_tempmail</code> name and its password), your mail domain, and the seed admin details. Every constant has an inline comment.</p>
+        <div class="step-shot"><img src="assets/guide/step8-config.png" alt="Edit config values" loading="lazy"></div>
       </div></div>
-      <div class="step-card"><div class="step-num">۹</div><div class="step-body">
-        <h3>setup.php رو یک‌بار باز کن و حذفش کن</h3>
-        <p>آدرس <code>https://temp.yoursite.com/setup.php</code> رو در مرورگر باز کن — جداول دیتابیس و اکانت ادمین seed ساخته می‌شه. بعد از پیام موفقیت، همین فایل رو از File Manager حذف کن (امنیت!).</p>
-        <div class="step-shot"><img src="assets/guide/step9-setup.png" alt="اجرای setup.php"></div>
+      <div class="step-card"><div class="step-num">9</div>
+<div class="step-body">
+<h3 data-i18n="g9_t">Open setup.php once, then delete it</h3>
+<p data-i18n="g9_p">Open <code>https://temp.yoursite.com/setup.php</code> in the browser â the database tables and the seed admin account are created. After the success message, delete this file from File Manager (security!).</p>
+        <div class="step-shot"><img src="assets/guide/step9-setup.png" alt="Run setup.php" loading="lazy"></div>
       </div></div>
     </div>
 
     <div class="gpanel" id="gp3">
-      <div class="step-card"><div class="step-num">۱۰</div><div class="step-body">
-        <h3>یک ایمیل catch-all بساز</h3>
-        <p>در سی‌پنل بخش <code>Email Accounts</code> → <code>Create</code>، روی همون دامنه‌ی ایمیل یک صندوق بساز (مثل <code>tempmail@yoursite.com</code>) و رمزش رو در کانفیگ یادداشت کن.</p>
-        <div class="step-shot"><img src="assets/guide/step10-mailbox.png" alt="ساخت صندوق ایمیل"></div>
+      <div class="step-card"><div class="step-num">10</div>
+<div class="step-body">
+<h3 data-i18n="g10_t">Create a catch-all mailbox</h3>
+<p data-i18n="g10_p">In cPanel <code>Email Accounts</code> â <code>Create</code>, make a mailbox on your mail domain (like <code>tempmail@yoursite.com</code>) and note its password for the config.</p>
+        <div class="step-shot"><img src="assets/guide/step10-mailbox.png" alt="Create the mailbox" loading="lazy"></div>
       </div></div>
-      <div class="step-card"><div class="step-num">۱۱</div><div class="step-body">
-        <h3>Default Address رو تنظیم کن</h3>
-        <p>در بخش <code>Default Address</code> گزینه‌ی <code>Forward to Email Address</code> را انتخاب و آدرس همون صندوق catch-all را وارد کن. حالا هر ایمیلی به هر نامی روی دامنه‌ات برسه، می‌ره تو اون صندوق.</p>
-        <div class="step-shot"><img src="assets/guide/step11-default.png" alt="تنظیم Default Address"></div>
+      <div class="step-card"><div class="step-num">11</div>
+<div class="step-body">
+<h3 data-i18n="g11_t">Set the Default Address</h3>
+<p data-i18n="g11_p">In <code>Default Address</code> choose <code>Forward to Email Address</code> and enter that catch-all mailbox. Now any mail to any name on your domain flows into that one mailbox.</p>
+        <div class="step-shot"><img src="assets/guide/step11-default.png" alt="Set the Default Address" loading="lazy"></div>
       </div></div>
-      <div class="step-card"><div class="step-num">۱۲</div><div class="step-body">
-        <h3>MX رکورد دامنه</h3>
-        <p>اگر دامنه‌ات روی همین هاست میل می‌خوره، MX خودکار تنظیمه. اگر ایمیل دامنه‌ات جای دیگه‌ست، در <code>Zone Editor</code> رکورد MX دامنه را به هاست فعلی برگردان تا ایمیل‌ها برسند.</p>
-        <div class="step-shot"><img src="assets/guide/step12-mx.png" alt="Zone Editor و MX"></div>
+      <div class="step-card"><div class="step-num">12</div>
+<div class="step-body">
+<h3 data-i18n="g12_t">Domain MX record</h3>
+<p data-i18n="g12_p">If your domain already receives mail on this host, MX is already set. If its email lives elsewhere, point the domain’s MX record in <code>Zone Editor</code> back to this host so the mail arrives.</p>
+        <div class="step-shot"><img src="assets/guide/step12-mx.png" alt="Zone Editor and MX" loading="lazy"></div>
       </div></div>
     </div>
 
     <div class="gpanel" id="gp4">
-      <div class="step-card"><div class="step-num">۱۳</div><div class="step-body">
-        <h3>Cron Jobs رو باز کن</h3>
-        <p>از سی‌پنل بخش <code>Advanced → Cron Jobs</code>. چهار کرون زیر را با دکمه‌ی <code>Add New Cron Job</code> اضافه کن (مسیر پوشه‌ی خودت را جایگزین کن).</p>
-        <div class="step-shot"><img src="assets/guide/step13-cron.png" alt="Cron Jobs در cPanel"></div>
+      <div class="step-card"><div class="step-num">13</div>
+<div class="step-body">
+<h3 data-i18n="g13_t">Open Cron Jobs</h3>
+<p data-i18n="g13_p">In cPanel go to <code>Advanced â Cron Jobs</code>. Add the four jobs below with <code>Add New Cron Job</code> (replace the folder path with your own).</p>
+        <div class="step-shot"><img src="assets/guide/step13-cron.png" alt="Cron Jobs in cPanel" loading="lazy"></div>
       </div></div>
-      <div class="step-card"><div class="step-num">۱۴</div><div class="step-body">
-        <h3>این چهار کرون رو اضافه کن</h3>
-        <p>
-          <code>* * * * * &nbsp;php -q /home/USER/temp/cron/imap_poll.php</code><br>
-          <code>* * * * * &nbsp;php -q /home/USER/temp/cron/process_scheduled.php</code><br>
-          <code>0 0,6,12,18 * * * &nbsp;php -q /home/USER/temp/cron/reset_cycle.php</code><br>
-          <code>30 3 * * * &nbsp;php -q /home/USER/temp/cron/purge_inactive.php</code><br>
-          اولی هر دقیقه ایمیل‌ها را از IMAP برمی‌دارد، دومی ارسال‌های زمان‌بندی‌شده را می‌فرستد، سومی هر ۶ ساعت همه‌چیز را پاک می‌کند و آخری اکانت‌های ۱۰ روز بی‌استفاده را حذف می‌کند.
-        </p>
-        <div class="step-shot"><img src="assets/guide/step14-add.png" alt="افزودن کرون"></div>
+      <div class="step-card"><div class="step-num">14</div>
+<div class="step-body">
+<h3 data-i18n="g14_t">Add these four cron jobs</h3>
+<p data-i18n="g14_p">The first pulls mail over IMAP every minute, the second sends scheduled mail, the third wipes everything every 6 hours, and the last purges inactive accounts at night.</p>
+        <div class="step-shot"><img src="assets/guide/step14-add.png" alt="Add a cron job" loading="lazy"></div>
       </div></div>
-      <div class="step-card"><div class="step-num">۱۵</div><div class="step-body">
-        <h3>تمومه! 🎉</h3>
-        <p>با اکانت ادمین seed وارد شو، از پنل ادمین رمزت رو عوض کن، سهمیه‌ها رو سلیقه‌ای کن و لذت ببر. اگر جایی گیر کردی، در گیت‌هاب Issue بزن یا به تلگرام پشتیبانی پیام بده.</p>
-        <div class="step-shot"><img src="assets/guide/step15-done.png" alt="پایان نصب"></div>
+      <div class="step-card"><div class="step-num">15</div>
+<div class="step-body">
+<h3 data-i18n="g15_t">Done! ð</h3>
+<p data-i18n="g15_p">Sign in with the seed admin, change its password in the admin panel, tune the quotas to taste and enjoy. Stuck? Open a GitHub Issue or message support on Telegram.</p>
+        <div class="step-shot"><img src="assets/guide/step15-done.png" alt="Install complete" loading="lazy"></div>
       </div></div>
     </div>
 
     <div class="guide-cta">
-      <a class="btn primary magnetic" href="https://github.com/Daronely/metora-tempmail" target="_blank" rel="noopener">📖 مستندات کامل در گیت‌هاب</a>
-      <a class="btn ghost magnetic" href="https://t.me/daronelydev" target="_blank" rel="noopener">💬 سؤال داری؟ تلگرام</a>
+      <a class="btn primary md magnetic" href="https://github.com/Daronely/metora-tempmail" target="_blank" rel="noopener"><span data-i18n="g_docs">📖 Full documentation on GitHub</span></a>
+      <a class="btn ghost md magnetic" href="https://t.me/daronelydev" target="_blank" rel="noopener"><span data-i18n="g_telegram">💬 Questions? Telegram</span></a>
     </div>
   </div>
 </section>
+<div class="ad-slot" onclick="openAdModal()" role="button" aria-label="Ad slot — yours">
+  <div style="text-align:center">
+    <div class="t"><span data-i18n="ad4_t">📣 Your ad here</span></div>
+    <div class="s"><span data-i18n="ad4_s">فوتر — آخرین چیزی که کاربر می‌بینه، اولین چیزی که یادش می‌مونه</span></div>
+  </div>
+</div>
+
+<footer>
+  <div><span data-i18n="ft_made">Crafted with ♥ by <a href="https://metora.ir" target="_blank" rel="noopener">Metora</a> · <a href="https://github.com/Daronely/metora-tempmail" target="_blank" rel="noopener">GitHub</a></span></div>
+  <div class="social">
+    <a href="https://t.me/daronelydev" target="_blank" rel="noopener"><span data-i18n="ft_tele">Telegram: @daronelydev</span></a>
+    <span>·</span><span data-i18n="ft_phone">+98 999 996 0295</span>
+  </div>
+</footer>
 
 <!-- ══ AUTH MODAL ══ -->
 <div class="modal" id="authModal">
   <div class="box">
-    <h2 id="authTitle">ورود</h2>
-    <p class="hint" id="authHint">با ایمیل و رمزت وارد صندوقت شو.</p>
+    <h2 id="authTitle" data-i18n="au_login">Sign in</h2>
+    <p class="hint" id="authHint"><span data-i18n="au_login_hint">Enter your inbox with email and password.</span></p>
     <div id="loginFields">
-      <div class="field"><label>ایمیل</label><div class="wrap"><input id="loginEmail" type="email" placeholder="you@metora.ir" autocomplete="email"></div></div>
-      <div class="field"><label>رمز عبور</label><div class="wrap"><input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password"></div></div>
+      <div class="field"><label data-i18n="au_email">Email</label><input id="loginEmail" type="email" placeholder="you@metora.ir" autocomplete="email"></div>
+      <div class="field"><label data-i18n="au_pass">Password</label><input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password"></div>
     </div>
     <div id="regFields" style="display:none">
-      <div class="field"><label>نام کاربری (ایمیلت می‌شه: کاربر@metora.ir)</label><div class="wrap"><input id="regUser" type="text" placeholder="myname" autocomplete="username"></div></div>
-      <div class="field"><label>رمز عبور (حداقل ۶ کاراکتر)</label><div class="wrap"><input id="regPass" type="password" placeholder="••••••••" autocomplete="new-password"></div></div>
+      <div class="field"><label data-i18n="au_user">Username (your address: user@metora.ir)</label><input id="regUser" type="text" placeholder="myname" autocomplete="username"></div>
+      <div class="field"><label data-i18n="au_newpass">New password (min 8 chars)</label><input id="regPass" type="password" placeholder="••••••••" autocomplete="new-password"></div>
     </div>
     <div class="err" id="authErr"></div>
-    <button class="btn primary" id="authBtn" style="width:100%" onclick="doAuth()">ورود</button>
+    <button class="btn primary md" id="authBtn" style="width:100%" onclick="doAuth()" data-i18n="au_btn_login">Sign in</button>
     <div class="switch">
-      <button id="swLogin" class="on" onclick="authMode('login')">ورود</button>
-      <button id="swReg" onclick="authMode('register')">ثبت‌نام</button>
+      <button id="swLogin" class="on" onclick="authMode('login')" data-i18n="au_login">Sign in</button>
+      <button id="swReg" onclick="authMode('register')" data-i18n="au_reg">Quick sign-up</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ AD MODAL ══ -->
+<div class="modal" id="adModal">
+  <div class="box" style="max-width:520px">
+    <h2 style="font-size:1.15rem"><span data-i18n="ad_t">📣 Advertise on Metora</span></h2>
+    <p class="hint" style="margin-bottom:16px"><span data-i18n="ad_p">Put your message in front of people who live in their inboxes.</span></p>
+    <div style="display:grid;gap:10px;margin-bottom:18px">
+      <div style="display:flex;justify-content:space-between;padding:11px 15px;border:1px solid var(--card-br);border-radius:12px">
+        <span data-i18n="adf1">🎯 Targeted reach of active email users</span><span class="mono" style="color:var(--acc)">✓</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:11px 15px;border:1px solid var(--card-br);border-radius:12px">
+        <span data-i18n="adf2">📐 Responsive banner or text + icon</span><span class="mono" style="color:var(--acc)">✓</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:11px 15px;border:1px solid var(--card-br);border-radius:12px">
+        <span data-i18n="adf3">📅 Flexible window: weekly / monthly</span><span class="mono" style="color:var(--acc)">✓</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:11px 15px;border:1px solid var(--card-br);border-radius:12px">
+        <span data-i18n="adf4">📊 Click report (soon)</span><span class="mono" style="color:var(--warn)" data-i18n="ad_soon">soon</span>
+      </div>
+    </div>
+    <a class="btn primary md magnetic" style="width:100%" href="https://t.me/daronelydev" target="_blank" rel="noopener"><span data-i18n="ad_cta">💬 Book a slot on Telegram</span></a>
+    <button class="btn ghost md" style="width:100%;margin-top:8px" onclick="document.getElementById('adModal').classList.remove('open')" data-i18n="ad_close">Close</button>
+  </div>
+</div>
+
+<!-- ══ QR MODAL ══ -->
+<div class="modal" id="qrModal">
+  <div class="box" style="max-width:360px">
+    <h2 style="font-size:1.05rem"><span data-i18n="qr_t">📱 Scan with your phone</span></h2>
+    <p class="hint" style="margin-bottom:10px"><span data-i18n="qr_p">Scan with the phone camera to INSTANTLY open your inbox on mobile — one scan, logged in.</span></p>
+    <div class="qr-box">
+      <canvas id="qrCanvas" width="220" height="220"></canvas>
+      <div class="qr-addr" id="qrAddr"></div>
+      <button class="btn ghost md" style="width:100%" onclick="document.getElementById('qrModal').classList.remove('open')" data-i18n="ad_close">Close</button>
     </div>
   </div>
 </div>
 
 <!-- ══ MAIL APP ══ -->
 <div id="app">
-  <div class="appbar">
+  <div class="glass appbar">
     <div class="who">
       <span class="email" id="userEmail"></span>
       <span class="meta">
@@ -783,161 +868,145 @@ html[data-theme="light"] .step-shot{background:rgba(255,255,255,.6)}
         <span class="quota" id="quotaInfo"></span>
       </span>
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-      <button class="themeBtn" id="themeBtn" onclick="toggleTheme()" title="حالت روشن / تاریک">🌙</button>
-      <a href="/admin/" id="adminLink" class="btn sm ghost" style="display:none">پنل ادمین</a>
-      <button class="btn sm ghost" onclick="refreshAll()">↻ تازه‌سازی</button>
-      <button class="btn sm primary magnetic" onclick="showCompose()">✏️ ایمیل جدید</button>
-      <button class="btn sm danger" onclick="doLogout()">خروج</button>
+    <div class="acts">
+      <button class="themeBtn" id="themeBtn" onclick="toggleTheme()" title="Dark / Light">🌙</button>
+      <a href="/admin/" id="adminLink" class="btn sm ghost" style="display:none"><span data-i18n="ap_admin">Admin panel</span></a>
+      <button class="btn sm ghost" onclick="refreshAll()" data-i18n="ap_refresh">↻ Refresh</button>
+      <button class="btn sm primary magnetic" onclick="showCompose()" data-i18n="ap_new">✏️ New email</button>
+      <button class="btn sm danger" onclick="doLogout()" data-i18n="ap_logout">Sign out</button>
     </div>
   </div>
 
   <div class="toolbar">
-    <button class="toolbtn" id="qrBtn" onclick="showQR()">📱 QR</button>
-    <button class="toolbtn" id="arBtn" onclick="toggleAutoRefresh()">⚡ برروزرسانی خودکار: خاموش</button>
-    <button class="toolbtn" id="sndBtn" onclick="toggleSound()">🔔 صدای دریافت: روشن</button>
-    <button class="toolbtn" id="expBtn" onclick="exportEML()" style="display:none">📤 خروجی EML</button>
-    <span class="cyclebar">⏳ انقضای سیکل: <span class="mono" id="cycleTimer">--:--:--</span></span>
+    <button class="toolbtn" onclick="showQR()"><span data-i18n="ap_qr">📱 QR login</span></button>
+    <button class="toolbtn" id="rqBtn" onclick="openRequests()">🎁 <span data-i18n="ap_req">Request resources</span></button>
+    <button class="toolbtn" id="arBtn" onclick="toggleAutoRefresh()" data-i18n="ap_auto">⚡ Auto-refresh: off</button>
+    <button class="toolbtn on" id="sndBtn" onclick="toggleSound()" data-i18n="ap_sound">🔔 Sound: on</button>
+    <span class="cyclebar"><span data-i18n="ap_cycle">⏳ Cycle ends in:</span> <span class="mono" id="cycleTimer">--:--:--</span></span>
   </div>
 
   <div class="client">
     <div class="glass listpane">
       <div class="tabrow">
-        <button id="mt-inbox" class="on" onclick="mailTab('inbox')">📥 دریافتی <span class="cnt" id="cntInbox"></span></button>
-        <button id="mt-sent" onclick="mailTab('sent')">📤 ارسالی <span class="cnt" id="cntSent"></span></button>
-        <button id="mt-sched" onclick="mailTab('sched')">⏰ زمان‌بندی <span class="cnt" id="cntSched"></span></button>
+        <button id="mt-inbox" class="on" onclick="mailTab('inbox')"><span data-i18n="tab_inbox">📥 Inbox</span> <span class="cnt" id="cntInbox"></span></button>
+        <button id="mt-sent" onclick="mailTab('sent')"><span data-i18n="tab_sent">📤 Sent</span> <span class="cnt" id="cntSent"></span></button>
+        <button id="mt-sched" onclick="mailTab('sched')"><span data-i18n="tab_sched">⏰ Scheduled</span> <span class="cnt" id="cntSched"></span></button>
       </div>
-      <div class="filterbar" id="filterBar" style="display:none">
-        <button class="on" data-f="all" onclick="setFilter('all')">همه</button>
-        <button data-f="fav" onclick="setFilter('fav')">⭐ مهم‌ها</button>
-        <button data-f="unread" onclick="setFilter('unread')">🔵 خوانده‌نشده</button>
-        <button data-f="att" onclick="setFilter('att')">📎 دارای پیوست</button>
+      <div class="filterbar" id="filterBar">
+        <button class="on" data-f="all" onclick="setFilter('all')" data-i18n="fl_all">همه</button>
+        <button data-f="fav" onclick="setFilter('fav')" data-i18n="fl_fav">⭐ مهم‌ها</button>
+        <button data-f="unread" onclick="setFilter('unread')" data-i18n="fl_unread">🔵 خوانده‌نشده</button>
+        <button data-f="att" onclick="setFilter('att')" data-i18n="fl_att">📎 پیوست‌دار</button>
       </div>
       <div class="otp-card" id="otpCard">
         <div>
-          <div class="otp-meta">🔑 کد تأیید شناسایی شد</div>
+          <div class="otp-meta" data-i18n="otp_meta">🔑 Verification code detected</div>
           <div class="otp-code" id="otpCode">—</div>
           <div class="otp-src" id="otpSrc"></div>
         </div>
-        <button class="btn sm primary magnetic" onclick="copyOtp()" style="margin-inline-start:auto">📋 کپی کد</button>
-        <button class="btn sm ghost" onclick="hideOtp()">✕</button>
+        <div style="display:flex;gap:8px;margin-inline-start:auto">
+          <button class="btn sm primary magnetic" onclick="copyOtp()" data-i18n="otp_copy">📋 Copy code</button>
+          <button class="btn sm ghost" onclick="hideOtp()">✕</button>
+        </div>
       </div>
       <div class="msglist" id="msgList"></div>
     </div>
     <div class="glass readpane" id="readPane">
-      <div class="empty"><span class="big">✉️</span>ایمیلی انتخاب نشده.<br>از لیست کنار یه ایمیل باز کن، یا با «ایمیل جدید» یکی بفرست.</div>
+      <div class="empty"><span class="big">✉️</span><span data-i18n="empty_pick">No email selected.<br>Open one from the list, or hit “New email”.</span></div>
     </div>
   </div>
 
-  <div class="ad-slot compact" onclick="openAdModal()" role="button" aria-label="رزرو محل تبلیغ">
+  <div class="ad-slot compact" onclick="openAdModal()" role="button" aria-label="Ad slot — yours">
     <div style="text-align:center">
-      <div class="t">📣 این محل تبلیغ شماست</div>
-      <div class="s">سایز ۷۲۸×۹۰ — در دید کامل کاربران فعال صندوق</div>
-    </div>
-  </div>
-
-  <div class="compose-wrap">
-    <canvas id="typefx"></canvas>
-    <div class="glass compose" id="composePane">
-      <h3 style="font-size:1.06rem;font-weight:800">ایمیل جدید</h3>
-      <div class="field"><label>به (گیرنده)</label><div class="wrap"><input id="cmpTo" class="mono-in" type="email" placeholder="someone@example.com"></div></div>
-      <div class="field"><label>موضوع</label><div class="wrap"><input id="cmpSubject" type="text" placeholder="سلام..."></div></div>
-      <div class="field"><label>متن</label><div class="wrap"><textarea id="cmpBody" placeholder="بنویس..."></textarea></div></div>
-
-      <div class="sched-toggle" id="schedToggle" onclick="toggleSched()">
-        <label class="toggle"><input type="checkbox" id="schedOn"><span class="tr"></span></label>
-        <span><span class="lbl">⏰ ارسال زمان‌بندی‌شده</span>
-        <span class="sub">ایمیلت در تاریخ و ساعتی که انتخاب می‌کنی، خودکار ارسال می‌شه</span></span>
-      </div>
-      <div class="sched-fields" id="schedFields">
-        <input type="date" id="schedDate" onchange="updateSendBtn()">
-        <input type="time" id="schedTime" onchange="updateSendBtn()">
-      </div>
-      <div class="sched-fields" id="schedAttWrap" style="grid-template-columns:1fr">
-        <div class="sched-drop" id="schedDrop" onclick="document.getElementById('schedFile').click()">
-          📎 پیوست اختیاری (حداکثر ۱ مگابایت)
-        </div>
-        <input type="file" id="schedFile" style="display:none">
-      </div>
-      <div class="sched-note">⚖️ قوانین: هر روز فقط یک ایمیل زمان‌بندی‌شده — حداکثر ۵ ایمیل در انتظار ارسال (قدیمی‌ترها خودکار حذف می‌شوند) — پیوست حداکثر ۱ مگابایت.</div>
-
-      <div>
-        <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
-          📎 پیوست اضافه کن (حداکثر ۲MB هر فایل) — یا فایل رو همین‌جا رها کن
-        </div>
-        <input type="file" id="fileInput" multiple style="display:none">
-        <div class="filelist" id="fileList" style="margin-top:10px"></div>
-      </div>
-      <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
-        <button class="btn ghost" onclick="hideCompose()">انصراف</button>
-        <button class="btn ghost magnetic" onclick="randomIdentity()" title="برای تست فرم‌ها — کپی در کلیپ‌بورد">🎭 هویت تصادفی</button>
-        <button class="btn primary magnetic" id="sendBtn" onclick="doSend()">ارسال ✦</button>
-      </div>
+      <div class="t"><span data-i18n="ad3_t">📣 Your ad here</span></div>
+      <div class="s"><span data-i18n="ad3_s">سایز ۷۲۸×۹۰ — در دید کامل کاربران فعال صندوق</span></div>
     </div>
   </div>
 </div>
 
-<div class="ad-slot" onclick="openAdModal()" role="button" aria-label="رزرو محل تبلیغ">
-  <div style="text-align:center">
-    <div class="t">📣 این محل تبلیغ شماست</div>
-    <div class="s">فوتر — آخرین چیزی که کاربر می‌بینه، اولین چیزی که یادش می‌مونه</div>
+<!-- ══ COMPOSE (modal overlay) ══ -->
+<div class="compose-wrap" id="composeWrap" onclick="if(event.target===this)hideCompose()">
+  <div class="glass compose" id="composePane">
+    <h3 data-i18n="cp_t">✏️ New email</h3>
+    <div class="field"><label data-i18n="cp_to">To (recipient)</label><input id="cmpTo" class="mono-in" type="email" placeholder="someone@example.com"></div>
+    <div class="field"><label data-i18n="cp_subj">Subject</label><input id="cmpSubject" type="text" data-i18n-ph="ph_subj" placeholder="Hi…"></div>
+    <div class="field"><label data-i18n="cp_body">Body</label><textarea id="cmpBody" data-i18n-ph="ph_body" placeholder="Write…"></textarea></div>
+    <div class="field">
+      <label data-i18n="cp_att">Attachments (optional)</label>
+      <div class="dropzone" id="dropzone" data-i18n="cp_drop">📎 Drag files here, or click to browse</div>
+      <input type="file" id="fileInput" multiple hidden>
+      <div id="fileList" style="margin-top:8px"></div>
+    </div>
+    <div class="sched-toggle" id="schedToggle" onclick="toggleSched()">
+      <input type="checkbox" id="schedOn" hidden>
+      <span data-i18n="cp_sched">⏰ Scheduled sending</span>
+      <span style="margin-inline-start:auto;font-size:.7rem;color:var(--muted)" data-i18n="cp_schedon">on/off</span>
+    </div>
+    <div class="sched-fields" id="schedFields">
+      <input type="date" id="schedDate">
+      <input type="time" id="schedTime">
+    </div>
+    <div id="schedAttWrap" style="display:none;margin-top:10px">
+      <div class="dropzone" id="schedDrop" onclick="document.getElementById('schedFile').click()" data-i18n="cp_schedatt">📎 Optional attachment (max 1 MB)</div>
+      <input type="file" id="schedFile" hidden>
+    </div>
+    <p class="sched-note" id="schedNote" data-i18n="cp_schednote">Time is interpreted as Tehran local time.</p>
+    <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px">
+      <button class="btn ghost md" onclick="hideCompose()" data-i18n="cp_cancel">Cancel</button>
+      <button class="btn ghost md" onclick="randomIdentity()" title="Copy a full fake profile for form testing"><span data-i18n="cp_identity">🎭 Random identity</span></button>
+      <button class="btn primary md magnetic" id="sendBtn" onclick="doSend()" data-i18n="cp_send">Send ✦</button>
+    </div>
   </div>
 </div>
 
-<footer>
-  <div>ساخته‌شده با ♥ توسط <a href="https://metora.ir" target="_blank" rel="noopener">متورا</a> · <a href="https://github.com/Daronely/metora-tempmail" target="_blank" rel="noopener">گیت‌هاب</a></div>
-  <div class="social">
-    <a href="https://t.me/daronelydev" target="_blank" rel="noopener">تلگرام: @daronelydev</a>
-    <span>·</span><span>۰۹۹۹۹۹۶۰۲۹۵</span>
-  </div>
-</footer>
 
-<!-- ══ AD RESERVATION MODAL ══ -->
-<div class="modal" id="adModal">
+<!-- ══ RESOURCE REQUESTS MODAL ══ -->
+<div class="modal" id="rqModal">
   <div class="box" style="max-width:520px">
-    <h2 style="font-size:1.2rem">📣 رزرو محل تبلیغ</h2>
-    <p class="hint" style="margin-bottom:16px">با تبلیغ در متِمپ، پیامت رو دقیقاً به مخاطبی برسون که هر روز با ایمیل سروکار داره.</p>
-    <div style="display:grid;gap:10px;margin-bottom:18px">
-      <div style="display:flex;justify-content:space-between;padding:11px 15px;border:1px solid var(--card-br);border-radius:12px">
-        <span>🎯 بازدید هدفمند کاربران فعال ایمیل</span><span class="mono" style="color:var(--acc)">✓</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;padding:11px 15px;border:1px solid var(--card-br);border-radius:12px">
-        <span>📐 بنر ریسپانسیو یا متن + آیکون</span><span class="mono" style="color:var(--acc)">✓</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;padding:11px 15px;border:1px solid var(--card-br);border-radius:12px">
-        <span>📅 بازه‌ی دلخواه: هفتگی / ماهانه</span><span class="mono" style="color:var(--acc)">✓</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;padding:11px 15px;border:1px solid var(--card-br);border-radius:12px">
-        <span>📊 گزارش کلیک (به‌زودی)</span><span class="mono" style="color:var(--warn)">به‌زودی</span>
-      </div>
+    <h2 data-i18n="rq_t">🎁 Request more resources</h2>
+    <p class="hint" style="margin-bottom:14px" data-i18n="rq_p">Need a bigger limit? Tell the team why — reasonable requests from active users get upgraded for FREE.</p>
+    <div class="field">
+      <label data-i18n="rq_kind">What do you want to increase?</label>
+      <select id="rqKind" class="rq-sel">
+        <option value="send" data-i18n="rq_send">More outgoing emails per cycle</option>
+        <option value="inbox" data-i18n="rq_inbox">Longer inbox retention</option>
+        <option value="att" data-i18n="rq_att">More attachments per email</option>
+        <option value="premium" data-i18n="rq_prem">Premium (everything at once)</option>
+      </select>
     </div>
-    <a class="btn primary magnetic" style="width:100%" href="https://t.me/daronelydev" target="_blank" rel="noopener">💬 رزرو و تعرفه‌ها در تلگرام ←</a>
-    <button class="btn ghost" style="width:100%;margin-top:8px" onclick="document.getElementById('adModal').classList.remove('open')">بستن</button>
-  </div>
-</div>
-
-<!-- ══ QR MODAL ══ -->
-<div class="modal" id="qrModal">
-  <div class="box" style="max-width:360px">
-    <h2 style="font-size:1.1rem">📱 آدرست رو اسکن کن</h2>
-    <p class="hint" style="margin-bottom:10px">با دوربین گوشی اسکن کن تا آدرس ایمیلت رو سریع روی موبایل داشته باشی.</p>
-    <div class="qr-box">
-      <canvas id="qrCanvas" width="220" height="220"></canvas>
-      <div class="qr-addr" id="qrAddr"></div>
-      <button class="btn ghost" style="width:100%" onclick="document.getElementById('qrModal').classList.remove('open')">بستن</button>
+    <div class="field" id="rqAmountWrap">
+      <label data-i18n="rq_amount">How much do you need?</label>
+      <input id="rqAmount" type="number" min="1" max="100000" value="50" class="mono-in">
     </div>
+    <div class="field">
+      <label data-i18n="rq_reason">Why do you need it? (the better the reason, the faster the approval)</label>
+      <textarea id="rqReason" style="min-height:90px"></textarea>
+    </div>
+    <button class="btn primary md" style="width:100%" id="rqSubmit" onclick="submitRequest()" data-i18n="rq_submit">Send request</button>
+    <div id="rqHistWrap" style="margin-top:18px">
+      <p class="hint" style="margin-bottom:8px" data-i18n="rq_hist">My previous requests</p>
+      <div id="rqHist" style="display:grid;gap:8px;max-height:200px;overflow-y:auto"></div>
+    </div>
+    <button class="btn ghost md" style="width:100%;margin-top:12px" onclick="document.getElementById('rqModal').classList.remove('open')" data-i18n="ad_close">Close</button>
   </div>
 </div>
 
 <div id="toast"></div>
-
 <script>
 /* ═══════════════════════════════════════════════════════════
-   متِمپ front-end — effects engine + mail client
+   METORA TEMPMAIL v5 — application logic
+   Sections: helpers → effects → auth → app → mail → features
    ═══════════════════════════════════════════════════════════ */
 const $ = id => document.getElementById(id);
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 let ME = null, CUR_FOLDER = 'inbox', SEL_ID = null, ATT_FILES = [];
+
+
+function updateLangButtons(){
+  document.querySelectorAll('#langSwitch button').forEach(b =>
+    b.classList.toggle('on', b.dataset.lang === LANG));
+}
+const APP_URL_FALLBACK = location.origin;
 
 /* ─────────── helpers ─────────── */
 function toast(msg, bad) {
@@ -954,20 +1023,18 @@ async function api(url, opts) {
 const faNum = n => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
 function fmtSize(b){ if(b>1048576) return (b/1048576).toFixed(1)+' MB'; if(b>1024) return Math.round(b/1024)+' KB'; return b+' B'; }
 function fmtDate(s){ const d=new Date(s.replace(' ','T'));
-  return faNum(d.toLocaleDateString('fa-IR'))+' '+faNum(d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})); }
+  const loc = LANG==='fa'?'fa-IR':LANG==='ru'?'ru-RU':'en-GB';
+  const num = LANG==='fa'?faNum:(n=>String(n));
+  return num(d.toLocaleDateString(loc))+' '+num(d.toLocaleTimeString(loc,{hour:'2-digit',minute:'2-digit'})); }
 function esc(s){ return (s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-/* ═════════════ EFFECT 1: Particle Typography v2 (hero title) ═════════════
-   The headline is rendered by thousands of crisp neon particles sampled
-   from the text glyphs. Particles rest tightly on their glyph targets;
-   only the cursor can scatter them — they blast away and spring back. */
+/* ═════════════ EFFECT 1: Particle Typography ═════════════ */
 (function particleTitle(){
   if (REDUCED) return;
   const cv = $('pcanvas'), ctx = cv.getContext('2d', {alpha:true});
   let W, H, parts = [], mouse = {x:-9e3, y:-9e3, on:false};
   const DPR = Math.min(devicePixelRatio || 1, 2);
 
-  // pre-rendered glow sprite for fast additive halos
   const sprite = document.createElement('canvas');
   const SPR = 24; sprite.width = sprite.height = SPR;
   {
@@ -999,9 +1066,10 @@ function esc(s){ return (s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;
     oc.fillStyle = '#fff';
     const cx = r.left - hr.left + r.width/2;
     const cy = r.top - hr.top + r.height/2;
-    oc.fillText('ایمیلی که',           cx, cy - lh);
-    oc.fillText('دووم نمیاره',         cx, cy);
-    oc.fillText('تا وقتی خودت بخوای',  cx, cy + lh);
+    const L = I18N[LANG] || I18N.en;
+    oc.fillText(L.hero_l1, cx, cy - lh);
+    oc.fillText(L.hero_l2, cx, cy);
+    oc.fillText(L.hero_l3, cx, cy + lh);
     const data = oc.getImageData(0, 0, W, H).data;
     const area = W * H;
     const gap = area > 700000 ? 3 : area > 380000 ? 4 : 5;
@@ -1031,7 +1099,6 @@ function esc(s){ return (s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;
     const mx = mouse.x, my = mouse.y, mOn = mouse.on;
     const R = 115, R2 = R*R;
     for (const p of parts) {
-      // tight spring toward glyph target → crisp letters at rest
       p.vx = (p.tx - p.x) * .16 + p.vx * .58;
       p.vy = (p.ty - p.y) * .16 + p.vy * .58;
       if (mOn) {
@@ -1072,18 +1139,15 @@ function esc(s){ return (s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;
   const title = $('heroTitle');
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => setTimeout(start, 100));
   else setTimeout(start, 600);
-  // once particles cover it, hide the real text but keep it for screen readers
   const cover = () => { title.style.color = 'transparent'; title.style.textShadow = 'none'; };
   setTimeout(() => { if (parts.length > 500) cover(); else setTimeout(cover, 2000); }, 1600);
 })();
 
-/* ═════════════ EFFECT 2: word-by-word reveal ═════════════ */
+/* ═════════════ EFFECT 2: word-by-word reveal (HTML-safe) ═════════════ */
 (function wordReveal(){
-  // split into words without breaking embedded HTML tags:
-  // walk child nodes; text nodes are split per word, elements are kept whole
   function wrapWords(node){
     [...node.childNodes].forEach(ch => {
-      if (ch.nodeType === 3) {                          // text node
+      if (ch.nodeType === 3) {
         const frag = document.createDocumentFragment();
         ch.textContent.split(/(\s+)/).forEach(tok => {
           if (!tok) return;
@@ -1096,7 +1160,7 @@ function esc(s){ return (s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;
         });
         ch.replaceWith(frag);
       } else if (ch.nodeType === 1 && ch.tagName !== 'BR' && !ch.classList.contains('word')) {
-        wrapWords(ch);                                  // recurse into elements
+        wrapWords(ch);
       }
     });
   }
@@ -1104,7 +1168,6 @@ function esc(s){ return (s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;
     if (h.closest('#app')) return;
     wrapWords(h);
   });
-  const words = [...document.querySelectorAll('.word')];
   const io = new IntersectionObserver(es => {
     es.forEach(e => {
       if (!e.isIntersecting) return;
@@ -1138,7 +1201,7 @@ function esc(s){ return (s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;
   });
 })();
 
-/* ═════════════ EFFECT 5: ripple on every button ═════════════ */
+/* ═════════════ EFFECT 5: ripple ═════════════ */
 document.addEventListener('pointerdown', e => {
   const b = e.target.closest('.btn');
   if (!b) return;
@@ -1147,66 +1210,24 @@ document.addEventListener('pointerdown', e => {
   s.className = 'ripple';
   s.style.cssText = `width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;
   b.appendChild(s);
-  setTimeout(() => s.remove(), 650);
+  setTimeout(() => s.remove(), 600);
 });
 
-/* ═════════════ EFFECT 6: hero email typer ═════════════ */
-(function typer(){
+/* ═════════════ EFFECT 6: live typer in hero chip ═════════════ */
+(function liveTyper(){
   const el = $('typeTarget');
-  if (!el) return;
-  const names = ['ali','sara','shop2026','myname','boss','nobody','ghost','star'];
+  const names = LANG === 'fa' ? ['ali.shop','dev.queen','nima92','pix.elf','sara_net']
+    : LANG === 'ru' ? ['ivan.dev','olga_net','max2026','pixel.elf','code.hub']
+    : ['ali.shop','dev.queen','nima92','pix.elf','sara_net','mr.rabbit','code.hub'];
   let ni = 0, ci = 0, del = false;
-  if (REDUCED) { el.textContent = names[0]; return; }
   (function tick(){
-    const word = names[ni % names.length];
-    if (!del) {
-      el.textContent = word.slice(0, ++ci);
-      if (ci === word.length) { del = true; return setTimeout(tick, 1900); }
-    } else {
-      el.textContent = word.slice(0, --ci);
-      if (!ci) { del = false; ni++; return setTimeout(tick, 350); }
-    }
-    setTimeout(tick, 90 + Math.random()*80);
+    const name = names[ni % names.length];
+    el.textContent = name.slice(0, ci);
+    if (!del) { ci++; if (ci > name.length) { del = true; return setTimeout(tick, 1400); } }
+    else { ci--; if (ci < 1) { del = false; ni++; } }
+    setTimeout(tick, del ? 34 : 85);
   })();
 })();
-
-/* ═════════════ EFFECT 7: typing particles (compose) ═════════════
-   While the user types in compose fields, tiny sparks burst around
-   the caret position on an overlay canvas. */
-(function typeFX(){
-  if (REDUCED) return;
-  const cv = $('typefx'), ctx = cv.getContext('2d');
-  let sparks = [], raf = null;
-  function fit(){ const w = cv.parentElement; cv.width = w.clientWidth; cv.height = w.clientHeight; }
-  addEventListener('resize', fit); fit();
-  function burst(x, y){
-    for (let i = 0; i < 7; i++) {
-      const a = Math.random()*Math.PI*2, v = Math.random()*2.2 + .6;
-      sparks.push({x, y, vx: Math.cos(a)*v, vy: Math.sin(a)*v - 1, life: 1});
-    }
-    if (!raf) raf = requestAnimationFrame(step);
-  }
-  function step(){
-    ctx.clearRect(0, 0, cv.width, cv.height);
-    sparks = sparks.filter(s => s.life > 0);
-    for (const s of sparks) {
-      s.x += s.vx; s.y += s.vy; s.vy += .07; s.life -= .035;
-      ctx.globalAlpha = Math.max(s.life, 0);
-      ctx.fillStyle = '#3CF2D3';
-      ctx.beginPath(); ctx.arc(s.x, s.y, 1.6*s.life + .4, 0, 7); ctx.fill();
-    }
-    ctx.globalAlpha = 1;
-    raf = sparks.length ? requestAnimationFrame(step) : null;
-  }
-  document.querySelectorAll('#composePane input, #composePane textarea').forEach(inp => {
-    inp.addEventListener('input', () => {
-      const pane = $('composePane'), pr = pane.getBoundingClientRect(), ir = inp.getBoundingClientRect();
-      // approximate caret x: for RTL/LTR mix just use right edge of typed value
-      burst(ir.right - pr.left - 8 - Math.random()*30, ir.bottom - pr.top - 14);
-    });
-  });
-})();
-
 /* ─────────── auth ─────────── */
 function openAuth(mode){ $('authModal').classList.add('open'); authMode(mode); }
 function authMode(mode){
@@ -1215,10 +1236,9 @@ function authMode(mode){
   $('regFields').style.display = login ? 'none' : '';
   $('swLogin').className = login ? 'on' : '';
   $('swReg').className = login ? '' : 'on';
-  $('authTitle').textContent = login ? 'ورود' : 'ثبت‌نام سریع';
-  $('authHint').textContent = login ? 'با ایمیل و رمزت وارد صندوقت شو.'
-    : 'یه نام کاربری انتخاب کن؛ آدرس متورا همینجا ساخته می‌شه.';
-  $('authBtn').textContent = login ? 'ورود' : 'ساخت ایمیل ←';
+  $('authTitle').textContent = login ? t('au_login') : t('au_reg');
+  $('authHint').textContent = login ? t('au_login_hint') : t('au_reg_hint');
+  $('authBtn').textContent = login ? t('au_btn_login') : t('au_btn_reg');
   $('authErr').textContent = '';
   $('authBtn').dataset.mode = mode;
 }
@@ -1227,9 +1247,9 @@ async function doAuth(){
   const btn = $('authBtn'); btn.disabled = true;
   let payload;
   if (mode === 'login') {
-    payload = {action:'login', email:$('loginEmail').value.trim(), password:$('loginPass').value};
+    payload = {action:'login', email:$('loginEmail').value.trim(), password:$('loginPass').value, lang:LANG};
   } else {
-    payload = {action:'register', username:$('regUser').value.trim(), password:$('regPass').value};
+    payload = {action:'register', username:$('regUser').value.trim(), password:$('regPass').value, lang:LANG};
   }
   const j = await api('/api/auth.php', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
   btn.disabled = false;
@@ -1239,18 +1259,39 @@ async function doAuth(){
 }
 async function doLogout(){ await api('/api/logout.php', {method:'POST'}); location.reload(); }
 $('authModal').addEventListener('click', e => { if (e.target.id === 'authModal') e.target.classList.remove('open'); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') $('authModal').classList.remove('open'); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { $('authModal').classList.remove('open'); hideCompose(); }
+});
 $('loginPass') && $('loginPass').addEventListener('keydown', e => { if (e.key==='Enter') doAuth(); });
 $('regPass') && $('regPass').addEventListener('keydown', e => { if (e.key==='Enter') doAuth(); });
 
 /* ─────────── boot ─────────── */
 (async function boot(){
+  // ── QR scan-to-login: ?qr=<token> mints a session instantly ──
+  const qrTok = new URLSearchParams(location.search).get('qr');
+  if (qrTok && /^[a-f0-9]{64}$/.test(qrTok)) {
+    try {
+      const jr = await api('/api/auth.php', {method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({action:'qr_login', token:qrTok, lang: (localStorage.getItem('tm_lang')||'en')})});
+      if (jr.ok) {
+        history.replaceState(null, '', '/');
+        toast('🔓 ' + (jr.email || ''));
+        const jm = await api('/api/me.php');
+        if (jm.authenticated) { initLang(); enterApp(jm); return; }
+      } else {
+        toast(jr.error || 'QR login failed', 1);
+      }
+    } catch(e) {}
+    history.replaceState(null, '', '/');
+  }
+  initLang();
   const j = await api('/api/me.php');
+  // server remembers the session language — adopt it on this device
+  if (j.lang && I18N[j.lang]) setLang(j.lang, false);
   if (j.authenticated) enterApp(j);
   else applyPublicQuotas();
 })();
 
-/* fill pricing numbers from live settings (falls back to text as-is) */
 async function applyPublicQuotas(){
   try {
     const j = await api('/api/quotas.php');
@@ -1271,6 +1312,7 @@ function enterApp(me){
   ME = me;
   $('landing').style.display = 'none';
   document.querySelectorAll('.marquee,.section').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.ad-slot').forEach(el => { if (!el.closest('#app')) el.style.display = 'none'; });
   $('app').style.display = 'block';
   $('navEnter').style.display = 'none';
   $('navUser').style.display = 'inline-flex';
@@ -1278,8 +1320,8 @@ function enterApp(me){
   $('userEmail').textContent = me.email;
   let badges = '';
   if (me.role === 'admin') badges += '<span class="badge-admin">ADMIN</span>';
-  if (me.unlimited) badges += '<span class="badge-inf">∞ نامحدود</span>';
-  else if (me.premium) badges += '<span class="badge-prem">پرمیوم</span>';
+  if (me.unlimited) badges += '<span class="badge-inf">' + t('badge_inf') + '</span>';
+  else if (me.premium) badges += '<span class="badge-prem">' + t('badge_prem') + '</span>';
   $('userBadges').innerHTML = badges;
   if (me.role === 'admin') $('adminLink').style.display = '';
   updateQuota(me);
@@ -1287,401 +1329,105 @@ function enterApp(me){
 }
 function updateQuota(me){
   const q = me.quota;
+  const n = x => LANG === 'fa' ? faNum(x) : String(x);
   $('quotaInfo').innerHTML = q.send_limit === null
-    ? `send <b>∞</b>`
-    : `send <b>${faNum(q.send_used)}/${faNum(q.send_limit)}</b> · max-file <b>${faNum(q.max_upload_mb)}MB</b>`;
+    ? t('quota_inf', {mb: n(q.max_upload_mb)})
+    : t('quota_line', {used: n(q.send_used), limit: n(q.send_limit), mb: n(q.max_upload_mb)});
 }
 function refreshAll(){ if (!ME) return; api('/api/me.php').then(j => { if (j.authenticated) { ME = j; updateQuota(j); } }); loadFolder(CUR_FOLDER); }
 
-/* ─────────── inbox / scheduled tabs ─────────── */
+/* ─────────── folders / tabs (single source of truth) ─────────── */
 let MAIL_TAB = 'inbox';
-function mailTab(t){
+window.MAIL_TAB_NOW = 'inbox'; // mirror for i18n.js (pre-boot safe)
+function mailTab(t){ window.MAIL_TAB_NOW = t;
   MAIL_TAB = t;
-  ['inbox','sent','sched'].forEach(x => $('mt-'+x).className = x===t ? 'on' : '');
+  CUR_FOLDER = (t === 'sched') ? CUR_FOLDER : t;
+  ['inbox','sent','sched'].forEach(x => $('mt-'+x).classList.toggle('on', x===t));
   $('filterBar').style.display = t === 'sched' ? 'none' : 'flex';
-  $('expBtn').style.display = t === 'sched' ? 'none' : '';
   if (t === 'sched') { loadSched(); return; }
-  switchFolder(t);
+  loadFolder(t);
 }
 function switchFolder(f){
   CUR_FOLDER = f;
+  MAIL_TAB = f;
+  ['inbox','sent','sched'].forEach(x => $('mt-'+x).classList.toggle('on', x===f));
+  $('filterBar').style.display = 'flex';
   loadFolder(f);
 }
-async function loadFolder(f){
-  const j = await api('/api/messages.php?folder=' + f);
-  if (!j.ok) return;
+
+/* ─────────── favorites / filters ─────────── */
+let FAVS = new Set(), FILTER = 'all';
+const CACHE = { list: [] };
+window.CACHE_OBJ = CACHE; // mirror for i18n.js (pre-boot safe)
+(function initFavs(){ try { FAVS = new Set(JSON.parse(localStorage.getItem('tm_favs') || '[]')); } catch(e){} })();
+function saveFavs(){ try { localStorage.setItem('tm_favs', JSON.stringify([...FAVS])); } catch(e){} }
+function toggleFav(id){
+  FAVS.has(id) ? FAVS.delete(id) : FAVS.add(id);
+  saveFavs(); renderList(CACHE.list);
+}
+function setFilter(f){
+  FILTER = f;
+  document.querySelectorAll('#filterBar button').forEach(b => b.classList.toggle('on', b.dataset.f === f));
+  renderList(CACHE.list);
+}
+
+/* ─────────── list rendering (folder + filter + stars aware) ─────────── */
+function renderList(msgs){
+  let rows = msgs;
+  if (FILTER === 'fav') rows = msgs.filter(m => FAVS.has(m.id));
+  if (FILTER === 'unread') rows = msgs.filter(m => !+m.is_read);
+  if (FILTER === 'att') rows = msgs.filter(m => +m.att_count > 0);
   const list = $('msgList');
-  $(f==='inbox'?'cntInbox':'cntSent').textContent = faNum(j.messages.length);
-  if (!j.messages.length) {
-    list.innerHTML = `<div class="empty"><span class="big">${f==='inbox'?'📥':'📤'}</span>${f==='inbox' ? 'صندوق دریافتی خالیه.<br>منتظر اولین ایمیلت باش...' : 'هنوز چیزی نفرستادی.'}</div>`;
+  if (MAIL_TAB === 'sched') return;
+  if (!rows.length) {
+    const ic = FILTER==='fav'?'⭐':FILTER==='unread'?'🔵':FILTER==='att'?'📎':(MAIL_TAB==='inbox'?'📥':'📤');
+    const msg = FILTER!=='all' ? (LANG==='fa'?'هیچ ایمیلی با این فیلتر نیست':LANG==='ru'?'Нет писем по этому фильтру':'No mail matches this filter') :
+      (MAIL_TAB==='inbox' ? t('empty_inbox') : t('empty_sent'));
+    list.innerHTML = `<div class="empty"><span class="big">${ic}</span>${msg}</div>`;
     return;
   }
-  list.innerHTML = j.messages.map(m => {
+  const f = MAIL_TAB;
+  list.innerHTML = rows.map(m => {
     const who = f === 'inbox' ? m.from_addr : m.to_addr;
     const un = f === 'inbox' && !+m.is_read;
+    const noSubj2 = LANG==='fa'?'(بدون موضوع)':LANG==='ru'?'(без темы)':'(no subject)';
     return `<div class="msgrow ${SEL_ID===m.id?'sel':''}" onclick="openMsg(${m.id},'${f}')">
-      <div class="from"><span class="who-l">${un?'<span class="dot-un"></span>':''}${esc(who)}</span><span class="t">${fmtDate(m.created_at)}</span></div>
-      <div class="subj">${esc(m.subject || '(بدون موضوع)')}</div>
+      <div class="from">
+        <span class="who-l">
+          <button class="star ${FAVS.has(m.id)?'on':''}" onclick="event.stopPropagation();toggleFav(${m.id})" title="مهم">⭐</button>
+          ${un?'<span class="dot-un"></span>':''}${esc(who)}
+        </span>
+        <span class="t">${fmtDate(m.created_at)}</span>
+      </div>
+      <div class="subj">${esc(m.subject || noSubj2)}</div>
       <div class="prev">${+m.att_count ? '📎 ' : ''}${fmtSize(+m.size_bytes)}</div>
     </div>`;
   }).join('');
 }
 
-/* ─────────── scheduled messages ─────────── */
-let SCHED = [], schedTick = null, SCHED_FILE = null;
-/* Tehran wall-clock "now" computed client-side regardless of local tz */
-function tehranNowParts(){
-  const now = new Date();
-  const tehran = new Date(now.toLocaleString('en-US', {timeZone: 'Asia/Tehran'}));
-  return tehran;
-}
-function toggleSched(){
-  const on = $('schedOn').checked = !$('schedOn').checked;
-  $('schedToggle').classList.toggle('on', on);
-  $('schedFields').classList.toggle('on', on);
-  $('schedAttWrap').classList.toggle('on', on);
-  // prefill date/time with Tehran "tomorrow 09:00" if empty
-  if (on && !$('schedDate').value) {
-    const t = tehranNowParts();
-    t.setDate(t.getDate() + 1);
-    $('schedDate').value = t.toISOString().slice(0,10);
-    $('schedTime').value = '09:00';
-  }
-  updateSendBtn();
-}
-function updateSendBtn(){
-  const on = $('schedOn').checked;
-  $('sendBtn').textContent = on ? '⏰ زمان‌بندی کن' : 'ارسال ✦';
-}
-async function loadSched(){
-  const j = await api('/api/schedule.php');
+async function loadFolder(f, silent){
+  const j = await api('/api/messages.php?folder=' + f);
   if (!j.ok) return;
-  SCHED = j.scheduled || [];
-  $('cntSched').textContent = SCHED.length ? faNum(SCHED.length) : '';
-  const list = $('msgList');
-  if (!SCHED.length) {
-    list.innerHTML = '<div class="empty"><span class="big">⏰</span>هیچ ایمیل زمان‌بندی‌شده‌ای نداری.<br>تو فرم «ایمیل جدید» گزینه‌ی زمان‌بندی رو روشن کن.</div>';
-    return;
-  }
-  list.innerHTML = `<div class="sched-list">` + SCHED.map(m => `
-    <div class="sched-item">
-      <div class="info">
-        <div class="to">${m.has_att ? '📎 ' : ''}${esc(m.to_addr)}</div>
-        <div class="subj">${esc(m.subject || '(بدون موضوع)')}</div>
-        <div class="cnt">↳ ${fmtDate(m.send_at.replace(' ','T'))}</div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
-        <span class="countdown" data-send="${m.send_at}">…</span>
-        <button class="btn sm danger" onclick="cancelSched(${m.id})">لغو</button>
-      </div>
-    </div>`).join('') + '</div>';
-  startCountdown();
+  CACHE.list = j.messages;
+  $(f==='inbox'?'cntInbox':'cntSent').textContent = (LANG === 'fa' ? faNum : (n => String(n)))(j.messages.length);
+  if (MAIL_TAB === f) renderList(j.messages);
+  if (f === 'inbox') maybeShowOtp(j.messages);
 }
-function startCountdown(){
-  clearInterval(schedTick);
-  const upd = () => document.querySelectorAll('.countdown').forEach(el => {
-    const target = new Date(el.dataset.send.replace(' ','T'));
-    let s = Math.floor((target - Date.now()) / 1000);
-    if (s < 0) s = 0;
-    const d = Math.floor(s/86400), h = Math.floor(s%86400/3600), m = Math.floor(s%3600/60), sec = s%60;
-    el.textContent = d > 0 ? `${d}d ${h}h ${m}m` : h > 0 ? `${h}h ${m}m ${sec}s` : `${m}m ${sec}s`;
-  });
-  upd();
-  schedTick = setInterval(upd, 1000);
-}
-async function cancelSched(id){
-  if (!confirm('این زمان‌بندی لغف بشه؟')) return;
-  const j = await api('/api/schedule.php', {method:'DELETE', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id})});
-  if (j.ok) { toast('زمان‌بندی لغو شد'); loadSched(); }
-  else toast(j.error, 1);
-}
-$('schedFile').addEventListener('change', function(){
-  const f = this.files[0];
-  if (!f) return;
-  if (f.size > 1048576) { toast('پیوست زمان‌بندی‌شده حداکثر ۱ مگابایت است', 1); this.value=''; return; }
-  SCHED_FILE = f;
-  $('schedDrop').textContent = '📎 ' + f.name + ' (' + fmtSize(f.size) + ') — برای حذف کلیک کن';
-  $('schedDrop').classList.add('has');
-  $('schedDrop').onclick = () => { SCHED_FILE = null; this.value=''; $('schedDrop').textContent = '📎 پیوست اختیاری (حداکثر ۱ مگابایت)'; $('schedDrop').classList.remove('has'); $('schedDrop').onclick = () => this.click(); };
-});
-
-async function openMsg(id, folder){
-  SEL_ID = id;
-  document.querySelectorAll('.msgrow').forEach(el => el.classList.remove('sel'));
-  const j = await api('/api/message.php?id=' + id);
-  if (!j.ok) { toast(j.error, 1); return; }
-  const m = j.message;
-  const atts = (j.attachments||[]).map(a =>
-    `<a class="att" href="/api/download.php?mid=${id}&att=${a.id}">📎 ${esc(a.filename)} <span class="mono">${fmtSize(+a.size_bytes)}</span></a>`).join('');
-  $('readPane').innerHTML = `
-    <div class="hd">
-      <h3>${esc(m.subject || '(بدون موضوع)')}</h3>
-      <div class="row"><b>از:</b><span class="mono">${esc(m.from_addr)}</span></div>
-      <div class="row"><b>به:</b><span class="mono">${esc(m.to_addr)}</span></div>
-      <div class="row"><b>زمان:</b><span class="mono">${fmtDate(m.created_at)}</span> · <span class="mono">${fmtSize(+m.size_bytes)}</span></div>
-    </div>
-    <div class="body">${esc(m.body_text || m.body_html || '(بدون متن)')}</div>
-    ${atts ? `<div class="attbar">${atts}</div>` : ''}
-    <div class="actionsbar">
-      <button class="btn sm ghost" onclick="replyTo(${id})">↩︎ پاسخ</button>
-      <button class="btn sm ghost" onclick="exportEMLFor(${id})">📤 EML</button>
-      <button class="btn sm danger" onclick="delMsg(${id})">🗑 حذف</button>
-    </div>`;
-  hideCompose();
-  loadFolder(CUR_FOLDER);
-}
-
-async function delMsg(id){
-  if (!confirm('این ایمیل حذف بشه؟')) return;
-  const j = await api('/api/delete.php?id=' + id, {method:'DELETE'});
-  if (j.ok) { toast('حذف شد'); SEL_ID = null;
-    $('readPane').innerHTML = '<div class="empty"><span class="big">🗑</span>ایمیل حذف شد.</div>';
-    loadFolder(CUR_FOLDER);
-  } else toast(j.error, 1);
-}
-
-/* ─────────── compose ─────────── */
-function showCompose(){
-  $('composePane').classList.add('on');
-  $('composePane').scrollIntoView({behavior:'smooth', block:'center'});
-}
-function hideCompose(){ $('composePane').classList.remove('on'); }
-
-async function replyTo(id){
-  const j = await api('/api/message.php?id=' + id);
-  if (!j.ok) return;
-  const m = j.message;
-  showCompose();
-  $('cmpTo').value = m.from_addr;
-  $('cmpSubject').value = (m.subject||'').startsWith('Re:') ? m.subject : 'Re: ' + (m.subject || '');
-  $('cmpBody').value = '\n\n----- ' + m.from_addr + ' نوشت:\n' + (m.body_text || '').split('\n').slice(0, 20).map(l => '> ' + l).join('\n');
-  $('cmpTo').focus();
-}
-
-function renderFiles(){
-  $('fileList').innerHTML = ATT_FILES.map((f,i) =>
-    `<span class="filepill">${esc(f.name)} · ${fmtSize(f.size)} <button onclick="rmFile(${i})" title="حذف">✕</button></span>`).join('');
-}
-function rmFile(i){ ATT_FILES.splice(i,1); renderFiles(); }
-$('fileInput').addEventListener('change', function(){
-  for (const f of this.files) addFile(f);
-  this.value = '';
-});
-function addFile(f){
-  if (f.size > (ME?.quota?.max_upload_mb || 2) * 1048576) { toast(`${f.name}: بزرگ‌تر از حد مجاز`, 1); return; }
-  const cap = ME?.quota?.att_limit;
-  if (cap !== null && ATT_FILES.length >= cap) { toast(`حداکثر ${faNum(cap)} پیوست مجازه${ME?.premium ? '' : ' (پرمیوم: بیشتر)'}`, 1); return; }
-  ATT_FILES.push(f); renderFiles();
-}
-const dz = $('dropzone');
-dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag'); });
-dz.addEventListener('dragleave', () => dz.classList.remove('drag'));
-dz.addEventListener('drop', e => {
-  e.preventDefault(); dz.classList.remove('drag');
-  for (const f of e.dataTransfer.files) addFile(f);
-});
-
-async function doSend(){
-  const to = $('cmpTo').value.trim(), subject = $('cmpSubject').value.trim(), body = $('cmpBody').value;
-
-  // ── scheduled branch ──
-  if ($('schedOn').checked) {
-    const date = $('schedDate').value, time = $('schedTime').value;
-    if (!to) { toast('گیرنده رو بنویس', 1); return; }
-    if (!date || !time) { toast('تاریخ و ساعت ارسال رو انتخاب کن', 1); return; }
-    // convert picked wall-clock (interpreted as Tehran time) → same wall-clock string the server validates against Tehran
-    // browsers give us the picked value as local wall-clock; we shift by (local - tehran) offset
-    const picked = new Date(date + 'T' + time + ':00');
-    const offsetMs = picked.getTime() - new Date(picked.toLocaleString('en-US', {timeZone:'Asia/Tehran'})).getTime();
-    const tehranPicked = new Date(picked.getTime() - offsetMs);
-    const sendAt = tehranPicked.getFullYear() + '-' +
-      String(tehranPicked.getMonth()+1).padStart(2,'0') + '-' +
-      String(tehranPicked.getDate()).padStart(2,'0') + ' ' + time;
-    const payload = {to, subject, body, send_at: sendAt};
-    if (SCHED_FILE) {
-      const b64 = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(SCHED_FILE); });
-      payload.attachment = {name: SCHED_FILE.name, data: b64};
-    }
-    const btn = $('sendBtn'); btn.disabled = true;
-    const j = await api('/api/schedule.php', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
-    btn.disabled = false;
-    if (!j.ok) { toast(j.error || 'زمان‌بندی ناموفق', 1); return; }
-    toast(`⏰ برای ${to} زمان‌بندی شد — ${j.send_at}`);
-    $('cmpTo').value = $('cmpSubject').value = $('cmpBody').value = '';
-    SCHED_FILE = null; $('schedFile').value = '';
-    $('schedDrop').textContent = '📎 پیوست اختیاری (حداکثر ۱ مگابایت)';
-    $('schedDrop').classList.remove('has');
-    toggleSched(); toggleSched(); // reset toggle to off
-    hideCompose();
-    mailTab('sched');
-    return;
-  }
-
-  // ── immediate branch ──
-  if (!to) { toast('گیرنده رو بنویس', 1); return; }
-  const fd = new FormData();
-  fd.append('to', to); fd.append('subject', subject); fd.append('body', body);
-  for (const f of ATT_FILES) fd.append('attachments[]', f);
-  const btn = $('sendBtn'); btn.disabled = true; btn.textContent = 'در حال ارسال...';
-  const r = await fetch('/api/send.php', {method:'POST', credentials:'same-origin', body:fd});
-  const j = await r.json().catch(() => ({ok:false, error:'پاسخ نامعتبر'}));
-  btn.disabled = false; btn.textContent = 'ارسال ✦';
-  if (!j.ok) { toast(j.error || 'ارسال ناموفق', 1); return; }
-  toast(j.quota_left === null ? `به ${to} ارسال شد ✦` : `به ${to} ارسال شد ✦ (باقی‌مانده: ${faNum(j.quota_left)})`);
-  $('cmpTo').value = $('cmpSubject').value = $('cmpBody').value = '';
-  ATT_FILES = []; renderFiles(); hideCompose();
-  switchFolder('sent');
-  refreshAll();
-}
-
-/* auto-refresh inbox every 45s */
-setInterval(() => { if (ME && MAIL_TAB === 'inbox') loadFolder('inbox'); }, 45000);
-
-/* ═════════════════ v4 FEATURES ═════════════════ */
-
-/* ── theme (dark/light) ── */
-function toggleTheme(){
-  const cur = document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
-  const next = cur === 'light' ? 'dark' : 'light';
-  document.documentElement.dataset.theme = next;
-  try { localStorage.setItem('tm_theme', next); } catch(e){}
-  const ic = next === 'light' ? '☀️' : '🌙';
-  const a = $('themeBtn'), b = $('themeBtnNav');
-  if (a) a.textContent = ic;
-  if (b) b.textContent = ic;
-}
-(function initTheme(){
-  let t = 'dark';
-  try { t = localStorage.getItem('tm_theme') || 'dark'; } catch(e){}
-  if (t === 'light') document.documentElement.dataset.theme = 'light';
-  const ic = t === 'light' ? '☀️' : '🌙';
-  const setIc = () => { const a=$('themeBtn'),b=$('themeBtnNav'); if(a)a.textContent=ic; if(b)b.textContent=ic; };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setIc); else setIc();
-})();
-
-/* ── ad / qr modals ── */
-function openAdModal(){ $('adModal').classList.add('open'); }
-['adModal','qrModal'].forEach(id => $(id).addEventListener('click', e => { if (e.target.id === id) e.target.classList.remove('open'); }));
-
-/* ── email generator ── */
-const GEN_DOMAINS = ['metora.ir'];   // available domains (mail domain + aliases)
-const ADJ = ['swift','neo','dark','cyber','lunar','solar','rapid','silent','atomic','quantum','shadow','prime'];
-const NOUN = ['fox','wolf','wave','node','byte','pixel','raven','tiger','falcon','spark','storm','comet'];
-function randFrom(a){ return a[Math.floor(Math.random()*a.length)]; }
-function randomName(){
-  const style = Math.floor(Math.random()*3);
-  let n;
-  if (style === 0) n = randFrom(ADJ) + randFrom(NOUN) + Math.floor(Math.random()*90+10);
-  else if (style === 1) n = randFrom(NOUN) + '_' + Math.floor(Math.random()*9000+1000);
-  else n = 'user' + Math.random().toString(36).slice(2, 9);
-  $('genName').value = n;
-  genPreview();
-}
-function genPassGen(){
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%';
-  let p = '';
-  const rnd = new Uint32Array(14); crypto.getRandomValues(rnd);
-  for (const r of rnd) p += chars[r % chars.length];
-  return p;
-}
-function newGenPass(){ $('genPass').textContent = genPassGen(); }
-function genPreview(){
-  const name = ($('genName').value.trim().toLowerCase() || 'esm');
-  const dom = $('genDomain').value || GEN_DOMAINS[0];
-  $('genAddr').textContent = name + '@' + dom;
-}
-function copyAddr(){
-  navigator.clipboard.writeText($('genAddr').textContent)
-    .then(() => toast('کپی شد: ' + $('genAddr').textContent))
-    .catch(() => toast('کپی نشد — دستی انتخاب کن', 1));
-}
-async function genRegister(){
-  const name = $('genName').value.trim().toLowerCase();
-  if (!name) { randomName(); return toast('یک نام بنویس یا تاس بنداز 🎲', 1); }
-  const j = await api('/api/auth.php', {method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({action:'register', username:name, password: $('genPass').textContent || genPassGen()})});
-  if (!j.ok) return toast(j.error || 'ساخت ناموفق', 1);
-  toast('ساخته شد ✓ واردت می‌کنم...');
-  setTimeout(() => location.reload(), 700);
-}
-(function initGen(){
-  $('genDomain').innerHTML = GEN_DOMAINS.map(d => `<option value="${d}">@${d}</option>`).join('');
-  randomName(); newGenPass(); genPreview();
-})();
-
-/* ── QR modal ── */
-function showQR(){
-  if (!ME) return toast('اول وارد شو', 1);
-  const addr = ME.email;
-  $('qrAddr').textContent = addr;
-  $('qrModal').classList.add('open');
-  try {
-    const qr = qrcode(0, 'M');
-    qr.addData('mailto:' + addr);
-    qr.make();
-    const cv = $('qrCanvas'), ctx = cv.getContext('2d');
-    const n = qr.getModuleCount(), cell = Math.floor(220 / (n + 4));
-    const dim = cell * (n + 4);
-    cv.width = cv.height = dim;
-    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, dim, dim);
-    ctx.fillStyle = '#070808';
-    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++)
-      if (qr.isDark(r, c)) ctx.fillRect((c + 2) * cell, (r + 2) * cell, cell, cell);
-  } catch(e) { toast('ساخت QR ناموفق بود', 1); }
-}
-
-/* ── auto refresh (visible toggle, default off) ── */
-let AR_ON = false, AR_TIMER = null;
-function toggleAutoRefresh(){
-  AR_ON = !AR_ON;
-  $('arBtn').classList.toggle('on', AR_ON);
-  $('arBtn').textContent = AR_ON ? '⚡ برروزرسانی خودکار: روشن' : '⚡ برروزرسانی خودکار: خاموش';
-  clearInterval(AR_TIMER);
-  if (AR_ON) { AR_TIMER = setInterval(() => { if (ME && MAIL_TAB === 'inbox') loadFolder('inbox', true); }, 10000); toast('هر ۱۰ ثانیه صندوق چک می‌شه'); }
-  else toast('بروزرسانی خودکار خاموش شد');
-}
-
-/* ── sound notification (default on) ── */
-let SND_ON = true;
-function toggleSound(){
-  SND_ON = !SND_ON;
-  $('sndBtn').classList.toggle('on', SND_ON);
-  $('sndBtn').textContent = SND_ON ? '🔔 صدای دریافت: روشن' : '🔔 صدای دریافت: خاموش';
-}
-function ping(){
-  if (!SND_ON) return;
-  try {
-    const AC = window.AudioContext || window.webkitAudioContext;
-    const ctx = ping._c || (ping._c = new AC());
-    const o = ctx.createOscillator(), g = ctx.createGain();
-    o.type = 'sine'; o.frequency.value = 880;
-    g.gain.setValueAtTime(.001, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(.25, ctx.currentTime + .02);
-    g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + .5);
-    o.connect(g).connect(ctx.destination);
-    o.start(); o.stop(ctx.currentTime + .55);
-  } catch(e){}
-}
-
-/* ── OTP extractor ── */
+/* ─────────── OTP extractor ─────────── */
 function extractOtp(text){
   if (!text) return null;
-  // kill separators inside digits, then look for 4-8 digit standalone codes
   const flat = String(text).replace(/(\d)[\s\-–.](\d)/g, '$1$2');
   const m = flat.match(/(?:^|[^\d])(\d{4,8})(?:$|[^\d])/);
   return m ? m[1] : null;
 }
 let LAST_OTP_KEY = null;
-let OTP_SKIP = new Set();   // message ids the user dismissed
+const OTP_SKIP = new Set();
 async function maybeShowOtp(msgs){
   for (const m of msgs) {
     if (OTP_SKIP.has(m.id)) continue;
-    // subject-only fast path first
+    if (+m.is_read) continue;                    // only unread
     let code = extractOtp(m.subject || '');
     if (!code) {
-      // body is not in the list payload — fetch the message itself (unread only, inbox only)
-      if (m.folder && m.folder !== 'inbox') continue;
-      if (+m.is_read) continue;
       try {
         const j = await api('/api/message.php?peek=1&id=' + m.id);
         if (!j.ok) continue;
@@ -1702,78 +1448,54 @@ async function maybeShowOtp(msgs){
 }
 function copyOtp(){
   navigator.clipboard.writeText($('otpCode').textContent)
-    .then(() => toast('کد کپی شد ✓'))
-    .catch(() => toast('کپی نشد', 1));
+    .then(() => toast(t('t_otp_copied')))
+    .catch(() => toast(LANG==='fa'?'کپی نشد':LANG==='ru'?'Не удалось скопировать':'Copy failed', 1));
 }
 function hideOtp(){
-  // remember dismissed id so it doesn't pop again on next refresh
-  const m = CACHE.list && CACHE.list.find(x => x.id && (x.subject||'').length && LAST_OTP_KEY && LAST_OTP_KEY.startsWith(x.id+':'));
+  const m = (CACHE.list || []).find(x => LAST_OTP_KEY && LAST_OTP_KEY.startsWith(x.id+':'));
   if (m) OTP_SKIP.add(m.id);
   $('otpCard').classList.remove('show');
 }
 
-/* ── favorites ── */
-let FAVS = new Set(), FILTER = 'all';
-(function initFavs(){ try { FAVS = new Set(JSON.parse(localStorage.getItem('tm_favs') || '[]')); } catch(e){} })();
-function saveFavs(){ try { localStorage.setItem('tm_favs', JSON.stringify([...FAVS])); } catch(e){} }
-function toggleFav(id){
-  FAVS.has(id) ? FAVS.delete(id) : FAVS.add(id);
-  saveFavs(); renderList(CACHE.list || []);
+/* ─────────── sound ─────────── */
+let SND_ON = true;
+function toggleSound(){
+  SND_ON = !SND_ON;
+  $('sndBtn').classList.toggle('on', SND_ON);
+  $('sndBtn').textContent = SND_ON ? t('ap_sound') : t('ap_sound_off');
 }
-function setFilter(f){
-  FILTER = f;
-  document.querySelectorAll('#filterBar button').forEach(b => b.classList.toggle('on', b.dataset.f === f));
-  renderList(CACHE.list || []);
-}
-
-/* ── cached list render (folder-aware + filter + stars) ── */
-const CACHE = { list: [] };
-function renderList(msgs){
-  let rows = msgs;
-  if (FILTER === 'fav') rows = msgs.filter(m => FAVS.has(m.id));
-  if (FILTER === 'unread') rows = msgs.filter(m => !+m.is_read);
-  if (FILTER === 'att') rows = msgs.filter(m => +m.att_count > 0);
-  const list = $('msgList');
-  if (MAIL_TAB === 'sched') return;   // sched renders its own
-  if (!rows.length) {
-    list.innerHTML = `<div class="empty"><span class="big">${FILTER==='fav'?'⭐':FILTER==='unread'?'🔵':FILTER==='att'?'📎':'📭'}</span>${FILTER==='all' ? (MAIL_TAB==='inbox'?'صندوق خالیه':'چیزی نفرستادی') : 'هیچ ایمیلی با این فیلتر نیست'}</div>`;
-    return;
-  }
-  const f = MAIL_TAB;
-  list.innerHTML = rows.map(m => {
-    const who = f === 'inbox' ? m.from_addr : m.to_addr;
-    const un = f === 'inbox' && !+m.is_read;
-    return `<div class="msgrow ${SEL_ID===m.id?'sel':''}" onclick="openMsg(${m.id},'${f}')">
-      <div class="from">
-        <span class="who-l"><button class="star ${FAVS.has(m.id)?'on':''}" onclick="event.stopPropagation();toggleFav(${m.id})" title="مهم">⭐</button>${un?'<span class="dot-un"></span>':''}${esc(who)}</span>
-        <span class="t">${fmtDate(m.created_at)}</span>
-      </div>
-      <div class="subj">${esc(m.subject || '(بدون موضوع)')}</div>
-      <div class="prev">${+m.att_count ? '📎 ' : ''}${fmtSize(+m.size_bytes)}</div>
-    </div>`;
-  }).join('');
+function ping(){
+  if (!SND_ON) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    const ctx = ping._c || (ping._c = new AC());
+    if (ctx.state === 'suspended') ctx.resume();
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'sine'; o.frequency.value = 880;
+    g.gain.setValueAtTime(.001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.25, ctx.currentTime + .02);
+    g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + .5);
+    o.connect(g).connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime + .55);
+  } catch(e){}
 }
 
-/* patched loadFolder: cache + OTP + sound + favorite-aware render */
-const _loadFolder = loadFolder;
-loadFolder = async function(f, silent){
-  const j = await api('/api/messages.php?folder=' + f);
-  if (!j.ok) return;
-  CACHE.list = j.messages;
-  const cnt = f === 'inbox' ? 'cntInbox' : 'cntSent';
-  $(cnt).textContent = faNum(j.messages.length);
-  if (MAIL_TAB === f) renderList(j.messages);
-  if (f === 'inbox') maybeShowOtp(j.messages);
-};
-
-/* ── EML export ── */
-function exportEML(){ exportEMLFor(SEL_ID); }
-function exportEMLFor(id){
-  if (!id) return toast('اول یه ایمیل باز کن', 1);
-  window.open('/api/export.php?id=' + id, '_blank');
+/* ─────────── auto refresh ─────────── */
+let AR_ON = false, AR_TIMER = null;
+function toggleAutoRefresh(){
+  AR_ON = !AR_ON;
+  $('arBtn').classList.toggle('on', AR_ON);
+  $('arBtn').textContent = AR_ON ? t('ap_auto_on') : t('ap_auto');
+  clearInterval(AR_TIMER);
+  if (AR_ON) {
+    AR_TIMER = setInterval(() => { if (ME && MAIL_TAB === 'inbox') loadFolder('inbox', true); }, 10000);
+    toast(LANG==='fa'?'هر ۱۰ ثانیه صندوق چک می‌شه':LANG==='ru'?'Ящик проверяется каждые 10 секунд':'Inbox polled every 10 seconds');
+  } else toast(LANG==='fa'?'بروزرسانی خودکار خاموش شد':LANG==='ru'?'Автообновление выключено':'Auto-refresh off');
 }
+/* background refresh: keep counters warm even without the toggle */
+setInterval(() => { if (ME && MAIL_TAB === 'inbox' && !AR_ON) loadFolder('inbox', true); }, 45000);
 
-/* ── cycle countdown (resets at 00/06/12/18 server-UTC) ── */
+/* ─────────── cycle countdown ─────────── */
 function tickCycle(){
   const now = new Date();
   const h = now.getUTCHours();
@@ -1787,38 +1509,384 @@ function tickCycle(){
 }
 setInterval(tickCycle, 1000); tickCycle();
 
-/* ── random identity (for testing forms) ── */
+/* ─────────── QR ─────────── */
+async function showQR(){
+  if (!ME) return toast(LANG==='fa'?'اول وارد شو':LANG==='ru'?'Сначала войдите':'Sign in first', 1);
+  const addr = ME.email;
+  $('qrAddr').textContent = addr;
+  $('qrModal').classList.add('open');
+  let loginUrl = location.origin + '/?qr=';
+  try {
+    const jr = await api('/api/qr.php');
+    if (jr.ok) loginUrl = jr.url;
+  } catch(e) {}
+  try {
+    const qr = qrcode(0, 'M');
+    qr.addData(loginUrl);
+    qr.make();
+    const cv = $('qrCanvas'), ctx = cv.getContext('2d');
+    const n = qr.getModuleCount(), cell = Math.floor(220 / (n + 4));
+    const dim = cell * (n + 4);
+    cv.width = cv.height = dim;
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, dim, dim);
+    ctx.fillStyle = '#070808';
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++)
+      if (qr.isDark(r, c)) ctx.fillRect((c + 2) * cell, (r + 2) * cell, cell, cell);
+  } catch(e) { toast(LANG==='fa'?'ساخت QR ناموفق بود':LANG==='ru'?'Не удалось создать QR':'QR build failed', 1); }
+}
+
+/* ─────────── EML export ─────────── */
+function exportEMLFor(id){
+  if (!id) return toast('اول یه ایمیل باز کن', 1);
+  window.open('/api/export.php?id=' + id, '_blank');
+}
+
+/* ─────────── random identity ─────────── */
+const ADJ = ['swift','neo','dark','cyber','lunar','solar','rapid','silent','atomic','quantum','shadow','prime'];
+const NOUN = ['fox','wolf','wave','node','byte','pixel','raven','tiger','falcon','spark','storm','comet'];
+function randFrom(a){ return a[Math.floor(Math.random()*a.length)]; }
 const FIRST = ['آرش','سارا','کیان','نگار','امیر','مینا','بردیا','رها','هومن','الناز'];
 const LAST  = ['احمدی','رضایی','کریمی','موسوی','جلالی','تهرانی','صادقی','نوری'];
 const STREETS = ['خیابان آزادی','بلوار فردوسی','خیابان ولیعصر','بلوار کارگر','خیابان انقلاب','بلوار امیرکبیر'];
+function genPassGen(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%';
+  let p = '';
+  const rnd = new Uint32Array(14); crypto.getRandomValues(rnd);
+  for (const r of rnd) p += chars[r % chars.length];
+  return p;
+}
 function randomIdentity(){
-  const city = 'تهران', first = randFrom(FIRST), last = randFrom(LAST);
+  const first = randFrom(FIRST), last = randFrom(LAST);
   const ident = {
     name: first + ' ' + last,
-    email: $('genName') ? $('genAddr').textContent : (ME ? ME.email : ''),
+    email: ME ? ME.email : '',
     phone: '0912' + String(Math.floor(Math.random()*9000000+1000000)),
     address: randFrom(STREETS) + '، پلاک ' + Math.floor(Math.random()*120+1) + '، واحد ' + Math.floor(Math.random()*9+1),
-    city, zip: String(Math.floor(Math.random()*90000000000+10000000000)).slice(0,10),
-    company: 'شرکت ' + last + ' ' + randFrom(['دیجیتال','تهران','نوین','آریا','پارس']),
+    city: 'تهران',
+    zip: String(Math.floor(Math.random()*9000000000+1000000000)),
+    company: 'شرکت ' + last + ' ' + randFrom(['دیجیتال','نوین','آریا','پارس']),
     user: 'user' + Math.random().toString(36).slice(2,8),
     pass: genPassGen(),
   };
   const txt = `نام: ${ident.name}\nایمیل: ${ident.email}\nموبایل: ${ident.phone}\nآدرس: ${ident.address}\nشهر: ${ident.city}\nکدپستی: ${ident.zip}\nشرکت: ${ident.company}\nنام کاربری: ${ident.user}\nرمز پیشنهادی: ${ident.pass}`;
   if (navigator.clipboard) navigator.clipboard.writeText(txt).then(() => toast('هویت کامل کپی شد ✓ (برای چسباندن Ctrl+V)')).catch(()=>{});
   else toast('مرورگرت کلیپ‌بورد ندارد', 1);
-  return ident;
+}
+/* ─────────── message reading ─────────── */
+async function openMsg(id, folder){
+  SEL_ID = id;
+  document.querySelectorAll('.msgrow').forEach(el => el.classList.remove('sel'));
+  const j = await api('/api/message.php?id=' + id);
+  if (!j.ok) { toast(j.error, 1); return; }
+  const m = j.message;
+  const atts = (j.attachments||[]).map(a =>
+    `<a class="att" href="/api/download.php?mid=${id}&att=${a.id}">📎 ${esc(a.filename)} <span class="mono">${fmtSize(+a.size_bytes)}</span></a>`).join('');
+  const noSubj = LANG==='fa'?'(بدون موضوع)':LANG==='ru'?'(без темы)':'(no subject)';
+  $('readPane').innerHTML = `
+    <div class="hd">
+      <h3>${esc(m.subject || noSubj)}</h3>
+      <div class="row"><b>${t('rd_from')}:</b><span class="mono">${esc(m.from_addr)}</span></div>
+      <div class="row"><b>${t('rd_to')}:</b><span class="mono">${esc(m.to_addr)}</span></div>
+      <div class="row"><b>${t('rd_time')}:</b><span class="mono">${fmtDate(m.created_at)}</span> · <span class="mono">${fmtSize(+m.size_bytes)}</span></div>
+    </div>
+    <div class="body">${esc(m.body_text || m.body_html || t('rd_body'))}</div>
+    ${atts ? `<div class="attbar">${atts}</div>` : ''}
+    <div class="actionsbar">
+      <button class="btn sm ghost" onclick="replyTo(${id})">${t('rd_reply')}</button>
+      <button class="btn sm ghost" onclick="exportEMLFor(${id})">${t('rd_eml')}</button>
+      <button class="btn sm danger" onclick="delMsg(${id})">${t('rd_del')}</button>
+    </div>`;
+  hideCompose();
+  loadFolder(CUR_FOLDER);
 }
 
-/* ── guide tabs ── */
+async function delMsg(id){
+  if (!confirm(t('t_delq'))) return;
+  const j = await api('/api/delete.php?id=' + id, {method:'DELETE'});
+  if (j.ok) { toast(t('t_deleted')); SEL_ID = null;
+    $('readPane').innerHTML = '<div class="empty"><span class="big">🗑</span>' + t('t_deleted') + '</div>';
+    loadFolder(CUR_FOLDER);
+  } else toast(j.error, 1);
+}
+
+/* ─────────── scheduled messages ─────────── */
+let SCHED = [], schedTick = null, SCHED_FILE = null;
+function tehranNowParts(){
+  const now = new Date();
+  return new Date(now.toLocaleString('en-US', {timeZone: 'Asia/Tehran'}));
+}
+function toggleSched(){
+  const on = $('schedOn').checked = !$('schedOn').checked;
+  $('schedToggle').classList.toggle('on', on);
+  $('schedFields').classList.toggle('on', on);
+  $('schedAttWrap').style.display = on ? '' : 'none';
+  if (on && !$('schedDate').value) {
+    const t = tehranNowParts();
+    t.setDate(t.getDate() + 1);
+    $('schedDate').value = t.toISOString().slice(0,10);
+    $('schedTime').value = '09:00';
+  }
+  updateSendBtn();
+}
+function updateSendBtn(){
+  $('sendBtn').textContent = $('schedOn').checked ? t('cp_schedbtn') : t('cp_send');
+}
+async function loadSched(){
+  const j = await api('/api/schedule.php');
+  if (!j.ok) return;
+  SCHED = j.scheduled || [];
+  $('cntSched').textContent = SCHED.length ? faNum(SCHED.length) : '';
+  const list = $('msgList');
+  if (!SCHED.length) {
+    list.innerHTML = '<div class="empty"><span class="big">⏰</span>' + (LANG==='fa'?'هیچ ایمیل زمان‌بندی‌شده‌ای نداری.<br>تو فرم «ایمیل جدید» گزینه‌ی زمان‌بندی رو روشن کن.':LANG==='ru'?'Нет отложенных писем.<br>Включите «Отложенная отправка» в форме нового письма.':'No scheduled emails yet.<br>Flip on “Scheduled sending” in the compose form.') + '</div>';
+    return;
+  }
+  list.innerHTML = `<div style="display:grid;gap:10px">` + SCHED.map(m => `
+    <div class="sched-item">
+      <div class="info">
+        <div class="to">${m.has_att ? '📎 ' : ''}${esc(m.to_addr)}</div>
+        <div class="subj">${esc(m.subject || '(بدون موضوع)')}</div>
+        <div class="cnt">↳ ${fmtDate(m.send_at.replace(' ','T'))}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+        <span class="countdown" data-send="${m.send_at}">…</span>
+        <button class="btn xs danger" onclick="cancelSched(${m.id})">لغو</button>
+      </div>
+    </div>`).join('') + '</div>';
+  startCountdown();
+}
+function startCountdown(){
+  clearInterval(schedTick);
+  const upd = () => document.querySelectorAll('.countdown').forEach(el => {
+    const target = new Date(el.dataset.send.replace(' ','T'));
+    let s = Math.floor((target - Date.now()) / 1000);
+    if (s < 0) s = 0;
+    const d = Math.floor(s/86400), h = Math.floor(s%86400/3600), m = Math.floor(s%3600/60), sec = s%60;
+    el.textContent = d > 0 ? `${d}d ${h}h ${m}m` : h > 0 ? `${h}h ${m}m ${sec}s` : `${m}m ${sec}s`;
+  });
+  upd();
+  schedTick = setInterval(upd, 1000);
+}
+async function cancelSched(id){
+  if (!confirm(LANG==='fa'?'این زمان‌بندی لغو بشه؟':LANG==='ru'?'Отменить это запланированное письмо?':'Cancel this scheduled email?')) return;
+  const j = await api('/api/schedule.php', {method:'DELETE', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id})});
+  if (j.ok) { toast(LANG==='fa'?'زمان‌بندی لغو شد':LANG==='ru'?'Запланированное письмо отменено':'Schedule canceled'); loadSched(); }
+  else toast(j.error, 1);
+}
+$('schedFile').addEventListener('change', function(){
+  const f = this.files[0];
+  if (!f) return;
+  if (f.size > 1048576) { toast(LANG==='fa'?'پیوست زمان‌بندی‌شده حداکثر ۱ مگابایت است':LANG==='ru'?'Вложение для отложенного письма — максимум 1 МБ':'Scheduled-send attachments are limited to 1 MB', 1); this.value=''; return; }
+  SCHED_FILE = f;
+  $('schedDrop').textContent = '📎 ' + f.name + ' (' + fmtSize(f.size) + ') — ' + (LANG==='fa'?'برای حذف کلیک کن':LANG==='ru'?'нажмите для удаления':'click to remove');
+  $('schedDrop').classList.add('has');
+  $('schedDrop').onclick = () => { SCHED_FILE = null; this.value=''; $('schedDrop').textContent = '📎 پیوست اختیاری (حداکثر ۱ مگابایت)'; $('schedDrop').classList.remove('has'); $('schedDrop').onclick = () => this.click(); };
+});
+
+/* ─────────── compose ─────────── */
+function showCompose(){
+  $('composeWrap').classList.add('on');
+  setTimeout(() => $('cmpTo').focus(), 80);
+}
+function hideCompose(){ $('composeWrap').classList.remove('on'); }
+
+async function replyTo(id){
+  const j = await api('/api/message.php?id=' + id);
+  if (!j.ok) return;
+  const m = j.message;
+  showCompose();
+  $('cmpTo').value = m.from_addr;
+  $('cmpSubject').value = (m.subject||'').startsWith('Re:') ? m.subject : 'Re: ' + (m.subject || '');
+  $('cmpBody').value = '\n\n----- ' + m.from_addr + ' نوشت:\n' + (m.body_text || '').split('\n').slice(0, 20).map(l => '> ' + l).join('\n');
+}
+
+function renderFiles(){
+  $('fileList').innerHTML = ATT_FILES.map((f,i) =>
+    `<span class="filepill">${esc(f.name)} · ${fmtSize(f.size)} <button onclick="rmFile(${i})" title="حذف">✕</button></span>`).join('');
+}
+function rmFile(i){ ATT_FILES.splice(i,1); renderFiles(); }
+$('fileInput').addEventListener('change', function(){
+  for (const f of this.files) addFile(f);
+  this.value = '';
+});
+function addFile(f){
+  if (f.size > (ME?.quota?.max_upload_mb || 2) * 1048576) { toast(`${f.name}: ` + (LANG==='fa'?'بزرگ‌تر از حد مجاز':LANG==='ru'?'слишком большой':'too large'), 1); return; }
+  const cap = ME?.quota?.att_limit;
+  if (cap !== null && ATT_FILES.length >= cap) { toast((LANG==='fa'?`حداکثر ${faNum(cap)} پیوست مجازه`:LANG==='ru'?`Максимум ${cap} вложений`:`Up to ${cap} attachments allowed`), 1); return; }
+  ATT_FILES.push(f); renderFiles();
+}
+const dz = $('dropzone');
+dz.addEventListener('click', () => $('fileInput').click());
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag'));
+dz.addEventListener('drop', e => {
+  e.preventDefault(); dz.classList.remove('drag');
+  for (const f of e.dataTransfer.files) addFile(f);
+});
+
+async function doSend(){
+  const to = $('cmpTo').value.trim(), subject = $('cmpSubject').value.trim(), body = $('cmpBody').value;
+
+  if ($('schedOn').checked) {
+    const date = $('schedDate').value, time = $('schedTime').value;
+    if (!to) { toast(LANG==='fa'?'گیرنده رو بنویس':LANG==='ru'?'Укажите получателя':'Enter a recipient', 1); return; }
+    if (!date || !time) { toast(LANG==='fa'?'تاریخ و ساعت ارسال رو انتخاب کن':LANG==='ru'?'Выберите дату и время':'Pick a date and time', 1); return; }
+    const picked = new Date(date + 'T' + time + ':00');
+    const offsetMs = picked.getTime() - new Date(picked.toLocaleString('en-US', {timeZone:'Asia/Tehran'})).getTime();
+    const tehranPicked = new Date(picked.getTime() - offsetMs);
+    const sendAt = tehranPicked.getFullYear() + '-' +
+      String(tehranPicked.getMonth()+1).padStart(2,'0') + '-' +
+      String(tehranPicked.getDate()).padStart(2,'0') + ' ' + time;
+    const payload = {to, subject, body, send_at: sendAt};
+    if (SCHED_FILE) {
+      const b64 = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(SCHED_FILE); });
+      payload.attachment = {name: SCHED_FILE.name, data: b64};
+    }
+    const btn = $('sendBtn'); btn.disabled = true;
+    const j = await api('/api/schedule.php', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+    btn.disabled = false;
+    if (!j.ok) { toast(j.error || t('err_generic'), 1); return; }
+    toast((LANG==='fa'?'⏰ برای ':LANG==='ru'?'⏰ Запланировано для ':'⏰ Scheduled for ') + to + ' — ' + j.send_at);
+    $('cmpTo').value = $('cmpSubject').value = $('cmpBody').value = '';
+    SCHED_FILE = null; $('schedFile').value = '';
+    $('schedDrop').textContent = '📎 پیوست اختیاری (حداکثر ۱ مگابایت)';
+    $('schedDrop').classList.remove('has');
+    toggleSched(); toggleSched();
+    hideCompose();
+    mailTab('sched');
+    return;
+  }
+
+  if (!to) { toast(LANG==='fa'?'گیرنده رو بنویس':LANG==='ru'?'Укажите получателя':'Enter a recipient', 1); return; }
+  const fd = new FormData();
+  fd.append('to', to); fd.append('subject', subject); fd.append('body', body);
+  for (const f of ATT_FILES) fd.append('attachments[]', f);
+  const btn = $('sendBtn'); btn.disabled = true; btn.textContent = t('cp_sending');
+  const r = await fetch('/api/send.php', {method:'POST', credentials:'same-origin', body:fd});
+  const j = await r.json().catch(() => ({ok:false, error:'پاسخ نامعتبر'}));
+  btn.disabled = false; btn.textContent = t('cp_send');
+  if (!j.ok) { toast(j.error || t('err_generic'), 1); return; }
+  const sentMsg = t('t_sent', {to});
+  toast(j.quota_left === null ? sentMsg : sentMsg + t('t_left', {n: (LANG==='fa'?faNum(j.quota_left):j.quota_left)}));
+  $('cmpTo').value = $('cmpSubject').value = $('cmpBody').value = '';
+  ATT_FILES = []; renderFiles(); hideCompose();
+  switchFolder('sent');
+  refreshAll();
+}
+/* ─────────── theme ─────────── */
+function toggleTheme(){
+  const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem('tm_theme', next); } catch(e){}
+  const ic = next === 'light' ? '☀️' : '🌙';
+  const a = $('themeBtn'), b = $('themeBtnNav');
+  if (a) a.textContent = ic;
+  if (b) b.textContent = ic;
+}
+(function initTheme(){
+  let t = 'dark';
+  try { t = localStorage.getItem('tm_theme') || 'dark'; } catch(e){}
+  if (t === 'light') document.documentElement.dataset.theme = 'light';
+  const ic = t === 'light' ? '☀️' : '🌙';
+  const setIc = () => { const a=$('themeBtn'),b=$('themeBtnNav'); if(a)a.textContent=ic; if(b)b.textContent=ic; };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setIc); else setIc();
+})();
+
+/* ─────────── modals ─────────── */
+function openAdModal(){ $('adModal').classList.add('open'); }
+['adModal','qrModal'].forEach(id => $(id).addEventListener('click', e => { if (e.target.id === id) e.target.classList.remove('open'); }));
+
+/* ─────────── generator ─────────── */
+const GEN_DOMAINS = ['metora.ir'];
+function randomName(){
+  const style = Math.floor(Math.random()*3);
+  let n;
+  if (style === 0) n = randFrom(ADJ) + randFrom(NOUN) + Math.floor(Math.random()*90+10);
+  else if (style === 1) n = randFrom(NOUN) + '_' + Math.floor(Math.random()*9000+1000);
+  else n = 'user' + Math.random().toString(36).slice(2, 9);
+  $('genName').value = n;
+  genPreview();
+}
+function newGenPass(){ $('genPass').textContent = genPassGen(); }
+function genPreview(){
+  const name = ($('genName').value.trim().toLowerCase() || 'esm');
+  const dom = $('genDomain').value || GEN_DOMAINS[0];
+  $('genAddr').textContent = name + '@' + dom;
+}
+function copyAddr(){
+  navigator.clipboard.writeText($('genAddr').textContent)
+    .then(() => toast(t('t_copied') + ' — ' + $('genAddr').textContent))
+    .catch(() => toast('کپی نشد — دستی انتخاب کن', 1));
+}
+function scrollToGen(){
+  document.getElementById('generator').scrollIntoView({behavior:'smooth'});
+  setTimeout(() => $('genName').focus(), 600);
+}
+async function genRegister(){
+  const name = $('genName').value.trim().toLowerCase();
+  if (!name) { randomName(); return toast(LANG==='fa'?'یک نام بنویس یا تاس بنداز 🎲':LANG==='ru'?'Введите имя или бросьте кубик 🎲':'Type a name or roll the dice 🎲', 1); }
+  const btn = event.target.closest('button'); if (btn) btn.disabled = true;
+  const j = await api('/api/auth.php', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'register', username:name, password: $('genPass').textContent || genPassGen()})});
+  if (btn) btn.disabled = false;
+  if (!j.ok) return toast(j.error || t('err_generic'), 1);
+  toast((LANG==='fa'?'ساخته شد ✓ واردت می‌کنم...':LANG==='ru'?'Готово ✓ Входим…':'Created ✓ signing you in…'));
+  setTimeout(() => location.reload(), 700);
+}
+(function initGen(){
+  $('genDomain').innerHTML = GEN_DOMAINS.map(d => `<option value="${d}">@${d}</option>`).join('');
+  randomName(); newGenPass(); genPreview();
+})();
+
+/* ─────────── guide tabs ─────────── */
 function guideTab(n){
   document.querySelectorAll('.guide-tabs button').forEach((b,i) => b.classList.toggle('on', i===n));
   document.querySelectorAll('.gpanel').forEach((p,i) => p.classList.toggle('on', i===n));
 }
 
-/* keyboard: g = generator focus */
+
+/* ─────────── resource requests ─────────── */
+function openRequests(){
+  $('rqModal').classList.add('open');
+  loadRequests();
+  const premSel = $('rqKind');
+  premSel.onchange = () => { $('rqAmountWrap').style.display = premSel.value === 'premium' ? 'none' : ''; };
+}
+async function loadRequests(){
+  try {
+    const j = await api('/api/requests.php');
+    if (!j.ok) return;
+    const hist = $('rqHist');
+    if (!j.requests.length) { hist.innerHTML = '<div class="rq-item" style="color:var(--muted)">—</div>'; return; }
+    hist.innerHTML = j.requests.map(r => {
+      const st = `<span class="st ${r.status}">${t('rq_' + r.status)}</span>`;
+      const amt = r.kind === 'premium' ? '★' : '×' + r.amount;
+      return `<div class="rq-item" style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+        <span><b>${r.kind}</b> ${amt} · <span style="color:var(--muted)">${esc((r.reason||'').slice(0,60))}</span></span>${st}</div>`;
+    }).join('');
+  } catch(e) {}
+}
+async function submitRequest(){
+  const kind = $('rqKind').value;
+  const amount = (int)($('rqAmount').value);
+  const reason = $('rqReason').value.trim();
+  const btn = $('rqSubmit'); btn.disabled = true;
+  const j = await api('/api/requests.php', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({kind, amount: kind==='premium'?0:amount, reason})});
+  btn.disabled = false;
+  if (!j.ok) { toast(j.error, 1); return; }
+  toast(LANG==='fa'?'درخواست ارسال شد — نتیجه از پنل ادمین اعلام می‌شه ✓':LANG==='ru'?'Запрос отправлен — ответ придёт после проверки ✓':'Request sent — the team will review it ✓');
+  $('rqReason').value = '';
+  loadRequests();
+}
+function int(v){ const n = parseInt(v, 10); return isNaN(n) ? 0 : n; }
+
+/* keyboard shortcuts */
 document.addEventListener('keydown', e => {
   if (e.target.matches('input,textarea,select')) return;
-  if (e.key === 'g' || e.key === 'G') { const g = $('genName'); if (g && !ME) { g.focus(); g.select(); } }
+  if (e.key === 'n' && ME) { e.preventDefault(); showCompose(); }
+  if (e.key === 'g') { scrollToGen(); }
+  if (e.key === 'Escape') { $('adModal').classList.remove('open'); $('qrModal').classList.remove('open'); }
 });
 </script>
 </body>
