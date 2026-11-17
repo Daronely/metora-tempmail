@@ -1,0 +1,32 @@
+# Metora TempMail
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+</IfModule>
+
+# protect includes / storage / state / config
+<FilesMatch "^(config\.php|db\.php|helpers\.php|mailer\.php|helpers_standalone\.php)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+</FilesMatch>
+
+# no direct access to private dirs (if web-accessible copy ever exists)
+RedirectMatch 404 ^/includes/
+RedirectMatch 404 ^/storage/
+RedirectMatch 404 ^/state/
+RedirectMatch 404 ^/cron/
+RedirectMatch 404 ^/pipe/
+
+# generous upload limits for attachments (2MB per file enforced by app anyway)
+<IfModule lsapi_php.c>
+</IfModule>
+
+<IfModule mod_headers.c>
+Header set X-Content-Type-Options "nosniff"
+Header set X-Frame-Options "SAMEORIGIN"
+Header set Referrer-Policy "same-origin"
+</IfModule>
+
+ErrorDocument 404 /

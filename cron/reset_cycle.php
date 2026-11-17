@@ -5,7 +5,7 @@
  * Wipes all messages + attachments + send logs (a fresh "cycle"),
  * keeps accounts (email/password) intact.
  */
-$home = '/home/YOURUSER/temp.example.com';
+$home = dirname(__DIR__);
 require_once $home . '/includes/config.php';
 require_once $home . '/includes/helpers_standalone.php';
 

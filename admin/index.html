@@ -158,6 +158,7 @@ tr:hover td{background:rgba(255,255,255,.025)}
 <div class="tabs">
   <button id="t-stats" class="on" onclick="tab('stats')">📊 آمار</button>
   <button id="t-accounts" onclick="tab('accounts')">👥 اکانت‌ها</button>
+  <button id="t-requests" onclick="tab('requests')">🎁 درخواست‌ها <span class="cnt" id="rqBadge"></span></button>
   <button id="t-messages" onclick="tab('messages')">📨 پیام‌ها</button>
   <button id="t-heavy" onclick="tab('heavy')">🏋️ سنگین‌ها</button>
   <button id="t-files" onclick="tab('files')">🗂 فایل‌ها</button>
@@ -177,6 +178,14 @@ tr:hover td{background:rgba(255,255,255,.025)}
       <thead><tr><th>#</th><th>ایمیل</th><th>نقش</th><th>پلن</th><th>پرمیوم تا</th><th>آخرین فعالیت</th><th>عملیات</th></tr></thead>
       <tbody></tbody>
     </table></div>
+  </div>
+
+  <div id="v-requests" style="display:none">
+    <div class="glass tablewrap"><table id="rqTable">
+      <thead><tr><th>#</th><th>کاربر</th><th>نوع</th><th>مقدار</th><th>دلیل</th><th>زمان</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <p class="hint" style="text-align:center">تأیید = اعمال فوری و رایگان ارتقا روی همان کاربر · رد = اعلام به کاربر با یادداشت</p>
   </div>
 
   <div id="v-messages" style="display:none">
@@ -375,6 +384,10 @@ const faNum = n => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
 
 function toast(m, bad){ const t=$('toast'); t.textContent=m; t.className=bad?'bad show':'show'; clearTimeout(t._h); t._h=setTimeout(()=>t.className='',3000); }
 async function api(url, opts){
+  // attach the CSRF token to every mutating call (admin.php enforces it)
+  if (opts && opts.method === 'POST') {
+    opts.headers = Object.assign({'Content-Type':'application/json'}, opts.headers||{}, {'X-CSRF': (window.CSRF||'')});
+  }
   const r = await fetch(url, Object.assign({credentials:'same-origin'}, opts));
   const j = await r.json().catch(()=>({ok:false,error:'پاسخ نامعتبر'}));
   if (!r.ok && !j.error) j.error = 'خطای '+r.status;
@@ -382,6 +395,14 @@ async function api(url, opts){
 }
 function fmtSize(b){ if(b>1048576) return (b/1048576).toFixed(1)+'MB'; if(b>1024) return Math.round(b/1024)+'KB'; return b+'B'; }
 function fmtDate(s){ const d=new Date(s.replace(' ','T')); return faNum(d.toLocaleDateString('fa-IR'))+' '+faNum(d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})); }
+let CSRF = '';
+async function loadCSRF(){
+  try {
+    const r = await fetch('/api/admin.php?action=csrf', {credentials:'same-origin'});
+    const j = await r.json().catch(()=>({}));
+    if (j.ok) { CSRF = j.csrf; window.CSRF = CSRF; }
+  } catch(e) {}
+}
 function esc(s){ return (s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 async function boot(){
@@ -392,17 +413,61 @@ async function boot(){
   loadAdmins();
 }
 function tab(t){
-  ['stats','accounts','messages','heavy','files','sched','settings','maintenance'].forEach(x=>{
+  ['stats','accounts','requests','messages','heavy','files','sched','settings','maintenance'].forEach(x=>{
     $('v-'+x).style.display = x===t?'block':'none';
     $('t-'+x).className = x===t?'on':'';
   });
   if (t==='stats') loadStats();
   if (t==='accounts') loadAccounts();
+  if (t==='requests') loadRequestsAdmin();
   if (t==='messages') loadMessages();
   if (t==='heavy') loadHeavy();
   if (t==='files') loadFiles();
   if (t==='sched') loadSchedAdmin();
   if (t==='settings') loadSettings();
+}
+
+
+/* ─────────── resource requests (admin) ─────────── */
+async function loadRequestsAdmin(){
+  const j = await api('/api/admin.php?action=requests&status=pending');
+  if (!j.ok) return;
+  const tb = document.querySelector('#rqTable tbody');
+  if (!j.requests.length) { tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:26px">درخواستی در انتظار نیست ✓</td></tr>'; return; }
+  tb.innerHTML = j.requests.map(r => `
+    <tr>
+      <td>${r.id}</td>
+      <td>${esc(r.email)}</td>
+      <td><b>${r.kind}</b></td>
+      <td>${r.kind==='premium'?'★ پرمیوم ۳۰ روز':'× '+r.amount}</td>
+      <td style="max-width:260px;white-space:pre-wrap">${esc(r.reason)}</td>
+      <td>${fmtDate(r.created_at)}</td>
+      <td>${r.status==='pending'?'<span style="color:var(--warn)">در انتظار</span>':r.status}</td>
+      <td style="white-space:nowrap">
+        <button class="btn xs primary" onclick="decideRequest(${r.id}, true)">✓ تأیید</button>
+        <button class="btn xs danger" onclick="decideRequest(${r.id}, false)">✕ رد</button>
+      </td>
+    </tr>`).join('');
+  $('rqBadge').textContent = j.requests.length ? faNum(j.requests.length) : '';
+}
+async function decideRequest(id, approve){
+  const note = prompt(approve ? 'یادداشت برای کاربر (اختیاری):' : 'دلیل رد (به کاربر نشان داده می‌شود):', '') ?? '';
+  const j = await api('/api/admin.php', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'request_decide', id, approve, note})});
+  if (j.ok) { toast(approve?'ارتقا اعمال شد ✓':'رد شد'); loadRequestsAdmin(); loadStats?.(); }
+  else toast(j.error, 1);
+}
+/* per-user quota override (مرزبندی جداگانه هر کاربر) */
+async function overrideUser(id){
+  const cur = window.ACC_CACHE?.[id] || {};
+  const send = prompt('سقف ارسال در سیکل (خالی = پیش‌فرض پلن):', cur.override_send_limit ?? '') ?? '';
+  const inbox = prompt('سقف نگهداری صندوق (خالی = پیش‌فرض):', cur.override_inbox_limit ?? '') ?? '';
+  const att = prompt('سقف پیوست در ایمیل (خالی = پیش‌فرض):', cur.override_att_limit ?? '') ?? '';
+  const j = await api('/api/admin.php', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'set_overrides', id,
+      override_send_limit: send, override_inbox_limit: inbox, override_att_limit: att})});
+  if (j.ok) { toast('مرزبندی کاربر ذخیره شد ✓'); loadAccounts(); }
+  else toast(j.error, 1);
 }
 
 async function loadStats(){
@@ -426,6 +491,8 @@ async function loadAccounts(){
   const j = await api('/api/admin.php?action=accounts');
   if (!j.ok) return;
   const tb = $('accTable').querySelector('tbody');
+  window.ACC_CACHE = {};
+  j.accounts.forEach(a => ACC_CACHE[a.id] = a);
   if (!j.accounts.length){ tb.innerHTML = '<tr><td colspan="7" class="empty">اکانتی نیست</td></tr>'; return; }
   tb.innerHTML = j.accounts.map(a=>`
     <tr>
@@ -437,6 +504,7 @@ async function loadAccounts(){
       <td class="mono" style="font-size:.72rem">${fmtDate(a.last_active_at)}</td>
       <td>${a.role!=='admin'?`
         <button class="btn sm ${a.is_premium==1?'ghost':'primary'}" onclick="togglePrem(${a.id},${a.is_premium==1?0:1})">${a.is_premium==1?'لغو پرمیوم':'پرمیوم کن'}</button>
+        <button class="btn sm ghost" onclick="overrideUser(${a.id})">🎚 مرزبندی${a.pending_requests?' <b style="color:var(--warn)">('+a.pending_requests+')</b>':''}</button>
         <button class="btn sm danger" onclick="delAcc(${a.id},'${esc(a.email)}')">حذف</button>`:'—'}
       </td>
     </tr>`).join('');
@@ -679,6 +747,7 @@ async function changePass(){
 async function doLogout(){ await api('/api/logout.php',{method:'POST'}); location.href='/'; }
 
 boot();
+addEventListener('DOMContentLoaded', loadCSRF);
 </script>
 </body>
 </html>

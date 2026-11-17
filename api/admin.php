@@ -18,6 +18,11 @@ $pdo = db();
 if ($method === 'GET') {
     $action = $_GET['action'] ?? 'stats';
 
+    if ($action === 'csrf') {
+        // panel fetches this at boot and echoes the token on every POST (X-CSRF)
+        json_out(['ok' => true, 'csrf' => csrf_token()]);
+    }
+
     if ($action === 'settings') {
         $keys = ['send_limit_free','send_limit_premium','send_limit_admin','inbox_limit_free',
                  'inbox_limit_premium','inbox_limit_admin','att_limit_free','att_limit_premium',
@@ -65,9 +70,30 @@ if ($method === 'GET') {
     }
 
     if ($action === 'accounts') {
-        $rows = $pdo->query("SELECT id, username, email, role, is_premium, premium_until, created_at, last_active_at
+        $rows = $pdo->query("SELECT id, username, email, role, is_premium, premium_until, created_at, last_active_at,
+                                    lang, override_send_limit, override_inbox_limit, override_att_limit
                              FROM accounts ORDER BY id DESC LIMIT 500")->fetchAll();
+        // pending resource-request count per account (for badges in the panel)
+        $req = $pdo->query("SELECT account_id, COUNT(*) c FROM resource_requests
+                            WHERE status='pending' GROUP BY account_id")->fetchAll();
+        $reqMap = [];
+        foreach ($req as $r) $reqMap[$r['account_id']] = (int)$r['c'];
+        foreach ($rows as &$r) $r['pending_requests'] = $reqMap[$r['id']] ?? 0;
         json_out(['ok' => true, 'accounts' => $rows]);
+    }
+
+    /* ── resource requests queue ── */
+    if ($action === 'requests') {
+        $status = in_array(($_GET['status'] ?? 'pending'), ['pending','approved','rejected','all'], true)
+                ? $_GET['status'] : 'pending';
+        $sql = "SELECT r.*, a.username, a.email, a.is_premium, a.created_at acc_created, a.last_active_at
+                FROM resource_requests r JOIN accounts a ON a.id = r.account_id";
+        $params = [];
+        if ($status !== 'all') { $sql .= " WHERE r.status = ?"; $params[] = $status; }
+        $sql .= " ORDER BY r.created_at DESC LIMIT 300";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        json_out(['ok' => true, 'requests' => $stmt->fetchAll()]);
     }
 
     if ($action === 'messages') {
@@ -305,35 +331,36 @@ if ($method === 'POST') {
     }
 
     if ($action === 'purge_kind') {
-        // delete all messages whose attachments match a content kind (image/video/…)
+        // delete ONLY the attachments of the selected kind (not whole messages
+        // that also carry other attachments). Messages left with zero
+        // attachments stay as normal text mails.
         $kind = (string)($in['kind'] ?? '');
         if (!isset(MIME_KINDS[$kind])) json_error('نوع نامعتبر است');
         $like = MIME_KINDS[$kind]['like'];
-        // find messages having at least one attachment of this kind
-        $stmt = $pdo->prepare("SELECT DISTINCT m.id FROM messages m
-                               JOIN attachments a ON a.message_id = m.id
-                               WHERE a.mime LIKE ?");
+        $stmt = $pdo->prepare("SELECT id, file_path, size_bytes FROM attachments WHERE mime LIKE ?");
         $stmt->execute([$like]);
-        $ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
-        $bytes = 0;
-        if ($ids) {
-            $inSql = implode(',', array_fill(0, count($ids), '?'));
-            $f = $pdo->prepare("SELECT a.file_path, a.size_bytes FROM attachments a
-                                JOIN messages m ON m.id = a.message_id
-                                WHERE m.id IN ($inSql)");
-            $f->execute($ids);
-            foreach ($f->fetchAll() as $r) { $bytes += (int)$r['size_bytes']; @unlink(STORAGE_DIR . '/' . $r['file_path']); }
-            $pdo->prepare("DELETE FROM messages WHERE id IN ($inSql)")->execute($ids);
+        $rows = $stmt->fetchAll();
+        $bytes = 0; $n = 0;
+        $pdo->beginTransaction();
+        try {
+            foreach ($rows as $r) {
+                if (@unlink(STORAGE_DIR . '/' . $r['file_path'])) { $n++; $bytes += (int)$r['size_bytes']; }
+                $pdo->prepare("DELETE FROM attachments WHERE id=?")->execute([$r['id']]);
+            }
+            $pdo->commit();
+        } catch (Throwable $e) {
+            $pdo->rollBack();
+            json_error('پاکسازی نیمه‌کاره — دوباره تلاش کنید', 500);
         }
-        json_out(['ok' => true, 'deleted' => count($ids), 'bytes' => $bytes]);
+        json_out(['ok' => true, 'deleted' => $n, 'bytes' => $bytes, 'mode' => 'attachments-only']);
     }
 
     if ($action === 'purge_texts') {
-        // delete all messages with no attachments and body under threshold (pure text mails)
+        // delete text-only messages (no attachments at all) — min size filter
         $min = max(0, (int)($in['min_kb'] ?? 0)) * 1024;
-        $stmt = $pdo->prepare("SELECT id FROM messages m WHERE NOT EXISTS
+        $stmt = $pdo->prepare("SELECT m.id FROM messages m WHERE NOT EXISTS
                                (SELECT 1 FROM attachments a WHERE a.message_id = m.id)
-                               AND COALESCE(size_bytes,0) >= ?");
+                               AND COALESCE(m.size_bytes,0) >= ?");
         $stmt->execute([$min]);
         $ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
         if ($ids) {
@@ -376,6 +403,55 @@ if ($method === 'POST') {
         if ($r = $row->fetch()) {
             foreach (json_decode($r['att_json'] ?? '[]', true) ?: [] as $a) @unlink(STORAGE_DIR . '/' . $a['path']);
             $pdo->prepare("DELETE FROM scheduled_messages WHERE id=?")->execute([$id]);
+        }
+        json_out(['ok' => true]);
+    }
+
+    /* ── decide a resource request (approve applies the quota instantly) ── */
+    if ($action === 'request_decide') {
+        $id = (int)($in['id'] ?? 0);
+        $approve = !empty($in['approve']);
+        $note = trim((string)($in['note'] ?? ''));
+        $stmt = $pdo->prepare("SELECT r.*, a.email, a.role FROM resource_requests r
+                               JOIN accounts a ON a.id = r.account_id
+                               WHERE r.id=? AND r.status='pending'");
+        $stmt->execute([$id]);
+        $req = $stmt->fetch();
+        if (!$req) json_error('درخواست یافت نشد یا قبلاً بررسی شده', 404);
+        if ($req['role'] === 'admin') json_error('ادمین‌ها نیاز به ارتقا ندارند');
+
+        if ($approve) {
+            if ($req['kind'] === 'premium') {
+                // grant 30 days of premium
+                $pdo->prepare("UPDATE accounts SET is_premium=1,
+                               premium_until = GREATEST(COALESCE(premium_until, NOW()), NOW()) + INTERVAL 30 DAY
+                               WHERE id=?")->execute([$req['account_id']]);
+            } else {
+                $col = ['send' => 'override_send_limit', 'inbox' => 'override_inbox_limit', 'att' => 'override_att_limit'][$req['kind']];
+                $pdo->prepare("UPDATE accounts SET $col = ? WHERE id=?")
+                    ->execute([(int)$req['amount'], $req['account_id']]);
+            }
+        }
+        $pdo->prepare("UPDATE resource_requests SET status=?, admin_note=?, handled_at=NOW() WHERE id=?")
+            ->execute([$approve ? 'approved' : 'rejected', $note, $id]);
+        json_out(['ok' => true]);
+    }
+
+    /* ── per-user quota overrides (independent of the request queue) ── */
+    if ($action === 'set_overrides') {
+        $id = (int)($in['id'] ?? 0);
+        if ($id === (int)$a['id']) json_error('برای خودتان override لازم نیست — ادمین هستید');
+        $sets = []; $params = [];
+        foreach (['override_send_limit', 'override_inbox_limit', 'override_att_limit'] as $col) {
+            if (array_key_exists($col, $in)) {
+                $v = $in[$col];
+                $sets[] = "$col = ?";
+                $params[] = ($v === null || $v === '' || (int)$v <= 0) ? null : (int)$v;
+            }
+        }
+        if ($sets) {
+            $params[] = $id;
+            $pdo->prepare("UPDATE accounts SET " . implode(', ', $sets) . " WHERE id=?")->execute($params);
         }
         json_out(['ok' => true]);
     }

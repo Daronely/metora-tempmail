@@ -44,41 +44,25 @@ $due = $stmt->fetchAll();
 $sentN = $failN = 0;
 foreach ($due as $m) {
     $atts = json_decode($m['att_json'] ?? '[]', true) ?: [];
+    // normalize attachment refs to [name, path] pairs for send_mail()
+    $attPairs = [];
+    foreach ($atts as $a) $attPairs[] = [$a['name'], $a['path']];
 
-    $boundary = '=_tm' . bin2hex(random_bytes(10));
-    $headers = [
-        'From: ' . $m['from_email'],
-        'Reply-To: ' . $m['from_email'],
-        'MIME-Version: 1.0',
-        'X-Mailer: Metora-TempMail',
-        'Date: ' . date('r'),
-    ];
-    $subject = mb_encode_mimeheader($m['subject'] ?: '(no subject)', 'UTF-8', 'B', "\r\n");
-
-    if (!$atts) {
-        $headers[] = 'Content-Type: text/plain; charset=UTF-8';
-        $headers[] = 'Content-Transfer-Encoding: base64';
-        $body = chunk_split(base64_encode($m['body_text'] ?? ''));
-    } else {
-        $headers[] = "Content-Type: multipart/mixed; boundary=\"$boundary\"";
-        $parts = ["--$boundary\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n"
-                  . chunk_split(base64_encode($m['body_text'] ?? ''))];
-        foreach ($atts as $a) {
-            $data = @file_get_contents(STORAGE_DIR . '/' . $a['path']);
-            if ($data === false) continue;
-            $fname = mb_encode_mimeheader($a['name'], 'UTF-8', 'B');
-            $parts[] = "--$boundary\r\nContent-Type: {$a['mime']}; name=\"$fname\"\r\n"
-                     . "Content-Transfer-Encoding: base64\r\n"
-                     . "Content-Disposition: attachment; filename=\"$fname\"\r\n\r\n"
-                     . chunk_split(base64_encode($data));
-        }
-        $parts[] = "--$boundary--";
-        $body = implode("\r\n", $parts);
-    }
-
-    $ok = @mail($m['to_addr'], $subject, $body, implode("\r\n", $headers), '-f' . $m['from_email']);
+    $res = send_mail(
+        ['from' => $m['from_email'], 'to' => $m['to_addr'], 'subject' => $m['subject'], 'body' => (string)($m['body_text'] ?? '')],
+        $attPairs
+    );
+    $ok = $res['ok'];
 
     if ($ok) {
+        // move file from sched/ to att/ FIRST so it lives/dies with the message,
+        // and store the NEW path in the attachments row (old path caused broken downloads)
+        foreach ($atts as $a) {
+            $newRel = 'att/' . basename($a['path']);
+            if (@rename(STORAGE_DIR . '/' . $a['path'], STORAGE_DIR . '/' . $newRel)) {
+                $a['path'] = $newRel;
+            }
+        }
         // store a copy in the sender's Sent folder
         $total = strlen($m['body_text'] ?? '');
         foreach ($atts as $a) $total += (int)($a['size'] ?? 0);
@@ -90,10 +74,6 @@ foreach ($due as $m) {
             $pdo->prepare("INSERT INTO attachments (message_id, filename, mime, size_bytes, file_path) VALUES (?,?,?,?,?)")
                 ->execute([$mid, $a['name'], $a['mime'], (int)($a['size'] ?? 0), $a['path']]);
         }
-        // copy file from sched/ to att/ so it lives/dies with the message
-        foreach ($atts as $a) {
-            @rename(STORAGE_DIR . '/' . $a['path'], STORAGE_DIR . '/att/' . basename($a['path']));
-        }
         $pdo->prepare("UPDATE scheduled_messages SET status='sent', sent_at=NOW() WHERE id=?")->execute([$m['id']]);
         $sentN++;
         $log("sent #{$m['id']} → {$m['to_addr']}");
@@ -101,7 +81,7 @@ foreach ($due as $m) {
         $pdo->prepare("UPDATE scheduled_messages SET status='failed', sent_at=NOW() WHERE id=?")->execute([$m['id']]);
         foreach ($atts as $a) @unlink(STORAGE_DIR . '/' . $a['path']);
         $failN++;
-        $log("FAILED #{$m['id']} → {$m['to_addr']}");
+        $log("FAILED #{$m['id']} → {$m['to_addr']} err={$res['error']}");
     }
 }
 

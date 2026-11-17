@@ -42,8 +42,10 @@ function db_install(): void {
       body_html MEDIUMTEXT,
       size_bytes INT UNSIGNED NOT NULL DEFAULT 0,
       is_read TINYINT(1) NOT NULL DEFAULT 0,
+      dedupe_key CHAR(64) NULL,
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       INDEX idx_acc_folder (account_id, folder, created_at),
+      INDEX idx_dedupe (account_id, folder, dedupe_key),
       FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
@@ -150,4 +152,58 @@ function set_setting(string $k, $v): void {
 function current_cycle_id(): int {
     $row = db()->query("SELECT id FROM cycles ORDER BY id DESC LIMIT 1")->fetch();
     return $row ? (int)$row['id'] : 1;
+}
+
+/**
+ * v6 migration: run once (idempotent). Adds columns/tables introduced
+ * after the first release without requiring setup.php re-run:
+ *   - messages.dedupe_key (+ index)      → real Message-ID dedupe
+ *   - qr_tokens                          → scan-to-login
+ *   - resource_requests                  → users asking admins for more quota
+ *   - accounts.lang + quota overrides    → per-user language + custom limits
+ */
+function db_migrate(): void {
+    $pdo = db();
+    // ── messages.dedupe_key ──
+    try {
+        $pdo->exec("ALTER TABLE messages ADD COLUMN dedupe_key CHAR(64) NULL,
+                    ADD INDEX idx_dedupe (account_id, folder, dedupe_key)");
+    } catch (Throwable $e) { /* already exists */ }
+    // ── accounts: language + per-user quota overrides (NULL = use plan default) ──
+    foreach (['lang' => "VARCHAR(8) NULL",
+              'override_send_limit' => 'INT UNSIGNED NULL',
+              'override_inbox_limit' => 'INT UNSIGNED NULL',
+              'override_att_limit' => 'INT UNSIGNED NULL'] as $col => $def) {
+        try { $pdo->exec("ALTER TABLE accounts ADD COLUMN $col $def"); }
+        catch (Throwable $e) { /* already exists */ }
+    }
+    // ── qr_tokens: single-use, 10-minute scan-to-login ──
+    $pdo->exec("
+    CREATE TABLE IF NOT EXISTS qr_tokens (
+      token CHAR(64) PRIMARY KEY,
+      account_id INT UNSIGNED NOT NULL,
+      used TINYINT(1) NOT NULL DEFAULT 0,
+      expires_at DATETIME NOT NULL,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      INDEX idx_exp (expires_at),
+      FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    // ── resource_requests: user → admin upgrade requests ──
+    $pdo->exec("
+    CREATE TABLE IF NOT EXISTS resource_requests (
+      id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+      account_id INT UNSIGNED NOT NULL,
+      kind ENUM('send','inbox','att','premium') NOT NULL,
+      amount INT UNSIGNED NOT NULL DEFAULT 0,
+      reason TEXT NOT NULL,
+      status ENUM('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+      admin_note TEXT NULL,
+      handled_at DATETIME NULL,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      INDEX idx_status (status, created_at),
+      INDEX idx_acc (account_id),
+      FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    // housekeeping: expire stale QR tokens (kept 24h for audit)
+    try { $pdo->exec("DELETE FROM qr_tokens WHERE expires_at < (NOW() - INTERVAL 1 DAY)"); } catch (Throwable $e) {}
 }

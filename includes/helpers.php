@@ -46,6 +46,8 @@ function require_user(): array {
 function require_admin(): array {
     $u = require_user();
     if ($u['role'] !== 'admin') json_error('forbidden', 403);
+    // every admin MUTATION must carry a valid CSRF header (GET stays open)
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') csrf_check();
     return $u;
 }
 
@@ -83,9 +85,16 @@ function is_unlimited(array $u): bool {
     return $u['role'] === 'admin' && get_setting('admin_unlimited', '1') === '1';
 }
 
+/* ── quota resolution: per-user admin override wins over plan default ── */
+function user_override(array $u, string $col): ?int {
+    $v = $u[$col] ?? null;
+    return ($v === null || $v === '' || (int)$v === 0) ? null : (int)$v;
+}
+
 function send_quota_limit(array $u): int {
     if (is_unlimited($u)) return PHP_INT_MAX;
     if ($u['role'] === 'admin') return (int)get_setting('send_limit_admin', 100000);
+    if ($ov = user_override($u, 'override_send_limit')) return $ov;
     return is_premium($u)
         ? (int)get_setting('send_limit_premium', SEND_LIMIT_PREMIUM)
         : (int)get_setting('send_limit_free', SEND_LIMIT_FREE);
@@ -94,6 +103,7 @@ function send_quota_limit(array $u): int {
 function inbox_limit(array $u): int {
     if (is_unlimited($u)) return PHP_INT_MAX;
     if ($u['role'] === 'admin') return (int)get_setting('inbox_limit_admin', 100000);
+    if ($ov = user_override($u, 'override_inbox_limit')) return $ov;
     return is_premium($u)
         ? (int)get_setting('inbox_limit_premium', INBOX_LIMIT_PREMIUM)
         : (int)get_setting('inbox_limit_free', INBOX_LIMIT_FREE);
@@ -101,9 +111,36 @@ function inbox_limit(array $u): int {
 
 function att_limit(array $u): int {
     if (is_unlimited($u)) return (int)get_setting('att_limit_admin', 10);
+    if ($ov = user_override($u, 'override_att_limit')) return $ov;
     return is_premium($u)
         ? (int)get_setting('att_limit_premium', ATTACH_LIMIT_PREMIUM)
         : (int)get_setting('att_limit_free', ATTACH_LIMIT_FREE);
+}
+
+/* ── language: session value → account preference → default ── */
+const SUPPORTED_LANGS = ['en' => 'ltr', 'fa' => 'rtl', 'ru' => 'ltr'];
+function normalize_lang(?string $l): string {
+    return isset(SUPPORTED_LANGS[$l]) ? $l : 'en';
+}
+function current_lang(): string {
+    if (session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['lang']))
+        return normalize_lang($_SESSION['lang']);
+    return 'en';
+}
+
+/* ── CSRF token (double-submit cookie pattern, no storage needed) ── */
+function csrf_token(): string {
+    if (session_status() !== PHP_SESSION_ACTIVE) session_boot();
+    if (empty($_SESSION['csrf'])) $_SESSION['csrf'] = bin2hex(random_bytes(20));
+    return $_SESSION['csrf'];
+}
+/** verify the X-CSRF header against the session token (admin mutations) */
+function csrf_check(): void {
+    session_boot();
+    $sent = $_SERVER['HTTP_X_CSRF'] ?? '';
+    if (empty($_SESSION['csrf']) || !hash_equals($_SESSION['csrf'], $sent)) {
+        json_error('نشست شما منقضی شده — صفحه را رفرش کنید', 403);
+    }
 }
 
 /** human-friendly quota number for JSON output (null = unlimited) */

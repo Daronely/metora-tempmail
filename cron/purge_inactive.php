@@ -5,7 +5,7 @@
  * Deletes accounts (and their data) inactive for more than TTL_DAYS days.
  * Admin accounts are never purged.
  */
-$home = '/home/YOURUSER/temp.example.com';
+$home = dirname(__DIR__);
 require_once $home . '/includes/config.php';
 require_once $home . '/includes/helpers_standalone.php';
 

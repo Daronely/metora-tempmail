@@ -22,6 +22,8 @@ json_out([
         'max_upload_mb' => MAX_UPLOAD_MB,
     ],
     'cycle_id' => $cycle,
+    'lang' => current_lang(),
+    'dir' => SUPPORTED_LANGS[current_lang()],
     'price' => (int)get_setting('premium_price', PREMIUM_PRICE),
     'telegram' => SUPPORT_TELEGRAM,
     'phone' => SUPPORT_PHONE,

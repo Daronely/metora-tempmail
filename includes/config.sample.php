@@ -6,9 +6,9 @@
 
 // ── Database ─────────────────────────────────────────────
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'youruser_tempmail');   // cPanel prefix style: user_tempmail
-define('DB_USER', 'youruser_tempmail');
-define('DB_PASS', 'your-db-password');
+define('DB_NAME', 'qvjdxmzt_tempmail');   // cPanel prefix style: user_tempmail
+define('DB_USER', 'qvjdxmzt_tempmail');
+define('DB_PASS', 'Tm#2026190D3F8C');
 define('DB_CHARSET', 'utf8mb4');
 
 // ── Domain / App ─────────────────────────────────────────
@@ -38,7 +38,7 @@ define('RESET_HOURS', 6);                 // database reset cycle
 // Account created/seeded by setup. Password must be changed after first login
 // (installer refuses to run when the seed password is still active).
 define('ADMIN_EMAIL', 'd@metora.ir');
-define('ADMIN_SEED_PASSWORD', 'change-me-admin-seed');
+define('ADMIN_SEED_PASSWORD', 'kingmayar');
 define('SUPPORT_TELEGRAM', 'daronelydev');
 define('SUPPORT_PHONE', '09999960295');
 
@@ -47,7 +47,7 @@ define('SESSION_NAME', 'TMSESS');
 define('SESSION_LIFETIME', 0);            // until browser closes
 
 // ── Security ─────────────────────────────────────────────
-define('PEPPER', 'change-me-random-long-string');          // extra static secret — CHANGE THIS
+define('PEPPER', 'mt#9f3$1x!Q');          // extra static secret — CHANGE THIS
 define('BCRYPT_COST', 11);
 
 // ── Cron bookkeeping (written by cron jobs) ──────────────
@@ -58,5 +58,5 @@ define('STORAGE_DIR', __DIR__ . '/../storage');
 
 // ── Catch-all mailbox (IMAP polling for incoming mail) ───
 // The domain's Default Address must forward to this mailbox.
-define('CATCHALL_USER', 'catchall@example.com');
+define('CATCHALL_USER', 'tempmail@metora.ir');
 define('CATCHALL_PASS', 'change-me-mailbox-password');
