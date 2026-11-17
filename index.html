@@ -647,7 +647,7 @@ footer a:hover{color:var(--acc)}
 <div class="ad-slot compact" onclick="openAdModal()" role="button" aria-label="Ad slot — yours">
   <div style="text-align:center">
     <div class="t"><span data-i18n="ad2_t">📣 Your ad here</span></div>
-    <div class="s"><span data-i18n="ad2_s">بنر ۹۷۰×۲۵۰ — کلیک کنید و همین امروز رزرو کنید</span></div>
+    <div class="s"><span data-i18n="ad2_s">970×250 banner — click and book it today</span></div>
   </div>
 </div>
 
@@ -1296,15 +1296,16 @@ async function applyPublicQuotas(){
   try {
     const j = await api('/api/quotas.php');
     if (!j.ok) return;
+    const n = x => LANG === 'fa' ? faNum(x) : String(x);
     const set = (sel, txt) => { const el = document.querySelector(`[data-q="${sel}"]`); if (el) el.textContent = txt; };
-    set('free_send', `ارسال ${faNum(j.free.send)} ایمیل در هر سیکل ۶ ساعته`);
-    set('free_inbox', `نگهداری ${faNum(j.free.inbox)} ایمیل دریافتی`);
-    set('free_att', `${faNum(j.free.att)} پیوست در هر ایمیل (تا ۲MB)`);
-    set('prem_send', `ارسال ${faNum(j.premium.send)} ایمیل در هر سیکل ۶ ساعته`);
-    set('prem_inbox', `نگهداری ${faNum(j.premium.inbox)} ایمیل دریافتی`);
-    set('prem_att', `${faNum(j.premium.att)} پیوست در هر ایمیل (هرکدام ۲MB)`);
+    set('free_send', t('q_send', {n: n(j.free.send)}));
+    set('free_inbox', t('q_inbox', {n: n(j.free.inbox)}));
+    set('free_att', t('q_att', {n: n(j.free.att)}));
+    set('prem_send', t('q_send', {n: n(j.premium.send)}));
+    set('prem_inbox', t('q_inbox', {n: n(j.premium.inbox)}));
+    set('prem_att', t('q_att5', {n: n(j.premium.att)}));
     const p = document.getElementById('planPrice');
-    if (p) p.innerHTML = `$${j.price}<small>/ماه</small>`;
+    if (p) p.innerHTML = `$${j.price}<small>${t('per_month')}</small>`;
   } catch(e) {}
 }
 

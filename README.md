@@ -1,213 +1,216 @@
 <div align="center">
 
-<img src="assets/landing.png" alt="متِمپ — Metora TempMail" width="880">
+<img src="assets/landing.png" alt="Metora TempMail" width="880">
 
-# ⚡ متِمپ — Metora TempMail
+# ⚡ Metora TempMail
 
-**ایمیل موقتی که واقعاً کار می‌کنه** — بفرست، بگیر، پیوست کن، زمان‌بندی کن. بدون اسپم، بدون دردسر.
+**A disposable email service that actually works — real sending, real receiving, real attachments.**
 
-[![Live](https://img.shields.io/badge/%F0%9F%94%B4_LIVE-temp.metora.ir-3CF2D3?style=for-the-badge)](https://temp.metora.ir)
-![PHP](https://img.shields.io/badge/PHP-8.1+-8892BF?style=for-the-badge&logo=php&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-3CF2D3?style=for-the-badge)
+Self-hosted on any cPanel shared host in ~20 minutes. No Node.js, no Docker, no database server to babysit — just PHP + MySQL + a catch-all mailbox.
 
-🌐 **[English](README.en.md)** · **[Русский](README.ru.md)** · **فارسی**
+[![Live Demo](https://img.shields.io/badge/Live-temp.metora.ir-3CF2D3?style=flat-square)](https://temp.metora.ir/)
+[![License](https://img.shields.io/badge/License-MIT-3CF2D3?style=flat-square)](LICENSE)
+[![PHP](https://img.shields.io/badge/PHP-7.4%2B-777BB4?style=flat-square&logo=php)]()
+[![Languages](https://img.shields.io/badge/UI-English%20%7C%20%D9%81%D8%A7%D8%B1%D8%B3%DB%8C%20%7C%20%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9-3CF2D3?style=flat-square)]()
 
-*سرویس کامل ایمیل موقت روی هاست اشتراکی cPanel معمولی — بدون سرور اختصاصی، بدون سرویس ابری، بدون فریم‌ورک.*
-
-**[🚀 دمو زنده](https://temp.metora.ir)** · **[✨ امکانات](#-امکانات)** · **[🎨 افکت‌های-UI](#️-تجربه-و-رابط-کاربری)** · **[📦 نصب](#️-نصب-روی-cpanel-۵-دقیقه)**
+**[English](README.md)** · **[فارسی](README.fa.md)** · **[Русский](README.ru.md)**
 
 </div>
 
 ---
 
-## 🎯 چرا متِمپ؟
+## 🤔 Why Metora?
 
-| قابلیت | متِمپ | سرویس‌های معمول |
-|:---|:---:|:---:|
-| آدرس اختصاصی `@metora.ir` | ✅ | ✅ |
-| **ارسال** ایمیل واقعی | ✅ | ❌ |
-| دریافت ایمیل واقعی (MIME کامل) | ✅ | ✅ |
-| پیوست تا ۲ مگابایت | ✅ | بعضی‌ها |
-| **⏰ ارسال زمان‌بندی‌شده** | ✅ | ❌ |
-| **🔑 استخراج خودکار کد تأیید (OTP)** | ✅ | ❌ |
-| **🎨 سازنده ایمیل دلخواه + دامنه** | ✅ | ❌ |
-| **📱 QR برای انتقال به موبایل** | ✅ | ❌ |
-| **🌗 تم تاریک / روشن** | ✅ | ❌ |
-| **⭐ ایمیل‌های مهم + فیلترها** | ✅ | ❌ |
-| **📤 خروجی EML استاندارد** | ✅ | ❌ |
-| **🎭 هویت ساختگی برای تست** | ✅ | ❌ |
-| **🔊 صدای دریافت ایمیل** | ✅ | ❌ |
-| پاسخ‌دادن با نقل قول | ✅ | ❌ |
-| ریست خودکار هر ۶ ساعت | ✅ | ❌ |
-| **پنل ادمین ۸ تب + سهمیه داینامیک** | ✅ | ❌ |
-| UI فارسی RTL با Particle Typography | ✅ | ❌ |
+Most temp-mail services are **read-only toys**: you can receive mail, but try *replying* to a verification email or *sending* an attachment and you hit a wall. Metora is a full mail client wrapped around a disposable identity:
 
-> 🧹 **فلسفه متِمپ:** هیچ‌چیز نمی‌ماند. هر ۶ ساعت کل صندوق‌ها پاک می‌شوند؛ فقط آدرس و رمز تو می‌ماند. اگر ۱۰ روز سراغش نروی، کل اکانت هم پاک می‌شود.
+| Capability | Typical temp-mail | Metora |
+|---|:-:|:-:|
+| Receive email (incl. from Gmail, Outlook…) | ✅ | ✅ |
+| **Send** email to any address | ❌ | ✅ |
+| Attachments (send **and** receive, up to 2 MB) | ❌ | ✅ |
+| **Automatic OTP / verification-code extraction** | ❌ | ✅ |
+| Scheduled sending (“send this in 2 hours”) | ❌ | ✅ |
+| QR hand-off — beam your inbox to your phone & **log in by scanning** | ❌ | ✅ |
+| Trilingual UI with full RTL | ❌ | ✅ |
+| Self-host on cheap shared hosting | ❌ | ✅ |
+
+Everything is wiped automatically every 6 hours — the whole inbox, attachments and all — so the service stays clean and your users stay anonymous.
 
 ---
 
-## ✨ امکانات
+## 📸 What it looks like
 
-### 👤 برای کاربر
-- **ثبت‌نام ۱۰ ثانیه‌ای** — نه شماره، نه کپچا، نه وریفای
-- **کلاینت کامل** — دریافتی/ارسالی با شمارنده، پاسخ با نقل قول، دانلود پیوست، درگ‌اند‌دراپ
-- **⏰ ارسال زمان‌بندی‌شده** — بنویس، تاریخ بگذار، خودکار ارسال می‌شود؛ با شمارش معکوس زنده و دکمه لغو
-  - هر روز یک ایمیل زمان‌بندی‌شده · حداکثر ۵ در انتظار · پیوست ≤ ۱MB · زمان به وقت تهران
-- **شمارنده سهمیه زنده** — همیشه می‌دانی چند ارسال مانده
-- **🎨 سازنده ایمیل دلخواه** — نام دلخواه یا تصادفی (🎲)، انتخاب دامنه از دامنه‌های موجود، رمز پیشنهادی امن و ساخت آنی آدرس
-- **🔑 استخراج خودکار OTP** — کدهای تأیید ۴ تا ۸ رقمی داخل ایمیل‌های ناخوانده خودکار شناسایی و در یک **کارت بزرگ درخشان** با دکمه کپی نمایش داده می‌شوند (بدون علامت‌خوردن ایمیل)
-- **📱 QR Code** — آدرس ایمیلت را با یک QR به موبایل منتقل کن
-- **⚡ برروزرسانی خودکار** — دکمه‌ی قابل‌مشاهده برای چک‌کردن صندوق هر ۱۰ ثانیه
-- **🔔 صدای دریافت** — زنگ نرم WebAudio هنگام رسیدن ایمیل جدید (قابل خاموش‌کردن)
-- **🌗 تم تاریک/روشن** — با یک کلیک و ذخیره در مرورگر
-- **⏳ تایمر انقضای سیکل** — شمارش معکوس زنده تا ریست بعدی ۶ ساعته
-- **⭐ ایمیل‌های مهم** — ستاره‌گذاری (ذخیره در مرورگر) + فیلترهای همه/مهم‌ها/ناخوانده/دارای پیوست
-- **📤 خروجی EML** — هر ایمیل را با فرمت استاندارد `.eml` دانلود کن (باز می‌شود در Outlook/Thunderbird)
-- **🎭 هویت تصادفی** — نام، موبایل، آدرس، کدپستی و... برای تست فرم‌ها، با یک کلیک در کلیپ‌بورد
-- **📚 راهنمای تصویری نصب** — ۱۵ مرحله با اسکرین‌شات، داخل خود سایت (بخش «راهنمای نصب»)
-- **📣 جای تبلیغ** — ۴ جایگاه تبلیغاتی رزروشدنی از طریق تلگرام
+| Landing (dark neon) | Inbox & OTP extraction |
+|---|---|
+| ![](assets/landing.png) | ![](assets/app.png) |
 
-### 👑 برای ادمین (پنل ۸ تب)
-| تب | امکانات |
-|:---|:---|
-| 📊 آمار | اکانت‌ها، پیام‌ها، فایل‌های یتیم، حجم دیتابیس |
-| 👥 اکانت‌ها | پرمیوم‌کردن، حذف |
-| 📨 پیام‌ها | مشاهده و حذف هر پیام |
-| 🏋️ **سنگین‌ها** | فیلتر حجمی پیام‌های بزرگ بر اساس نوع پیوست (عکس/ویدیو/صدا/PDF/ZIP) |
-| 🗂 **فایل‌ها** | درخت فایل‌ها بر اساس پسوند با نوار درصد، بج یتیم، حذف گروهی هر پسوند |
-| ⏰ **زمان‌بندی‌ها** | دیدن و حذف زمان‌بندی‌های همه کاربران |
-| ⚙️ تنظیمات | **همه سهمیه‌ها قابل ویرایش زنده** + افزودن/سلب ادمینی + تغییر رمز |
-| 🧹 نگهداری | ۴ ریست + **پاکسازی هوشمند نوعی** (همه عکس‌ها/ویدیوها/صداها/اسناد/آرشیوها/فقط متن‌ها) |
+| Scheduled send | QR login (scan → you're in) |
+|---|---|
+| ![](assets/qr-login.png) | ![](assets/admin-requests.png) |
+
+<details>
+<summary><b>More screenshots</b></summary>
+
+| Persian UI (RTL) | Admin panel (trilingual) |
+|---|---|
+| ![](assets/fa.png) | ![](assets/admin-requests.png) |
+
+![](assets/mobile.png)
+
+</details>
 
 ---
 
-## 🎨 تجربه و رابط کاربری
+## 🚀 Features
 
-| افکت | توضیح |
-|:---|:---|
-| **🪐 Particle Typography v2** | تیتر اصلی از **هزاران پارتیکل نئونی تیز** ساخته می‌شود — در حالت سکون حروف کاملاً خوانا و براق‌اند و فقط وقتی موس رویشان می‌رود منفجر می‌شوند و به‌آرامی به جای خودشان برمی‌گردند |
-| **✨ Particle Typing** | موقع تایپ، جرقه‌های پارتیکلی دور کرسر می‌ترکند |
-| **🧲 Magnetic Buttons** | دکمه‌ها مثل آهن‌ربا به موس کشیده می‌شوند |
-| **📝 Word Reveal** | تیترها موقع اسکرول کلمه‌کلمه با بلر ظاهر می‌شوند |
-| **🌊 Liquid Glass** | کل رابط شیشه‌ای با backdrop-blur و حاشیه نورانی |
-| **☄️ Aurora + Grain** | پس‌زمینه سه‌لکه‌نوری متحرک + بافت گرین سینمایی |
-| **⌨️ Live Typer + Countdown** | تایپ زنده ایمیل نمونه + شمارش معکوس ثانیه‌ای زمان‌بندی‌ها و انقضای سیکل |
-| **🌗 تم دوگانه** | کل رابط در دو حالت تاریک نئونی و روشن مینیمال، با ذخیره‌سازی انتخاب |
+- **⚡ 10-second signup** — just a username and a password. No phone, no captcha, no personal data.
+- **📥 Real receiving** — a catch-all mailbox + IMAP poller (runs every minute) delivers mail from *any* external sender (Gmail, Outlook, …) into the right inbox, with **SHA-256 de-duplication** and a 5-minute fuzzy-dedup fallback.
+- **📤 Real sending** — outbound mail goes through a **direct-SMTP engine** (socket to the recipient's MX, STARTTLS when offered, automatic plaintext fallback) with the local MTA as a reserve route. Verified working against Gmail.
+- **🔑 Automatic OTP extraction** — verification codes inside unread mail are detected and shown in a big glowing card with a one-click copy button.
+- **📎 Attachments both ways** — up to 2 MB per file (10 files / 2× max aggregate on receive), MIME type preserved from the sender.
+- **⏰ Scheduled sending** — write now, pick a time, watch the live countdown; the cron fires it exactly on schedule.
+- **📱 QR hand-off & scan-to-login** — beam your address to your phone, or mint a **single-use 10-minute login QR**: scan it with any device and you land inside the account. Replay-proof by design.
+- **🌍 Trilingual UI** — English, فارسی (full RTL) and Русский, switchable from the navbar, persisted to both the session and the account.
+- **🌗 Dark / light theme** with the whole neon-glass design system.
+- **🛡 Hardened by default** — CSRF double-submit tokens, login rate-limiting (10 fails / 15 min lockout), registration throttling, password policy, per-account `GET_LOCK` serialization for quota races, `Content-Security-Policy`, security headers via `.htaccess`.
 
-همه افکت‌ها `prefers-reduced-motion` را رعایت می‌کنند و روی **390 / 768 / 1440px** تست‌شده‌اند — بدون هیچ سرریز افقی.
-
-<div align="center">
-<table><tr>
-<td><img src="assets/generator.png" width="410" alt="ژنراتور"></td>
-<td><img src="assets/otp.png" width="410" alt="OTP"></td>
-</tr><tr>
-<td align="center"><sub>🎨 سازنده ایمیل دلخواه</sub></td>
-<td align="center"><sub>🔑 کارت بزرگ کد تأیید خودکار</sub></td>
-</tr><tr>
-<td><img src="assets/light-theme.png" width="410" alt="تم روشن"></td>
-<td><img src="assets/qr.png" width="410" alt="QR"></td>
-</tr><tr>
-<td align="center"><sub>🌗 حالت روشن</sub></td>
-<td align="center"><sub>📱 انتقال آدرس با QR</sub></td>
-</tr><tr>
-<td><img src="assets/scheduled.png" width="410" alt="زمان‌بندی"></td>
-<td><img src="assets/guide-section.png" width="410" alt="راهنما"></td>
-</tr><tr>
-<td align="center"><sub>⏰ زمان‌بندی با شمارش معکوس</sub></td>
-<td align="center"><sub>📚 راهنمای تصویری نصب (۱۵ مرحله)</sub></td>
-</tr><tr>
-<td><img src="assets/app.png" width="410" alt="اپ"></td>
-<td><img src="assets/files.png" width="410" alt="فایل‌ها"></td>
-</tr><tr>
-<td align="center"><sub>کلاینت کامل با نوار ابزار v4</sub></td>
-<td align="center"><sub>🗂 درخت فایل‌های ادمین</sub></td>
-</tr></table>
-</div>
+### Admin panel (trilingual since v6.2)
+- 📊 Live stats (accounts, messages, cycle load, DB size, orphan files)
+- 👥 Account management — promote/demote premium, per-user quota **overrides**, delete
+- 🎁 Resource **requests queue** — users ask for more quota with a reason; admins approve/reject in one click, the override applies instantly
+- 📨 Message viewer & moderation across all accounts
+- 🏋️ Heavy-message explorer — filter by attachment type / size
+- 🗂 File tree by extension with per-extension purge
+- ⚙️ Quota settings (free / premium / admin tiers), premium price, unlimited-admin toggle
+- 👑 Add/revoke admins, change password
+- 🧹 Maintenance — full reset, self-inbox reset, orphan cleanup, inactive purge, smart purge by content type (images / videos / audio / PDF / archives / plain-text)
 
 ---
 
-## 🏗️ معماری
+## 🧱 Architecture
 
 ```
-External mail ──▶ MX (Exim) ──catch-all──▶ IMAP poll (هر دقیقه) ──▶ MySQL
-                                                                        ▲
-Browser SPA ◀──── REST API (PHP) ◀──────────────────────────────────────┘
-                     │
-                     ├── send.php (ارسال فوری + سهمیه)
-                     ├── schedule.php (زمان‌بندی + قوانین)
-                     └── admin.php (۸ بخش مدیریتی)
-
-Cron:  * * * * *  imap_poll + process_scheduled (زمان‌بندی‌ها)
-       0 */6 * * *  reset_cycle (ریست ۶ ساعته)
-       30 3 * * *  purge_inactive (اکانت‌های ۱۰ روزه)
+                 ┌────────────────────────────────────────────────┐
+                 │                     cPanel                     │
+                 │                                                │
+  Incoming SMTP  │  catch-all mailbox ──► cron/imap_poll.php      │
+ ─────────────►  │                          │  (IMAP, every min)  │
+  (any sender)   │                          ▼                     │
+                 │                     mail_parser.php ──► MySQL  │
+                 │                          │                     │
+                 │  index.html ◄── api/*.php (JSON + CSRF)        │
+                 │     ▲            │                             │
+                 │     │            ▼                             │
+                 │  you ──► send.php ──► includes/mailer.php      │
+                 │                        │                       │
+                 │                        ├─► Direct SMTP ──► recipient MX
+                 │                        └─► mail() (local exim, fallback)
+                 │                                                │
+                 │  cron: imap_poll · process_scheduled ·         │
+                 │        reset_cycle (6h) · purge_inactive (d)   │
+                 └────────────────────────────────────────────────┘
 ```
 
-| مسیر | توضیح |
-|:---|:---|
-| `/` | اپ تک‌صفحه‌ای (Landing + کلاینت + زمان‌بندی) |
-| `/api/schedule.php` | ساخت/لیست/لغو زمان‌بندی با همه قوانین |
-| `/cron/process_scheduled.php` | هر دقیقه: ارسال زمان‌بندی‌های سررسیده (قفل GET_LOCK) |
-| `/api/admin.php` | ۲۰+ اکشن مدیریتی |
+**Why direct SMTP?** On many shared hosts the local exim queue stalls silently for app-generated mail (PHP `mail()` returns true, the message never leaves). Metora therefore talks **directly to the recipient's MX** — the same hop Gmail itself answered `250 2.0.0 OK` to in testing — and only falls back to the local MTA. Same-domain mail is routed through the catch-all pipeline as before.
+
+<details>
+<summary><b>📁 File map</b></summary>
+
+| Path | Purpose |
+|---|---|
+| `index.html` | Landing + full mail client (single file, no build step) |
+| `admin/index.html` | Trilingual admin panel |
+| `assets/js/i18n.js` | EN/FA/RU dictionaries + language engine |
+| `api/auth.php` | Login / register / QR-login / rate limiting |
+| `api/send.php` | Atomic send (quota lock → direct SMTP → sent copy) |
+| `api/schedule.php` | Scheduled sends |
+| `api/messages.php`, `message.php` | Inbox / message fetch |
+| `api/download.php`, `delete.php`, `export.php` | Attachments & cleanup |
+| `api/me.php`, `quotas.php`, `lang.php`, `logout.php` | Session / public quotas / language |
+| `api/qr.php` | Mint single-use QR login tokens |
+| `api/requests.php` | Resource requests (user side) |
+| `api/admin.php` | All admin actions (CSRF-protected) |
+| `includes/mailer.php` | MIME builder + direct-SMTP engine |
+| `includes/mail_parser.php` | RFC-2822 parser (multipart, attachments, OTP sniffing) |
+| `includes/db.php`, `helpers.php` | PDO + helpers (cycles, quotas, locks) |
+| `includes/config.sample.php` | Copy to `config.php` and fill in |
+| `cron/imap_poll.php` | Pull catch-all over IMAP (socket fallback included) |
+| `cron/process_scheduled.php` | Fire scheduled sends |
+| `cron/reset_cycle.php` | 6-hour wipe |
+| `cron/purge_inactive.php` | Daily inactive-account purge |
+| `setup.php` | One-shot schema + seed admin (delete after use!) |
+
+</details>
 
 ---
 
-## 🔧 نصب روی cPanel (۱۵ دقیقه — با تصویر)
+## 🛠 Installation (cPanel, ~20 minutes)
 
-> 💡 **راهنمای تصویری کامل ۱۵ مرحله‌ای داخل خود سایت هست:** [temp.metora.ir/#guide](https://temp.metora.ir/#guide)
+> Full visual walkthrough with 15 screenshots lives on the [live site → “Self-host” section](https://temp.metora.ir/#guide).
 
-1. **آپلود** محتوا در docroot ساب‌دامین
-2. **دیتابیس** بسازید (MySQL Databases) و دسترسی کامل بدهید
-3. **کانفیگ**: `includes/config.sample.php` → `config.php` را پر کنید
-4. **صندوق catch-all** بسازید و Default Address را رویش بگذارید
-5. **setup.php** را یک‌بار باز کنید و **بعد حذفش کنید**
-6. **Cron Jobs**:
-   ```
-   * * * * *           php -q .../cron/imap_poll.php
-   * * * * *           php -q .../cron/process_scheduled.php
-   0 0,6,12,18 * * *   php -q .../cron/reset_cycle.php
-   30 3 * * *          php -q .../cron/purge_inactive.php
-   ```
-7. با ادمین seed لاگین کنید و از ⚙️ تنظیمات رمز و سهمیه‌ها را بگذارید
-
-> 🔐 `config.php` در `.gitignore` است؛ `.htaccess` دسترسی مستقیم به `includes/`, `storage/`, `cron/` را می‌بندد.
-
----
-
-## 📊 سهمیه‌ها (پیش‌فرض — همه از پنل قابل تغییر)
-
-| | رایگان | پرمیوم | ادمین |
-|:---|:---:|:---:|:---:|
-| ارسال / سیکل ۶ ساعته | ۱۰ | ۱۰۰ | **∞** |
-| صندوق دریافتی | ۵۰ | ۵۰۰ | **∞** |
-| پیوست / ایمیل | ۱ | ۵ | ۱۰ |
-| حجم هر پیوست | ۲MB | ۲MB | ۲MB |
-
----
-
-## 🗂️ دیتابیس
+1. **Database** — cPanel → *MySQL® Databases*: create a DB, a user, grant **ALL PRIVILEGES**. Note the full prefixed names (e.g. `user_tempmail`).
+2. **Upload** — clone/download this repo, upload the contents into your subdomain folder (e.g. `public_html/temp`), extract.
+3. **Config** — copy `includes/config.sample.php` → `includes/config.php`, fill in DB credentials, your mail domain, and the seed admin. Every constant is commented.
+4. **Setup** — open `https://temp.yoursite.com/setup.php` once, then **delete it** from File Manager.
+5. **Catch-all mailbox** — create a mailbox on your mail domain (e.g. `tempmail@yoursite.com`), note its password for the config.
+6. **Default Address** — set the domain's *Default Address* to **Forward to** that mailbox, so every `anything@yoursite.com` flows in.
+7. **MX** — if the domain's email lives elsewhere, point its MX to this host in *Zone Editor*.
+8. **Cron jobs** — add these four (replace paths with yours):
 
 ```
-accounts · messages · attachments · send_log · cycles · settings
-scheduled_messages (to_addr, send_at, status[pending|sent|failed|canceled], att_json, …)
+* * * * *      php -q /home/USER/temp/cron/imap_poll.php
+* * * * *      php -q /home/USER/temp/cron/process_scheduled.php
+0 0,6,12,18 * * *  php -q /home/USER/temp/cron/reset_cycle.php
+30 3 * * *     php -q /home/USER/temp/cron/purge_inactive.php
 ```
 
+Done 🎉 — log in with the seed admin, change the password, tune quotas from the admin panel.
+
+### Upgrading from an earlier version
+Replace `index.html`, `admin/index.html`, `assets/js/i18n.js`, everything under `api/`, `includes/` and `cron/`. Your `config.php` and database are untouched. New columns (dedupe, overrides, qr_tokens, resource_requests) are added automatically by `setup.php` — re-run it once (it is idempotent) and delete it again.
+
 ---
 
-## 🛡️ امنیت
+## ⚙️ Configuration reference
 
-bcrypt+pepper · prepared statements همه‌جا · سشن HttpOnly/SameSite · پیوست خارج از docroot با نام تصادفی · دانلود فقط برای مالک · اعتبارسنجی کامل ورودی‌ها · قفل GET_LOCK روی کرون‌ها
+All settings live in `includes/config.php`. The important ones:
+
+| Constant | Meaning |
+|---|---|
+| `MAIL_DOMAIN` | The domain addresses live on (`metora.ir` in production) |
+| `IMAP_HOST` / `IMAP_USER` / `IMAP_PASS` | The catch-all mailbox credentials |
+| `RESET_HOURS` | Inbox wipe interval (default 6) |
+| `MAX_UPLOAD_MB` | Per-attachment cap (default 2) |
+| Seed admin | Created by `setup.php`; change its password immediately |
+
+Quota *values* (free/premium sends, inbox retention, attachment counts, premium price) are editable at runtime from **Admin → Settings** — no code edits needed. Per-user overrides take precedence over plan values.
 
 ---
 
-## 🤝 پشتیبانی
+## 🔒 Security notes
 
-**تلگرام:** [@daronelydev](https://t.me/daronelydev) · **تلفن:** ۰۹۹۹۹۹۶۰۲۹۵
+- **CSRF**: every mutating API call requires the double-submit token (`X-CSRF` header).
+- **Rate limiting**: 10 failed logins per email+IP → 15-minute lockout; 20 registrations/hour/IP; minimum 8-char alphanumeric passwords.
+- **Quota races**: sends and scheduling run inside per-account MySQL `GET_LOCK`, so concurrent requests can't double-spend quota.
+- **File safety**: attachments stored outside the webroot-served path with random names, MIME sniffed with `finfo`, aggregate caps enforced.
+- **Headers**: `CSP`, `X-Frame-Options`, `X-Content-Type-Options` etc. shipped via `.htaccess`.
+- **QR logins**: 64-hex single-use tokens with a 10-minute TTL, deleted on first use.
 
-## 📄 لایسنس
+---
 
-MIT — آزادانه fork کنید، ولی اسپم نسازید 🙂
+## 🗺 Roadmap
 
-<div align="center">
-<sub>ساخته‌شده با ♥ توسط <a href="https://github.com/Daronely">Daronely</a> زیر چتر <a href="https://metora.ir">Metora</a></sub>
-</div>
+- [ ] Click reports for ad slots
+- [ ] WebAuthn / passkey login
+- [ ] Multiple addresses per account
+- [ ] REST API + API keys for automation
+
+---
+
+## 🤝 Contributing
+
+Issues and PRs are welcome. For questions about the hosted instance, reach out on Telegram: **[@daronelydev](https://t.me/daronelydev)**.
+
+## 📄 License
+
+[MIT](LICENSE) — do whatever you want, attribution appreciated.

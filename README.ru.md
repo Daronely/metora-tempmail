@@ -11,7 +11,7 @@
 ![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-3CF2D3?style=for-the-badge)
 
-🌐 **Русский** · **[English](README.en.md)** · **[فارسی](README.md)**
+🌐 **Русский** · **[English](README.md)** · **[فارسی](README.fa.md)**
 
 *Полноценный сервис одноразовой почты на обычном виртуальном хостинге cPanel — без выделенного сервера, без облаков, без фреймворков.*
 
@@ -202,3 +202,14 @@ MIT — форкайте свободно, но не спамьте 🙂
 <div align="center">
 <sub>Сделано с ♥ <a href="https://github.com/Daronely">Daronely</a> под эгидой <a href="https://metora.ir">Metora</a></sub>
 </div>
+
+
+---
+
+## 🆕 Версия 6.2
+
+- **Движок прямой SMTP-доставки**: письма уходят прямо на MX получателя (STARTTLS + автоматический plaintext-fallback) — отправка работает даже на shared-хостингах, где очередь exim «зависает».
+- **Админ-панель на трёх языках** (EN / فارси / RU), 183 переведённые строки, полный RTL.
+- **Раздел тарифов** полностью синхронизирован на всех трёх языках.
+- Тексты главной страницы переписаны и стали заметно убедительнее.
+- Главный README репозитория теперь английский; это его русская версия.
